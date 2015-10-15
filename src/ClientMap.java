@@ -1,12 +1,15 @@
 import java.util.List;
+import java.util.Observable;
 
-public class ClientMap
+public class ClientMap extends Observable
 {
-    public List<BoDCharacter> characters;
+    public List<GameObject> characters;
 
-    public ClientMap()
+    private Broker broker;
+    
+    public ClientMap(IMap serverMap, Broker broker)
     {
-        
+        this.broker = broker;
     }
 
     public void activate()
