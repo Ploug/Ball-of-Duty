@@ -2,7 +2,8 @@
 public class Player
 {
     public BoDCharacter character;
-    public int id;
+    private int id;
+    private String IP;
 
     public void setCharacter(BoDCharacter character)
     {
