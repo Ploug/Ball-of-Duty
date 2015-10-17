@@ -1,28 +1,33 @@
+package application;
+
+import javafx.scene.canvas.GraphicsContext;
 
 public abstract class GameObject
 {
-    public Body body;
-    public Physics physics;
-    public View view;
+    protected Body body;
+    protected Physics physics;
+    protected View view;
 
     public GameObject()
     {
-        
+
     }
-    
-    public void draw()
+
+    public void update(GraphicsContext gc)
     {
-        
+        if (physics != null)
+        {
+            physics.update();
+        }
+        if (view != null)
+        {
+            view.draw(gc);
+        }
     }
-    
-    public void update()
-    {
-        
-    }
-    
+
     public void destroy()
     {
-        
+
     }
 
     public Body getBody()
