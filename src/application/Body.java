@@ -1,9 +1,10 @@
+package application;
 
 public class Body
 {
     public GameObject gameObject;
-    private int x;
-    private int y;
+    protected int x;
+    protected int y;
 
     public Body(GameObject gO)
     {

@@ -1,23 +1,28 @@
+package application;
+
+import java.awt.Graphics2D;
 
 public abstract class GameObject
 {
-    public Body body;
-    public Physics physics;
-    public View view;
+    protected Body body;
+    protected Physics physics;
+    protected View view;
 
     public GameObject()
     {
         
     }
     
-    public void draw()
-    {
-        
-    }
-    
     public void update()
     {
-        
+        if(physics != null)
+        {
+            physics.update();
+        }
+        if(view != null)
+        {
+            view.draw();
+        }
     }
     
     public void destroy()
