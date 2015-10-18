@@ -1,9 +1,8 @@
 package application;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
-import java.awt.Color;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class View
 {
@@ -14,12 +13,12 @@ public class View
         this.gameObject = gO;
     }
 
-    public void draw(Graphics2D g2d)
+    public void draw(GraphicsContext gc)
     {
-        Color oldColor = g2d.getColor();
-        g2d.setColor(Color.green);
-        System.out.println((int) gameObject.getBody().getX()+"  "+ (int) gameObject.getBody().getY());
-        g2d.fillOval((int) gameObject.getBody().getX(), (int) gameObject.getBody().getY(), 40, 40);
-        g2d.setColor(oldColor);
+        Paint oldPaint = gc.getFill();
+        gc.setFill(Color.GREEN);
+        gc.fillOval((int) gameObject.getBody().getX(), (int) gameObject.getBody().getY(), 40, 40);
+
+        gc.setFill(oldPaint);
     }
 }

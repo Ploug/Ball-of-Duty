@@ -1,21 +1,19 @@
 package test;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
+import application.BoDServer;
+import application.GameManager;
+import application.IGame;
+import application.Player;
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import javax.swing.DebugGraphics;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import application.*;
-
-public class BoDClient
+public class BoDClient extends Application
 {
 
     public static IGame game;
@@ -23,68 +21,55 @@ public class BoDClient
     private static BoDServer server;
     private static int windowWidth = 800;
     private static int windowHeight = 600;
-    private static JButton joinGameButton;
-    private static JButton quitGameButton;
-    private static JFrame a;
-    private static ClientMap canvas;
-    private static JPanel menuPanel;
-    private static JPanel gamePanel;
-    private static JPanel cards;
-    private static final String GAME_PANEL = "Game Panel";
-    private static final String MENU_PANEL = "Menu Panel";
 
     public static void main(String[] args)
     {
-        a = new JFrame();
-        a.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        a.setTitle("Ball of Duty");
-        a.setSize(windowWidth, windowHeight);
-        a.setLocationRelativeTo(null);
-        a.setVisible(true);
-
-        menuPanel = new JPanel();
-        menuPanel.setFocusable(true);
-
-        gamePanel = new JPanel();
-
-        cards = new JPanel(new CardLayout());
-        cards.add(gamePanel, GAME_PANEL);
-        cards.add(menuPanel, MENU_PANEL);
-        a.add(cards);
-        CardLayout cl = (CardLayout) (cards.getLayout());
-        cl.show(cards, MENU_PANEL);
-        // a.setLayout(null);
-        joinGameButton = new JButton("Join Game");
-        joinGameButton.addActionListener(e ->
-        {
-            System.out.println("join game called");
-            cl.show(cards, GAME_PANEL);
-            canvas = gameManager.joinGame();
-            gamePanel.add(canvas);
-            gamePanel.addKeyListener(gameManager.getCharacterController());
-            gamePanel.requestFocus();
-            
-        });
-        quitGameButton = new JButton("Quit Game");
-        quitGameButton.addActionListener(e ->
-        {
-            System.out.println("quit game called");
-            cl.show(cards, MENU_PANEL);
-            gameManager.quitGame();
-            gamePanel.remove(canvas);
-        });
-        // joinGame.setLocation(windowWidth / 2 - 100, windowHeight / 2 - 80);
-        menuPanel.add(joinGameButton);
-
-       
-
-        gamePanel.add(quitGameButton);
-
-        Player clientPlayer = new Player(1337); // får den fra server normalt
-        gameManager = new GameManager(clientPlayer);
-        
-      
-
+        launch(args);
     }
 
+    public void start(Stage theStage)
+    {
+        Player clientPlayer = new Player(1337);
+        gameManager = new GameManager(clientPlayer);
+
+        theStage.setTitle("Ball of Duty");
+        theStage.setHeight(windowHeight);
+        theStage.setWidth(windowWidth);
+
+        BorderPane startMenuRoot = new BorderPane();
+        Scene startMenu = new Scene(startMenuRoot);
+        BorderPane gameBox = new BorderPane();
+        Scene gameScene = new Scene(gameBox);
+
+        theStage.setScene(startMenu);
+
+        VBox buttonBox = new VBox();
+        Button joinBtn = new Button("Join game");
+        joinBtn.setPrefSize(200, 100);
+        joinBtn.setId("join-game");
+        joinBtn.setOnAction(ActionEvent ->
+        {
+            gameManager.joinGame(gameBox);
+            theStage.setScene(gameScene);
+        });
+
+        buttonBox.getChildren().add(joinBtn);
+        startMenuRoot.setCenter(buttonBox);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        Button quitBtn = new Button("Quit game");
+        quitBtn.setPrefSize(80, 40);
+        quitBtn.setId("join-game");
+        quitBtn.setOnAction(ActionEvent ->
+        {
+
+            theStage.setScene(startMenu);
+        });
+        Canvas canvas = new Canvas(600, 500);
+
+        gameBox.setCenter(canvas);
+        gameBox.setBottom(quitBtn);
+        BorderPane.setAlignment(quitBtn, Pos.BASELINE_RIGHT);
+        theStage.show();
+    }
 }

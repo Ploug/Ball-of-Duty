@@ -25,7 +25,7 @@ public class Vector2
     {
         return Math.sqrt(Math.pow(getX(), 2) + Math.pow(getY(), 2));
     }
-    
+
     public double getAngle()
     {
         return Math.atan2(y, x);
@@ -72,18 +72,15 @@ public class Vector2
         return new Vector2(vector1.getX() + vector2.getX(), vector1.getY() + vector2.getY());
     }
 
-   
-
     public void normalize()
     {
         double length = this.getMagnitude();
-        if(!(x==0 && y == 0))
+        if (!(x == 0 && y == 0))
         {
             x /= length;
             y /= length;
         }
-        
-       
+
     }
 
     public static Vector2 normalize(Vector2 vector)
@@ -92,12 +89,13 @@ public class Vector2
         return new Vector2(vector.getX() / length, vector.getY() / length);
 
     }
+
     @Override
     public String toString()
     {
-        return "Vector2 [x=" + x + ", y=" + y +", angle="+this.getAngle()+", magnitude="+this.getMagnitude()+"]";
+        return "Vector2 [x=" + x + ", y=" + y + ", angle=" + this.getAngle() + ", magnitude=" + this.getMagnitude() + "]";
     }
-    
+
     @Override
     public int hashCode()
     {
@@ -132,12 +130,12 @@ public class Vector2
             xTotal += vector.getX();
             yTotal += vector.getY();
         }
-        if(!(xTotal==0 && yTotal == 0))
+        if (!(xTotal == 0 && yTotal == 0))
         {
             xTotal /= array.length;
             yTotal /= array.length;
         }
-      
+
         return new Vector2(xTotal, yTotal);
     }
 

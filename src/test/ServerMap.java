@@ -11,6 +11,7 @@ public class ServerMap implements IMap
 {
 
     ArrayList<GameObject> characters;
+
     @Override
     public List<GameObject> getCharacters()
     {

@@ -9,7 +9,6 @@ public class Player
     public Player(int id)
     {
         this.id = id;
-       
 
     }
 
@@ -17,6 +16,7 @@ public class Player
     {
         return character;
     }
+
     public void setCharacter(BoDCharacter character)
     {
         this.character = character;

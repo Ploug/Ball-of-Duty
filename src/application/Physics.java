@@ -1,6 +1,5 @@
 package application;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Physics
@@ -24,13 +23,13 @@ public class Physics
 
     public void update()
     {
-        double secondsSinceLast = timer.getDuration()/1000;// compensating for lag
-        gameObject.body.setX(gameObject.body.getX()+velocity.getX()*secondsSinceLast);
-        gameObject.body.setY(gameObject.body.getY()+velocity.getY()*secondsSinceLast);
+        double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
+        gameObject.body.setX(gameObject.body.getX() + velocity.getX() * secondsSinceLast);
+        gameObject.body.setY(gameObject.body.getY() + velocity.getY() * secondsSinceLast);
         timer.reset();
 
     }
-    
+
     public Vector2 getVelolicity()
     {
         return velocity;
@@ -46,6 +45,7 @@ public class Physics
     {
         speed = amount;
     }
+
     public void addDirection(Vector2 direction)
     {
         if (!directionVectors.contains(direction))

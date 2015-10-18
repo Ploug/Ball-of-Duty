@@ -1,6 +1,6 @@
 package application;
 
-import java.awt.Graphics2D;
+import javafx.scene.canvas.GraphicsContext;
 
 public abstract class GameObject
 {
@@ -13,7 +13,7 @@ public abstract class GameObject
 
     }
 
-    public void update(Graphics2D g2d)
+    public void update(GraphicsContext gc)
     {
         if (physics != null)
         {
@@ -21,7 +21,7 @@ public abstract class GameObject
         }
         if (view != null)
         {
-            view.draw(g2d);
+            view.draw(gc);
         }
     }
 

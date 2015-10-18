@@ -1,6 +1,5 @@
 package application;
 
-
 public class Timer
 {
     private double lastTime = 0;
@@ -46,10 +45,10 @@ public class Timer
         }
         else
         {
-            sleepDuration = (int) (ms-(System.currentTimeMillis()-lastCalled));
-            if(sleepDuration<1)
+            sleepDuration = (int) (ms - (System.currentTimeMillis() - lastCalled));
+            if (sleepDuration < 1)
             {
-               return;
+                return;
             }
             try
             {
@@ -61,7 +60,6 @@ public class Timer
             }
         }
 
-        
         lastCalled = System.currentTimeMillis();
 
     }

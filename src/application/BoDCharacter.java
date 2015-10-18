@@ -3,6 +3,7 @@ package application;
 public class BoDCharacter extends GameObject
 {
     int speed = 200;
+
     public BoDCharacter()
     {
         this.physics = new Physics(this, speed);
@@ -10,5 +11,4 @@ public class BoDCharacter extends GameObject
         this.view = new View(this);
     }
 
-    
 }

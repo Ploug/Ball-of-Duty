@@ -1,70 +1,63 @@
 package application;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import javafx.scene.layout.BorderPane;
 
-public class CharacterController implements KeyListener
+public class CharacterController
 {
     private BoDCharacter character;
     private static final Vector2 UP_VECTOR = new Vector2(0, -1);
     private static final Vector2 DOWN_VECTOR = new Vector2(0, 1);
     private static final Vector2 RIGHT_VECTOR = new Vector2(1, 0);
     private static final Vector2 LEFT_VECTOR = new Vector2(-1, 0);
+    private KeyHandler keyHandler;
 
-    public CharacterController(BoDCharacter inputChar)
+    public CharacterController(BoDCharacter inputChar, BorderPane gameBox)
     {
         character = inputChar;
+        keyHandler = new KeyHandler();
+        gameBox.setOnKeyPressed(actionEvent ->
+        {
+            KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
+
+            if (action == KeyHandler.Action.MOVE_UP)
+            {
+                character.physics.addDirection(UP_VECTOR);
+            }
+            else if (action == KeyHandler.Action.MOVE_DOWN)
+            {
+                character.physics.addDirection(DOWN_VECTOR);
+            }
+            else if (action == KeyHandler.Action.MOVE_LEFT)
+            {
+                character.physics.addDirection(LEFT_VECTOR);
+            }
+            else if (action == KeyHandler.Action.MOVE_RIGHT)
+            {
+                character.physics.addDirection(RIGHT_VECTOR);
+            }
+
+        });
+        gameBox.setOnKeyReleased(actionEvent ->
+        {
+            KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
+
+            if (action == KeyHandler.Action.MOVE_UP)
+            {
+                character.physics.removeDirection(UP_VECTOR);
+            }
+            else if (action == KeyHandler.Action.MOVE_DOWN)
+            {
+                character.physics.removeDirection(DOWN_VECTOR);
+            }
+            else if (action == KeyHandler.Action.MOVE_LEFT)
+            {
+                character.physics.removeDirection(LEFT_VECTOR);
+            }
+            else if (action == KeyHandler.Action.MOVE_RIGHT)
+            {
+                character.physics.removeDirection(RIGHT_VECTOR);
+            }
+        });
     }
 
-    @Override
-    public void keyPressed(KeyEvent e)
-    {
-        int code = e.getKeyCode();
-        if (code == Keys.W || code == Keys.UP)
-        {
-            character.physics.addDirection(UP_VECTOR);
-        }
-        else if (code == Keys.S || code == Keys.DOWN)
-        {
-            character.physics.addDirection(DOWN_VECTOR);
-        }
-        else if (code == Keys.A || code == Keys.LEFT)
-        {
-            character.physics.addDirection(LEFT_VECTOR);
-        }
-        else if (code == Keys.D || code == Keys.RIGHT)
-        {
-            character.physics.addDirection(RIGHT_VECTOR);
-        }
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e)
-    {
-        int code = e.getKeyCode();
-        if (code == Keys.W || code == Keys.UP)
-        {
-            character.physics.removeDirection(UP_VECTOR);
-        }
-        else if (code == Keys.S || code == Keys.DOWN)
-        {
-            character.physics.removeDirection(DOWN_VECTOR);
-        }
-        else if (code == Keys.A || code == Keys.LEFT)
-        {
-            character.physics.removeDirection(LEFT_VECTOR);
-        }
-        else if (code == Keys.D || code == Keys.RIGHT)
-        {
-            character.physics.removeDirection(RIGHT_VECTOR);
-        }
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e)
-    {
-        // TODO Auto-generated method stub
-
-    }
 }
