@@ -1,41 +1,42 @@
 package application;
 
-import java.awt.Graphics2D;
 import java.util.List;
+
+import test.ServerMap;
 
 public class GameManager
 {
-    private static volatile GameManager instance;
 
-    public Broker broker;
     public ClientMap cMap;
     public List<Player> enemyPlayers;
     public Player clientPlayer;
-
-    private GameManager()
+    public CharacterController characterController;
+    public GameManager(Player clientPlayer)
+    {
+        this.clientPlayer = clientPlayer;
+        
+    }
+    
+    public ClientMap joinGame()
+    {
+        BoDCharacter character = new BoDCharacter();// Creation of character should be done serverside.
+        clientPlayer.setCharacter(character);
+        
+       
+        setClientMap(new ServerMap(character));  // Gets from server normally
+        characterController = new CharacterController(character); 
+        
+        return cMap;
+    }
+    public void quitGame()
     {
         
     }
 
-    public static GameManager getInstance()
+    public CharacterController getCharacterController()
     {
-        if (instance == null)
-        {
-            synchronized (GameManager.class)
-            {
-                if (instance == null)
-                {
-                    instance = new GameManager();
-                }
-            }
-        }
-
-        return instance;
-    }
-
-    public void setClientPlayer(Player player)
-    {
-        clientPlayer = player;
+        return characterController;
+        
     }
 
     public void setEnemyPlayers(List<Player> enemyPlayers)
@@ -45,7 +46,7 @@ public class GameManager
 
     public void setClientMap(IMap serverMap)
     {
-        this.cMap = new ClientMap(serverMap, new Broker("Server IP")); // Ved ikke hvordan GameManager skal have fat i IP endnu
+        this.cMap = new ClientMap(serverMap, new Broker("localhost")); // Ved ikke hvordan GameManager skal have fat i IP endnu
     }
 
 }

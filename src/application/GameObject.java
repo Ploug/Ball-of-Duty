@@ -10,24 +10,24 @@ public abstract class GameObject
 
     public GameObject()
     {
-        
+
     }
-    
-    public void update()
+
+    public void update(Graphics2D g2d)
     {
-        if(physics != null)
+        if (physics != null)
         {
             physics.update();
         }
-        if(view != null)
+        if (view != null)
         {
-            view.draw();
+            view.draw(g2d);
         }
     }
-    
+
     public void destroy()
     {
-        
+
     }
 
     public Body getBody()

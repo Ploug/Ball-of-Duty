@@ -1,9 +1,9 @@
 package application;
+
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-
 
 public class BoDClient
 {
@@ -12,7 +12,7 @@ public class BoDClient
     private static BoDServer server;
     private static int windowWidth = 800;
     private static int windowHeight = 600;
-    private static JButton joinGame;
+    private static JButton joinGameButton;
 
     public static void main(String[] args)
     {
@@ -23,15 +23,14 @@ public class BoDClient
         a.setLocationRelativeTo(null);
         a.setVisible(true);
         a.setLayout(null);
-        joinGame = new JButton("Join Game");
-        joinGame.addActionListener(e ->
+        joinGameButton = new JButton("Join Game");
+        joinGameButton.addActionListener(e ->
         {
             joinGame();
         });
-        joinGame.setSize(200,80);
-        joinGame.setLocation(windowWidth/2-100,windowHeight/2-80); //Bad magic numbers. Will be removed later... hopefully
-        a.add(joinGame);
-        
+        joinGameButton.setSize(200, 80);
+        joinGameButton.setLocation(windowWidth / 2 - 100, windowHeight / 2 - 80); // Bad magic numbers. Will be removed later... hopefully
+        a.add(joinGameButton);
 
     }
 

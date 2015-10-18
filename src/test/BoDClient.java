@@ -1,9 +1,14 @@
 package test;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 
+import javax.swing.DebugGraphics;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,11 +23,15 @@ public class BoDClient
     private static BoDServer server;
     private static int windowWidth = 800;
     private static int windowHeight = 600;
-    private static JButton joinGame;
+    private static JButton joinGameButton;
+    private static JButton quitGameButton;
     private static JFrame a;
-    private static Canvas canvas;
-    private static JPanel buttonPanel;
-    private static JPanel drawPanel;
+    private static ClientMap canvas;
+    private static JPanel menuPanel;
+    private static JPanel gamePanel;
+    private static JPanel cards;
+    private static final String GAME_PANEL = "Game Panel";
+    private static final String MENU_PANEL = "Menu Panel";
 
     public static void main(String[] args)
     {
@@ -32,46 +41,49 @@ public class BoDClient
         a.setSize(windowWidth, windowHeight);
         a.setLocationRelativeTo(null);
         a.setVisible(true);
-//        a.setLayout(null);
-        joinGame = new JButton("Join Game");
-        joinGame.addActionListener(e ->
+
+        menuPanel = new JPanel();
+        menuPanel.setFocusable(true);
+
+        gamePanel = new JPanel();
+
+        cards = new JPanel(new CardLayout());
+        cards.add(gamePanel, GAME_PANEL);
+        cards.add(menuPanel, MENU_PANEL);
+        a.add(cards);
+        CardLayout cl = (CardLayout) (cards.getLayout());
+        cl.show(cards, MENU_PANEL);
+        // a.setLayout(null);
+        joinGameButton = new JButton("Join Game");
+        joinGameButton.addActionListener(e ->
         {
-            joinGame();
+            System.out.println("join game called");
+            cl.show(cards, GAME_PANEL);
+            canvas = gameManager.joinGame();
+            gamePanel.add(canvas);
+            gamePanel.addKeyListener(gameManager.getCharacterController());
+            gamePanel.requestFocus();
+            
         });
-//        joinGame.setLocation(windowWidth / 2 - 100, windowHeight / 2 - 80);
-        buttonPanel = new JPanel();
-        drawPanel = new JPanel();
-        buttonPanel.add(joinGame);
-        a.add(buttonPanel, BorderLayout.CENTER);
-//        a.add(drawPanel);
-        canvas = new Canvas();
-        drawPanel.add(canvas);
-       
-        gameManager = GameManager.getInstance();
-        
-        Player clientPlayer = new Player(true, 1337);
-        
-        clientPlayer.setCharacter(new BoDCharacter(canvas.getGraphics()));
-        gameManager.setClientPlayer(clientPlayer);
-        
-        a.addKeyListener(clientPlayer.getKeyListener());
-        buttonPanel.addKeyListener(clientPlayer.getKeyListener());
-        joinGame.addKeyListener(clientPlayer.getKeyListener());
-        buttonPanel.setFocusable(true);
+        quitGameButton = new JButton("Quit Game");
+        quitGameButton.addActionListener(e ->
+        {
+            System.out.println("quit game called");
+            cl.show(cards, MENU_PANEL);
+            gameManager.quitGame();
+            gamePanel.remove(canvas);
+        });
+        // joinGame.setLocation(windowWidth / 2 - 100, windowHeight / 2 - 80);
+        menuPanel.add(joinGameButton);
 
-    }
-
-    public static void joinGame()
-    {
-//        ServerMap sm = new ServerMap();
        
 
-//        gameManager.setClientMap(sm);
+        gamePanel.add(quitGameButton);
 
-    }
-
-    public static void quitGame()
-    {
+        Player clientPlayer = new Player(1337); // får den fra server normalt
+        gameManager = new GameManager(clientPlayer);
+        
+      
 
     }
 
