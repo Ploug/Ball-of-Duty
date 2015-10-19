@@ -7,10 +7,11 @@ public abstract class GameObject
     protected Body body;
     protected Physics physics;
     protected View view;
+    private int id;
 
-    public GameObject()
+    public GameObject(int id)
     {
-
+    	this.id = id;
     }
 
     public void update(GraphicsContext gc)
@@ -23,6 +24,10 @@ public abstract class GameObject
         {
             view.draw(gc);
         }
+    }
+    public int getID()
+    {
+    	return id;
     }
 
     public void destroy()
