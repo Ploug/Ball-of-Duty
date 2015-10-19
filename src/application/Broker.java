@@ -1,18 +1,17 @@
 package application;
+
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,17 +21,18 @@ public class Broker extends Observable
 {
 
     private ClientMap map;
-    private String _serverIP;
     private DatagramSocket _sender;
+    private InetAddress ina;
     private MulticastSocket _socket;
 
-    public Broker(String serverIP)
+    public Broker(ClientMap map)
     {
-        this._serverIP = serverIP;
+        this.map = map;
         InetAddress group = null;
         try
         {
-            group = InetAddress.getByName("127.0.0.1");
+            ina = InetAddress.getByName("127.0.0.1");
+            group = InetAddress.getByName("235.1.2.87");
         }
         catch (UnknownHostException e1)
         {
@@ -41,7 +41,13 @@ public class Broker extends Observable
         }
         try
         {
+            // _sender = new DatagramSocket(15001, ina);
+            _sender = new DatagramSocket();
             _socket = new MulticastSocket(15000);
+            new Thread(() ->
+            {
+                receive();
+            }).start();
         }
         catch (IOException e)
         {
@@ -64,26 +70,20 @@ public class Broker extends Observable
         return map;
     }
 
-    public void setMap(ClientMap map)
-    {
-        this.map = map;
-    }
-
     public void sendPositionUpdate(Point2D.Double position, int id) throws IOException
     {
-        ByteArrayOutputStream s = new ByteArrayOutputStream();
-        DataOutputStream out = new DataOutputStream(s);
+        ByteBuffer buffer = ByteBuffer.allocate(256); // more bytes pls
 
-        out.writeByte(1); // ASCII Standard for Start of heading
-        out.writeByte(Opcodes.POSITION_UPDATE.getCode());
-        out.writeByte(2); // ASCII Standard for Start of text
-        out.write(id);
-        out.writeDouble(position.getX());
-        out.writeDouble(position.getY());
-        out.writeByte(4); // ASCII Standard for End of transmission
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put((byte)1); // ASCII Standard for Start of heading
+        buffer.put((byte)Opcodes.POSITION_UPDATE.getCode());
+        buffer.put((byte)2); // ASCII Standard for Start of text
+        buffer.putInt(id);
+        buffer.putDouble(position.getX());
+        buffer.putDouble(position.getY());
+        buffer.put((byte)4); // ASCII Standard for End of transmission
 
-        byte[] buf = s.toByteArray();
-        send(buf);
+        send(buffer.array());
     }
 
     public void receive()
@@ -91,30 +91,40 @@ public class Broker extends Observable
         while (true)
         {
             DatagramPacket packet;
-            byte[] buf = new byte[256];
+
+            byte[] buf = new byte[256]; // more bytes pls
             packet = new DatagramPacket(buf, buf.length);
             try
             {
                 _socket.receive(packet);
                 byte[] data = Arrays.copyOf(packet.getData(), packet.getLength());
+
+                ByteBuffer buffer = ByteBuffer.allocate(256); // more bytes pls
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
+                buffer.put(data);
+                buffer.rewind();
+
                 InputStream s = new ByteArrayInputStream(data);
                 DataInputStream in = new DataInputStream(s);
-                if (in.readByte() != 1)
+                if (buffer.get() != 1) // start of heading
                 {
                     return;
                 }
-                byte opcode = in.readByte();
-                in.readByte();
+                byte opcode = buffer.get();
+
+                buffer.get(); // start of text
+
                 List<ObjectPosition> positions = new ArrayList<>();
                 do
                 {
-                    int id = in.readInt();
-                    double x = in.readDouble();
-                    double y = in.readDouble();
+                    int id = buffer.getInt();
+                    double x = buffer.getDouble();
+                    double y = buffer.getDouble();
                     Point2D.Double position = new Point2D.Double(x, y);
                     positions.add(new ObjectPosition(id, position));
                 }
-                while (in.readByte() != 31);
+                while (buffer.get() == 31); // unit separator
+
                 map.updatePositions(positions);
 
             }
@@ -130,10 +140,10 @@ public class Broker extends Observable
     public void send(byte[] buf)
     {
         DatagramPacket packet;
-        packet = new DatagramPacket(buf, buf.length);
+        packet = new DatagramPacket(buf, buf.length, ina, 15001);
         try
         {
-            _socket.send(packet);
+            _sender.send(packet);
         }
         catch (IOException e)
         {

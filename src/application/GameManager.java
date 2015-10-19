@@ -12,32 +12,38 @@ public class GameManager
     public List<Player> enemyPlayers;
     public Player clientPlayer;
     public CharacterController characterController;
+
     public GameManager(Player clientPlayer)
     {
         this.clientPlayer = clientPlayer;
-        
+
     }
-    
+
     public ClientMap joinGame(BorderPane gameBox)
     {
-        BoDCharacter character = new BoDCharacter(1234);// Creation of character should be done serverside.
+        BoDCharacter character = new BoDCharacter(2);// Creation
+                                                     // of
+                                                     // character
+        // should be done
+        // serverside.
         clientPlayer.setCharacter(character);
-        
-       
-        setClientMap(new ServerMap(character), gameBox);  // Gets from server normally
-        characterController = new CharacterController(character,gameBox); 
+
+        setClientMap(new ServerMap(character), gameBox); // Gets from server
+                                                         // normally
+        characterController = new CharacterController(character, gameBox);
         cMap.activate();
         return cMap;
     }
+
     public void quitGame()
     {
-        
+
     }
 
     public CharacterController getCharacterController()
     {
         return characterController;
-        
+
     }
 
     public void setEnemyPlayers(List<Player> enemyPlayers)
@@ -47,7 +53,9 @@ public class GameManager
 
     public void setClientMap(IMap serverMap, BorderPane gameBox)
     {
-        this.cMap = new ClientMap(serverMap, new Broker("localhost"), gameBox); // Ved ikke hvordan GameManager skal have fat i IP endnu
+        this.cMap = new ClientMap(serverMap, gameBox); // Ved ikke hvordan
+                                                       // GameManager skal have
+                                                       // fat i IP endnu
     }
 
 }

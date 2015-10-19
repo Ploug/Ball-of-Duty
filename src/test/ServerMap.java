@@ -18,10 +18,13 @@ public class ServerMap implements IMap
         return characters;
     }
 
-    public ServerMap(BoDCharacter clientCharacter) // remember.. TEST CONSTRUCTOR!
+    public ServerMap(BoDCharacter clientCharacter) // remember.. TEST
+                                                   // CONSTRUCTOR!
     {
         characters = new ArrayList<>();
         characters.add(clientCharacter);
+        // characters.add(new BoDCharacter(1));
+        characters.add(new BoDCharacter(1));
     }
 
 }
