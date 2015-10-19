@@ -20,7 +20,7 @@ public class GameManager
     
     public ClientMap joinGame(BorderPane gameBox)
     {
-        BoDCharacter character = new BoDCharacter();// Creation of character should be done serverside.
+        BoDCharacter character = new BoDCharacter(1234);// Creation of character should be done serverside.
         clientPlayer.setCharacter(character);
         
        

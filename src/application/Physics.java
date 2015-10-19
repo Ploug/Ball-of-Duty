@@ -24,8 +24,7 @@ public class Physics
     public void update()
     {
         double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
-        gameObject.body.setX(gameObject.body.getX() + velocity.getX() * secondsSinceLast);
-        gameObject.body.setY(gameObject.body.getY() + velocity.getY() * secondsSinceLast);
+        gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
         timer.reset();
 
     }

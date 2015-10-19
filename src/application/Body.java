@@ -1,38 +1,33 @@
 package application;
 
+import java.awt.geom.Point2D;
+
 public class Body
 {
     public GameObject gameObject;
-    private double x;
-    private double y;
+    private Point2D.Double position;
 
     public Body(GameObject gO)
     {
+    	position = new Point2D.Double(10, 10);
         this.gameObject = gO;
     }
-
-    public void setX(double input)
-    {
-        x = input;
-    }
-
-    public void setY(double input)
-    {
-        y = input;
-    }
-
-    public double getX()
-    {
-        return x;
-    }
-
-    public double getY()
-    {
-        return y;
-    }
-
+    
     public void collidesWith(GameObject gO)
     {
-
+        
+    }
+    
+    public Point2D.Double getPosition()
+    {
+    	return position;
+    }
+    public void increasePosition(double xIncrease, double yIncrease)
+    {
+    	position.setLocation(position.getX()+xIncrease, position.getY()+yIncrease);
+    }
+    public void setPosition(Point2D.Double position)
+    {
+    	this.position = position;
     }
 }

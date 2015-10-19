@@ -13,79 +13,73 @@ import javax.swing.JComponent;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 
-public class ClientMap
-{
-    public List<GameObject> characters;
+public class ClientMap {
+	public List<GameObject> characters;
 
-    private Broker broker;
-    private long fpsLock = 120;
-    private GraphicsContext gc;
-    private Canvas canvas;
-    private Dimension mapSize;
+	private Broker broker;
+	private long fpsLock = 120;
+	private GraphicsContext gc;
+	private Canvas canvas;
+	private Dimension mapSize;
 	public HashMap<Integer, GameObject> gameObjects;
-    public BoDCharacter myChar;
+	public BoDCharacter myChar;
+	public Timer timer;
+	Label fpsLabel;
 
-    public ClientMap(IMap serverMap, Broker broker, BorderPane gameBox)
-    {
-        this.broker = broker;
-        if (serverMap.getCharacters() != null)
-        {
-            this.characters = serverMap.getCharacters();
-        }
-        mapSize = new Dimension(700, 500);
-        setPreferredSize(mapSize);
-      
-        this.canvas = (Canvas)gameBox.getCenter();
-        gc = canvas.getGraphicsContext2D();
-    }
+	public ClientMap(IMap serverMap, Broker broker, BorderPane gameBox) {
+		this.broker = broker;
+		timer = new Timer();
+		timer.start();
 
-    public void activate()
-    {
-        Image space = new Image("images/space.png");
-        new AnimationTimer()
-        {
-            public void handle(long currentNanoTime)
-            {
-                gc.drawImage(space, 0, 0, 600, 500);
-                for(GameObject character : characters)
-                {
-                    character.update(gc);
-                }
-            }
-        }.start();
-    }
+		if (serverMap.getCharacters() != null) {
+			this.characters = serverMap.getCharacters();
+		}
+		mapSize = new Dimension(700, 500);
+		fpsLabel = new Label();
+		gameBox.setLeft(fpsLabel);
+		this.canvas = (Canvas) gameBox.getCenter();
+		gc = canvas.getGraphicsContext2D();
+	}
 
+	public void activate() {
+		Image space = new Image("images/space.png");
+		new AnimationTimer() {
+			public void handle(long currentNanoTime) {
+				gc.drawImage(space, 0, 0, 600, 500);
+				for (GameObject character : characters) {
+					character.update(gc);
+				}
+				
+				
+				fpsLabel.setText(""+(int)(1000/timer.getDuration()));
+				timer.reset();
+			}
+		}.start();
+	}
 
-    public void deactivate()
-    {
+	public void deactivate() {
 
-    }
-	
-	public void updatePositions(List<ObjectPosition> positions)
-    {
-    	for (ObjectPosition pos : positions) 
-    	{
-    		GameObject go = gameObjects.get(pos.getId());
-    		if (go != null) 
-    		{
-    			go.getBody().setPosition(pos.getPosition());
-    		}
-    	}
-    }
-     
-    public void sendPositionUpdate()
-	{
-    	try
-        {
-            broker.sendPositionUpdate(myChar.getBody().getPosition(), myChar.getId());
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+	}
+
+	public void updatePositions(List<ObjectPosition> positions) {
+		for (ObjectPosition pos : positions) {
+			GameObject go = gameObjects.get(pos.getId());
+			if (go != null) {
+				go.getBody().setPosition(pos.getPosition());
+			}
+		}
+	}
+
+	public void sendPositionUpdate() {
+		try {
+			broker.sendPositionUpdate(myChar.getBody().getPosition(), myChar.getID());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -1,3 +1,4 @@
+package application;
 import java.awt.geom.Point2D;
 
 public class ObjectPosition {
