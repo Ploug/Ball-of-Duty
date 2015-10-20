@@ -1,5 +1,7 @@
 package application;
 
+import java.awt.geom.Point2D;
+
 import javafx.scene.layout.BorderPane;
 
 public class CharacterController
@@ -15,6 +17,7 @@ public class CharacterController
     {
         character = inputChar;
         keyHandler = new KeyHandler();
+
         gameBox.setOnKeyPressed(actionEvent ->
         {
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
@@ -58,6 +61,20 @@ public class CharacterController
                 character.physics.removeDirection(RIGHT_VECTOR);
             }
         });
-    }
 
+        gameBox.setOnMouseMoved(actionEvent ->
+        {
+            character.mousePosition.setMouseX(actionEvent.getX());
+            character.mousePosition.setMouseY(actionEvent.getY());
+        });
+
+        character.physics.addCalculation(() ->
+        {
+            Point2D.Double position = character.body.getPosition();
+            double deltaX = character.mousePosition.getMouseX() - position.getX();
+            double deltaY = character.mousePosition.getMouseY() - position.getY();
+
+            character.body.setOrientation(Math.atan2(deltaY, deltaX)); // har ikke tjekket om orientation vender rigtigt.
+        });
+    }
 }

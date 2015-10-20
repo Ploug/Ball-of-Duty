@@ -1,6 +1,8 @@
 package application;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class Physics
 {
@@ -10,12 +12,14 @@ public class Physics
     private int speed = 0;
     private HashSet<Vector2> directionVectors;
     private Timer timer;
+    private List<CallBack> calculations;
 
     public Physics(GameObject gO, int speed)
     {
         this.speed = speed;
         this.velocity = new Vector2(0, 0);
         this.gameObject = gO;
+        this.calculations = new ArrayList<>();
         directionVectors = new HashSet<>();
         timer = new Timer();
         timer.start();
@@ -23,10 +27,21 @@ public class Physics
 
     public void update()
     {
-        double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
+        double secondsSinceLast = timer.getDuration() / 1000;// compensating for
+                                                             // lag
         gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
         timer.reset();
 
+        for (CallBack cb : calculations)
+        {
+            cb.call();
+        }
+
+    }
+
+    public void addCalculation(CallBack cb)
+    {
+        calculations.add(cb);
     }
 
     public Vector2 getVelolicity()
@@ -68,7 +83,8 @@ public class Physics
     // public void addVelocity(Vector2 inputVelocity)
     // {
     //
-    // if (Vector2.getAddedVectors(velocity, inputVelocity).getMagnitude() < maxSpeed)
+    // if (Vector2.getAddedVectors(velocity, inputVelocity).getMagnitude() <
+    // maxSpeed)
     // {
     // velocity.addVector(inputVelocity);
     // }

@@ -11,7 +11,7 @@ public abstract class GameObject
 
     public GameObject(int id)
     {
-    	this.id = id;
+        this.id = id;
     }
 
     public void update(GraphicsContext gc)
@@ -25,9 +25,10 @@ public abstract class GameObject
             view.draw(gc);
         }
     }
+
     public int getID()
     {
-    	return id;
+        return id;
     }
 
     public void destroy()
