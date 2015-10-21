@@ -2,8 +2,11 @@ package application;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.datacontract.schemas._2004._07.ball_of_duty_server.ServerGameObject;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -21,26 +24,25 @@ public class ClientMap
     private Canvas canvas;
     private Dimension mapSize;
     public HashMap<Integer, GameObject> gameObjects;
-    public BoDCharacter myChar;
     public Timer timer;
     Label fpsLabel;
+    private BoDCharacter clientChar;
 
-    public ClientMap(IMap serverMap, BorderPane gameBox)
+    public ClientMap(List<ServerGameObject> serverGameObjects, BorderPane gameBox, BoDCharacter clientChar)
     {
+        this.clientChar = clientChar;
 
         gameObjects = new HashMap<>();
 
         this.broker = new Broker(this);
         timer = new Timer();
         timer.start();
-
-        if (serverMap.getCharacters() != null)
+        gameObjects.put(clientChar.getId(), clientChar);
+        if (serverGameObjects != null)
         {
-            myChar = (BoDCharacter)serverMap.getCharacters().get(0);
-            List<GameObject> characters = serverMap.getCharacters();
-            for (GameObject character : characters)
+            for (ServerGameObject sgo : serverGameObjects)
             {
-                gameObjects.put(character.getID(), character);
+                gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
             }
         }
         mapSize = new Dimension(700, 500);
@@ -55,6 +57,7 @@ public class ClientMap
         Image space = new Image("images/space.png");
         new AnimationTimer()
         {
+            int frames = 0;
             public void handle(long currentNanoTime)
             {
                 gc.drawImage(space, 0, 0, 600, 500);
@@ -62,9 +65,17 @@ public class ClientMap
                 {
                     character.update(gc);
                 }
-
-                fpsLabel.setText("" + (int)(1000 / timer.getDuration()));
-                timer.reset();
+                if(timer.getDuration()>1000)
+                {
+                    fpsLabel.setText("fps: " + frames);
+                    timer.reset();
+                    frames = 0;
+                }
+                else
+                {
+                   frames++;
+                }
+               
             }
         }.start();
 
@@ -96,9 +107,8 @@ public class ClientMap
         for (ObjectPosition pos : positions)
         {
             GameObject go = gameObjects.get(pos.getId());
-            if (go != null && go.getID() != myChar.getID())
+            if (go != null && go.getID() != clientChar.getId())
             {
-                System.out.println(go.getID() + " client id = " + myChar.getID());
                 go.getBody().setPosition(pos.getPosition());
             }
         }
@@ -108,7 +118,7 @@ public class ClientMap
     {
         try
         {
-            broker.sendPositionUpdate(myChar.getBody().getPosition(), myChar.getID());
+            broker.sendPositionUpdate(clientChar.getBody().getPosition(), clientChar.getId());
         }
         catch (IOException e)
         {
