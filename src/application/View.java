@@ -15,7 +15,8 @@ public class View {
 		Paint oldPaint = gc.getFill();
 		gc.setFill(Color.GREEN);
 
-		gc.fillOval((int) gameObject.getBody().getPosition().getX(), (int) gameObject.getBody().getPosition().getY(),
+		
+		gc.fillOval((int) gameObject.getBody().getPosition().get_x(), (int) gameObject.getBody().getPosition().get_y(),
 				40, 40);
 
 		gc.setFill(oldPaint);

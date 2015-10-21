@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.datacontract.schemas._2004._07.ball_of_duty_server.ServerGameObject;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -28,7 +28,7 @@ public class ClientMap
     Label fpsLabel;
     private BoDCharacter clientChar;
 
-    public ClientMap(List<ServerGameObject> serverGameObjects, BorderPane gameBox, BoDCharacter clientChar)
+    public ClientMap(ServerGameObject[] serverGameObjects, BorderPane gameBox, BoDCharacter clientChar)
     {
         this.clientChar = clientChar;
 
@@ -42,13 +42,17 @@ public class ClientMap
         {
             for (ServerGameObject sgo : serverGameObjects)
             {
-                gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
+                if (sgo.getId() != clientChar.getId())
+                {
+                    gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
+                }
+
             }
         }
         mapSize = new Dimension(700, 500);
         fpsLabel = new Label();
         gameBox.setLeft(fpsLabel);
-        this.canvas = (Canvas)gameBox.getCenter();
+        this.canvas = (Canvas) gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
     }
 
@@ -58,6 +62,7 @@ public class ClientMap
         new AnimationTimer()
         {
             int frames = 0;
+
             public void handle(long currentNanoTime)
             {
                 gc.drawImage(space, 0, 0, 600, 500);
@@ -65,7 +70,7 @@ public class ClientMap
                 {
                     character.update(gc);
                 }
-                if(timer.getDuration()>1000)
+                if (timer.getDuration() > 1000)
                 {
                     fpsLabel.setText("fps: " + frames);
                     timer.reset();
@@ -73,9 +78,9 @@ public class ClientMap
                 }
                 else
                 {
-                   frames++;
+                    frames++;
                 }
-               
+
             }
         }.start();
 
@@ -84,15 +89,7 @@ public class ClientMap
             while (true)
             {
                 sendPositionUpdate();
-                try
-                {
-                    Thread.sleep(10);
-                }
-                catch (Exception e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+               
             }
         }).start();
     }
@@ -107,7 +104,7 @@ public class ClientMap
         for (ObjectPosition pos : positions)
         {
             GameObject go = gameObjects.get(pos.getId());
-            if (go != null && go.getID() != clientChar.getId())
+            if (go != null && go.getId() != clientChar.getId())
             {
                 go.getBody().setPosition(pos.getPosition());
             }

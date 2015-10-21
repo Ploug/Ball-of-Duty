@@ -2,7 +2,7 @@ package application;
 
 import java.awt.geom.Point2D;
 
-import org.datacontract.schemas._2004._07.system.Point;
+import org.datacontract.schemas._2004._07.System_Windows.Point;
 
 import javafx.scene.layout.BorderPane;
 
@@ -73,8 +73,8 @@ public class CharacterController
         character.physics.addCalculation(() ->
         {
             Point position = character.body.getPosition();
-            double deltaX = character.mousePosition.getMouseX() - position.getX();
-            double deltaY = character.mousePosition.getMouseY() - position.getY();
+            double deltaX = character.mousePosition.getMouseX() - position.get_x();
+            double deltaY = character.mousePosition.getMouseY() - position.get_y();
 
             character.body.setOrientation(Math.atan2(deltaY, deltaX)); // har ikke tjekket om orientation vender rigtigt.
         });
