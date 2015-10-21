@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 
+import org.datacontract.schemas._2004._07.system.Point;
+
 public class Broker extends Observable
 {
 
@@ -70,8 +72,18 @@ public class Broker extends Observable
         return map;
     }
 
-    public void sendPositionUpdate(Point2D.Double position, int id) throws IOException
+    public void sendPositionUpdate(Point position, int id) throws IOException
     {
+
+        try
+        {
+            Thread.sleep(20);
+        }
+        catch (InterruptedException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         ByteBuffer buffer = ByteBuffer.allocate(256); // more bytes pls
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -120,7 +132,10 @@ public class Broker extends Observable
                     int id = buffer.getInt();
                     double x = buffer.getDouble();
                     double y = buffer.getDouble();
-                    Point2D.Double position = new Point2D.Double(x, y);
+                    Point position = new Point();
+                    position.setX(x);
+                    position.setY(y);
+                    
                     positions.add(new ObjectPosition(id, position));
                 }
                 while (buffer.get() == 31); // unit separator

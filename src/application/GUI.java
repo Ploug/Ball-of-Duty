@@ -1,9 +1,11 @@
-package test;
+package application;
 
-import application.BoDServer;
-import application.GameManager;
-import application.IGame;
-import application.Player;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
+import org.tempuri.BoDServer;
+import org.tempuri.IBoDServer;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,11 +15,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Test extends Application
+public class GUI extends Application
 {
 
     public static IGame game;
-    public static GameManager gameManager;
+    public static GameClient gameManager;
     private static BoDServer server;
     private static int windowWidth = 800;
     private static int windowHeight = 600;
@@ -29,9 +31,9 @@ public class Test extends Application
 
     public void start(Stage theStage)
     {
-        Player clientPlayer = new Player(1337);
-        gameManager = new GameManager(clientPlayer);
+       gameManager = new GameClient();
 
+       
         theStage.setTitle("Ball of Duty");
         theStage.setHeight(windowHeight);
         theStage.setWidth(windowWidth);
@@ -49,8 +51,9 @@ public class Test extends Application
         joinBtn.setId("join-game");
         joinBtn.setOnAction(ActionEvent ->
         {
-            gameManager.joinGame(gameBox);
-            theStage.setScene(gameScene);
+               gameManager.joinGame(gameBox);
+               theStage.setScene(gameScene);
+
         });
 
         buttonBox.getChildren().add(joinBtn);

@@ -2,6 +2,8 @@ package application;
 
 import java.awt.geom.Point2D;
 
+import org.datacontract.schemas._2004._07.system.Point;
+
 import javafx.scene.layout.BorderPane;
 
 public class CharacterController
@@ -70,7 +72,7 @@ public class CharacterController
 
         character.physics.addCalculation(() ->
         {
-            Point2D.Double position = character.body.getPosition();
+            Point position = character.body.getPosition();
             double deltaX = character.mousePosition.getMouseX() - position.getX();
             double deltaY = character.mousePosition.getMouseY() - position.getY();
 
