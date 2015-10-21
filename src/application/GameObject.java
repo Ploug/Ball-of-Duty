@@ -1,6 +1,7 @@
 package application;
 
-import org.datacontract.schemas._2004._07.ball_of_duty_server.ServerGameObject;
+
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject;
 
 import javafx.scene.canvas.GraphicsContext;
 
@@ -9,18 +10,16 @@ public abstract class GameObject extends ServerGameObject
     protected Body body;
     protected Physics physics;
     protected View view;
-    private int id;
-    private ServerGameObject parent;
 
     public GameObject(ServerGameObject parent)
     {
-        this.id = parent.getId();
-        this.body.setPosition(parent.getBody().getPosition());
+        this.body = new Body(this, parent.getBody().getPosition());
+        this.setId(parent.getId());
         
     }
     public GameObject(int id)
     {
-        this.id = id;
+        this.setId(id);
         
     }
     
@@ -37,10 +36,6 @@ public abstract class GameObject extends ServerGameObject
         }
     }
 
-    public int getID()
-    {
-        return id;
-    }
 
     public void destroy()
     {

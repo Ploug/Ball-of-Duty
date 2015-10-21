@@ -1,7 +1,8 @@
 package application;
 import java.awt.geom.Point2D;
 
-import org.datacontract.schemas._2004._07.system.Point;
+import org.datacontract.schemas._2004._07.System_Windows.Point;
+
 
 public class ObjectPosition {
 	public final int Id;

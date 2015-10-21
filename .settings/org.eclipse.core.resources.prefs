@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_Domain/ServerBody.java=UTF-8
+encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_Domain/ServerGameObject.java=UTF-8
+encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_Persistence/Account.java=UTF-8
+encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_Persistence/ServerPlayer.java=UTF-8
+encoding//src/org/datacontract/schemas/_2004/_07/System_Windows/Point.java=UTF-8
+encoding//src/org/tempuri/BasicHttpBinding_IBoDServerStub.java=UTF-8
+encoding//src/org/tempuri/BoDServer.java=UTF-8
+encoding//src/org/tempuri/BoDServerLocator.java=UTF-8
+encoding//src/org/tempuri/IBoDServer.java=UTF-8

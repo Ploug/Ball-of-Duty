@@ -17,7 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 
-import org.datacontract.schemas._2004._07.system.Point;
+import org.datacontract.schemas._2004._07.System_Windows.Point;
+
 
 public class Broker extends Observable
 {
@@ -91,8 +92,8 @@ public class Broker extends Observable
         buffer.put((byte)Opcodes.POSITION_UPDATE.getCode());
         buffer.put((byte)2); // ASCII Standard for Start of text
         buffer.putInt(id);
-        buffer.putDouble(position.getX());
-        buffer.putDouble(position.getY());
+        buffer.putDouble(position.get_x());
+        buffer.putDouble(position.get_y());
         buffer.put((byte)4); // ASCII Standard for End of transmission
 
         send(buffer.array());
@@ -133,8 +134,8 @@ public class Broker extends Observable
                     double x = buffer.getDouble();
                     double y = buffer.getDouble();
                     Point position = new Point();
-                    position.setX(x);
-                    position.setY(y);
+                    position.set_x(x);
+                    position.set_y(y);
                     
                     positions.add(new ObjectPosition(id, position));
                 }
