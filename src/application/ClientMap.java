@@ -2,11 +2,11 @@ package application;
 
 import java.awt.Dimension;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
@@ -19,37 +19,37 @@ public class ClientMap
 {
 
     private Broker broker;
-    private long fpsLock = 120;
     private GraphicsContext gc;
     private Canvas canvas;
-    private Dimension mapSize;
+    private int mapWidth = 600;
+    private int mapHeight = 500;
     public HashMap<Integer, GameObject> gameObjects;
     public Timer timer;
     Label fpsLabel;
     private BoDCharacter clientChar;
 
-    public ClientMap(ServerGameObject[] serverGameObjects, BorderPane gameBox, BoDCharacter clientChar)
+    public ClientMap(MapDTO serverMap, BorderPane gameBox, BoDCharacter clientChar)
     {
         this.clientChar = clientChar;
 
         gameObjects = new HashMap<>();
 
-        this.broker = new Broker(this);
+        this.broker = new Broker(this, serverMap.getIPAddress());
         timer = new Timer();
         timer.start();
         gameObjects.put(clientChar.getId(), clientChar);
-        if (serverGameObjects != null)
-        {
-            for (ServerGameObject sgo : serverGameObjects)
-            {
-                if (sgo.getId() != clientChar.getId())
-                {
-                    gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
-                }
 
+        
+        for (GameObjectDTO sgo : serverMap.getGameObjects())
+        {
+            if (sgo.getId() != clientChar.getId())
+            {
+                gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
             }
+            System.out.println("objects received: "+sgo.getId());
+
         }
-        mapSize = new Dimension(700, 500);
+
         fpsLabel = new Label();
         gameBox.setLeft(fpsLabel);
         this.canvas = (Canvas) gameBox.getCenter();
@@ -65,7 +65,7 @@ public class ClientMap
 
             public void handle(long currentNanoTime)
             {
-                gc.drawImage(space, 0, 0, 600, 500);
+                gc.drawImage(space, 0, 0, mapWidth, mapHeight);
                 for (GameObject character : gameObjects.values())
                 {
                     character.update(gc);
@@ -89,7 +89,7 @@ public class ClientMap
             while (true)
             {
                 sendPositionUpdate();
-               
+
             }
         }).start();
     }
@@ -104,6 +104,7 @@ public class ClientMap
         for (ObjectPosition pos : positions)
         {
             GameObject go = gameObjects.get(pos.getId());
+
             if (go != null && go.getId() != clientChar.getId())
             {
                 go.getBody().setPosition(pos.getPosition());

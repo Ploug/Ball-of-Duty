@@ -1,47 +1,47 @@
 /**
- * ServerBody.java
+ * BodyDTO.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain;
+package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
-public class ServerBody  implements java.io.Serializable {
-    private org.datacontract.schemas._2004._07.System_Windows.Point position;
+public class BodyDTO  implements java.io.Serializable {
+    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO point;
 
-    public ServerBody() {
+    public BodyDTO() {
     }
 
-    public ServerBody(
-           org.datacontract.schemas._2004._07.System_Windows.Point position) {
-           this.position = position;
-    }
-
-
-    /**
-     * Gets the position value for this ServerBody.
-     * 
-     * @return position
-     */
-    public org.datacontract.schemas._2004._07.System_Windows.Point getPosition() {
-        return position;
+    public BodyDTO(
+           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO point) {
+           this.point = point;
     }
 
 
     /**
-     * Sets the position value for this ServerBody.
+     * Gets the point value for this BodyDTO.
      * 
-     * @param position
+     * @return point
      */
-    public void setPosition(org.datacontract.schemas._2004._07.System_Windows.Point position) {
-        this.position = position;
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO getPoint() {
+        return point;
+    }
+
+
+    /**
+     * Sets the point value for this BodyDTO.
+     * 
+     * @param point
+     */
+    public void setPoint(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO point) {
+        this.point = point;
     }
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof ServerBody)) return false;
-        ServerBody other = (ServerBody) obj;
+        if (!(obj instanceof BodyDTO)) return false;
+        BodyDTO other = (BodyDTO) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -50,9 +50,9 @@ public class ServerBody  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            ((this.position==null && other.getPosition()==null) || 
-             (this.position!=null &&
-              this.position.equals(other.getPosition())));
+            ((this.point==null && other.getPoint()==null) || 
+             (this.point!=null &&
+              this.point.equals(other.getPoint())));
         __equalsCalc = null;
         return _equals;
     }
@@ -64,8 +64,8 @@ public class ServerBody  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getPosition() != null) {
-            _hashCode += getPosition().hashCode();
+        if (getPoint() != null) {
+            _hashCode += getPoint().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -73,14 +73,14 @@ public class ServerBody  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ServerBody.class, true);
+        new org.apache.axis.description.TypeDesc(BodyDTO.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerBody"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "BodyDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("position");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "position"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/System.Windows", "Point"));
+        elemField.setFieldName("point");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Point"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PointDTO"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 
-import org.datacontract.schemas._2004._07.System_Windows.Point;
 
 
 public class Broker extends Observable
@@ -28,13 +27,13 @@ public class Broker extends Observable
     private InetAddress ina;
     private MulticastSocket _socket;
 
-    public Broker(ClientMap map)
+    public Broker(ClientMap map, String serverIP)
     {
         this.map = map;
         InetAddress group = null;
         try
         {
-            ina = InetAddress.getByName("127.0.0.1");
+            ina = InetAddress.getByName(serverIP);
             group = InetAddress.getByName("235.1.2.87");
         }
         catch (UnknownHostException e1)
@@ -73,7 +72,7 @@ public class Broker extends Observable
         return map;
     }
 
-    public void sendPositionUpdate(Point position, int id) throws IOException
+    public void sendPositionUpdate(Point2D.Double position, int id) throws IOException
     {
 
         try
@@ -92,8 +91,9 @@ public class Broker extends Observable
         buffer.put((byte)Opcodes.POSITION_UPDATE.getCode());
         buffer.put((byte)2); // ASCII Standard for Start of text
         buffer.putInt(id);
-        buffer.putDouble(position.get_x());
-        buffer.putDouble(position.get_y());
+        buffer.putDouble(position.getX());
+        buffer.putDouble(position.getY());
+
         buffer.put((byte)4); // ASCII Standard for End of transmission
 
         send(buffer.array());
@@ -101,6 +101,7 @@ public class Broker extends Observable
 
     public void receive()
     {
+
         while (true)
         {
             DatagramPacket packet;
@@ -117,8 +118,6 @@ public class Broker extends Observable
                 buffer.put(data);
                 buffer.rewind();
 
-                InputStream s = new ByteArrayInputStream(data);
-                DataInputStream in = new DataInputStream(s);
                 if (buffer.get() != 1) // start of heading
                 {
                     return;
@@ -133,9 +132,7 @@ public class Broker extends Observable
                     int id = buffer.getInt();
                     double x = buffer.getDouble();
                     double y = buffer.getDouble();
-                    Point position = new Point();
-                    position.set_x(x);
-                    position.set_y(y);
+                    Point2D.Double position = new Point2D.Double(x,y);
                     
                     positions.add(new ObjectPosition(id, position));
                 }

@@ -1,5 +1,5 @@
 /**
- * BasicHttpBinding_IBoDServerStub.java
+ * BasicHttpBinding_IBoDServiceStub.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
@@ -7,7 +7,7 @@
 
 package org.tempuri;
 
-public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub implements org.tempuri.IBoDServer {
+public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stub implements org.tempuri.IBoDService {
     private java.util.Vector cachedSerClasses = new java.util.Vector();
     private java.util.Vector cachedSerQNames = new java.util.Vector();
     private java.util.Vector cachedSerFactories = new java.util.Vector();
@@ -24,41 +24,38 @@ public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("newGuest");
-        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Persistence", "ServerPlayer"));
-        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "newGuestResult"));
+        oper.setName("NewGuest");
+        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO"));
+        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "NewGuestResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[0] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("joinGame");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "clientPlayer"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Persistence", "ServerPlayer"), org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer.class, false, false);
+        oper.setName("JoinGame");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "clientPlayerId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), java.lang.Integer.class, false, false);
         param.setOmittable(true);
-        param.setNillable(true);
         oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ArrayOfServerGameObject"));
-        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "joinGameResult"));
-        param = oper.getReturnParamDesc();
-        param.setItemQName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerGameObject"));
+        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "MapDTO"));
+        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "JoinGameResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[1] = oper;
 
     }
 
-    public BasicHttpBinding_IBoDServerStub() throws org.apache.axis.AxisFault {
+    public BasicHttpBinding_IBoDServiceStub() throws org.apache.axis.AxisFault {
          this(null);
     }
 
-    public BasicHttpBinding_IBoDServerStub(java.net.URL endpointURL, javax.xml.rpc.Service service) throws org.apache.axis.AxisFault {
+    public BasicHttpBinding_IBoDServiceStub(java.net.URL endpointURL, javax.xml.rpc.Service service) throws org.apache.axis.AxisFault {
          this(service);
          super.cachedEndpoint = endpointURL;
     }
 
-    public BasicHttpBinding_IBoDServerStub(javax.xml.rpc.Service service) throws org.apache.axis.AxisFault {
+    public BasicHttpBinding_IBoDServiceStub(javax.xml.rpc.Service service) throws org.apache.axis.AxisFault {
         if (service == null) {
             super.service = new org.apache.axis.client.Service();
         } else {
@@ -78,46 +75,46 @@ public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ArrayOfServerGameObject");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "ArrayOfGameObjectDTO");
             cachedSerQNames.add(qName);
-            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject[].class;
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO[].class;
             cachedSerClasses.add(cls);
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerGameObject");
-            qName2 = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerGameObject");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjectDTO");
+            qName2 = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjectDTO");
             cachedSerFactories.add(new org.apache.axis.encoding.ser.ArraySerializerFactory(qName, qName2));
             cachedDeserFactories.add(new org.apache.axis.encoding.ser.ArrayDeserializerFactory());
 
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerBody");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "BodyDTO");
             cachedSerQNames.add(qName);
-            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerBody.class;
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerGameObject");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjectDTO");
             cachedSerQNames.add(qName);
-            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject.class;
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Persistence", "Account");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "MapDTO");
             cachedSerQNames.add(qName);
-            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.Account.class;
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Persistence", "ServerPlayer");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO");
             cachedSerQNames.add(qName);
-            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer.class;
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
-            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/System.Windows", "Point");
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PointDTO");
             cachedSerQNames.add(qName);
-            cls = org.datacontract.schemas._2004._07.System_Windows.Point.class;
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -188,19 +185,19 @@ public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub
         }
     }
 
-    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer newGuest() throws java.rmi.RemoteException {
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO newGuest() throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[0]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://tempuri.org/IBoDServer/newGuest");
+        _call.setSOAPActionURI("http://tempuri.org/IBoDService/NewGuest");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "newGuest"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "NewGuest"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
@@ -212,9 +209,9 @@ public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub
         else {
             extractAttachments(_call);
             try {
-                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer) _resp;
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer.class);
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
@@ -222,23 +219,23 @@ public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub
 }
     }
 
-    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject[] joinGame(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Persistence.ServerPlayer clientPlayer) throws java.rmi.RemoteException {
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO joinGame(java.lang.Integer clientPlayerId) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[1]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("http://tempuri.org/IBoDServer/joinGame");
+        _call.setSOAPActionURI("http://tempuri.org/IBoDService/JoinGame");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "joinGame"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "JoinGame"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {clientPlayer});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {clientPlayerId});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -246,9 +243,9 @@ public class BasicHttpBinding_IBoDServerStub extends org.apache.axis.client.Stub
         else {
             extractAttachments(_call);
             try {
-                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject[]) _resp;
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerGameObject[].class);
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

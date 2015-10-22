@@ -1,22 +1,22 @@
 /**
- * ServerGameObject.java
+ * GameObjectDTO.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain;
+package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
-public class ServerGameObject  implements java.io.Serializable {
-    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerBody body;
+public class GameObjectDTO  implements java.io.Serializable {
+    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body;
 
     private int id;
 
-    public ServerGameObject() {
+    public GameObjectDTO() {
     }
 
-    public ServerGameObject(
-           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerBody body,
+    public GameObjectDTO(
+           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body,
            int id) {
            this.body = body;
            this.id = id;
@@ -24,27 +24,27 @@ public class ServerGameObject  implements java.io.Serializable {
 
 
     /**
-     * Gets the body value for this ServerGameObject.
+     * Gets the body value for this GameObjectDTO.
      * 
      * @return body
      */
-    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerBody getBody() {
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO getBody() {
         return body;
     }
 
 
     /**
-     * Sets the body value for this ServerGameObject.
+     * Sets the body value for this GameObjectDTO.
      * 
      * @param body
      */
-    public void setBody(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerBody body) {
+    public void setBody(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body) {
         this.body = body;
     }
 
 
     /**
-     * Gets the id value for this ServerGameObject.
+     * Gets the id value for this GameObjectDTO.
      * 
      * @return id
      */
@@ -54,7 +54,7 @@ public class ServerGameObject  implements java.io.Serializable {
 
 
     /**
-     * Sets the id value for this ServerGameObject.
+     * Sets the id value for this GameObjectDTO.
      * 
      * @param id
      */
@@ -64,8 +64,8 @@ public class ServerGameObject  implements java.io.Serializable {
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof ServerGameObject)) return false;
-        ServerGameObject other = (ServerGameObject) obj;
+        if (!(obj instanceof GameObjectDTO)) return false;
+        GameObjectDTO other = (GameObjectDTO) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -99,19 +99,19 @@ public class ServerGameObject  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(ServerGameObject.class, true);
+        new org.apache.axis.description.TypeDesc(GameObjectDTO.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerGameObject"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjectDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("body");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "body"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "ServerBody"));
-        elemField.setNillable(true);
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Body"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "BodyDTO"));
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("id");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.Domain", "id"));
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Id"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

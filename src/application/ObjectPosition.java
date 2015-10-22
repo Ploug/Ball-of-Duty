@@ -1,14 +1,13 @@
 package application;
 import java.awt.geom.Point2D;
 
-import org.datacontract.schemas._2004._07.System_Windows.Point;
 
 
 public class ObjectPosition {
 	public final int Id;
-	public final Point Position;
+	public final Point2D.Double Position;
 	
-	public ObjectPosition(int id, Point position) 
+	public ObjectPosition(int id, Point2D.Double position) 
 	{
 		this.Id = id;
 		this.Position = position;
@@ -19,7 +18,7 @@ public class ObjectPosition {
 		return Id;
 	}
 	
-	public Point getPosition()
+	public Point2D.Double getPosition()
 	{
 		return Position;
 	}
