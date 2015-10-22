@@ -7,7 +7,6 @@ import java.util.List;
 public class Physics
 {
     public GameObject gameObject;
-    private double drag;
     private Vector2 velocity;
     private int speed = 0;
     private HashSet<Vector2> directionVectors;

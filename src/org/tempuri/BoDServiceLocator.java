@@ -1,5 +1,5 @@
 /**
- * BoDServerLocator.java
+ * BoDServiceLocator.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
@@ -7,53 +7,53 @@
 
 package org.tempuri;
 
-public class BoDServerLocator extends org.apache.axis.client.Service implements org.tempuri.BoDServer {
+public class BoDServiceLocator extends org.apache.axis.client.Service implements org.tempuri.BoDService {
 
-    public BoDServerLocator() {
+    public BoDServiceLocator() {
     }
 
 
-    public BoDServerLocator(org.apache.axis.EngineConfiguration config) {
+    public BoDServiceLocator(org.apache.axis.EngineConfiguration config) {
         super(config);
     }
 
-    public BoDServerLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
+    public BoDServiceLocator(java.lang.String wsdlLoc, javax.xml.namespace.QName sName) throws javax.xml.rpc.ServiceException {
         super(wsdlLoc, sName);
     }
 
-    // Use to get a proxy class for BasicHttpBinding_IBoDServer
-    private java.lang.String BasicHttpBinding_IBoDServer_address = "http://localhost:8733/Ball_of_Duty_Server/Domain/BoDServer/";
+    // Use to get a proxy class for BasicHttpBinding_IBoDService
+    private java.lang.String BasicHttpBinding_IBoDService_address = "http://localhost:8733/Ball_of_Duty_Server/Services/BoDService/";
 
-    public java.lang.String getBasicHttpBinding_IBoDServerAddress() {
-        return BasicHttpBinding_IBoDServer_address;
+    public java.lang.String getBasicHttpBinding_IBoDServiceAddress() {
+        return BasicHttpBinding_IBoDService_address;
     }
 
     // The WSDD service name defaults to the port name.
-    private java.lang.String BasicHttpBinding_IBoDServerWSDDServiceName = "BasicHttpBinding_IBoDServer";
+    private java.lang.String BasicHttpBinding_IBoDServiceWSDDServiceName = "BasicHttpBinding_IBoDService";
 
-    public java.lang.String getBasicHttpBinding_IBoDServerWSDDServiceName() {
-        return BasicHttpBinding_IBoDServerWSDDServiceName;
+    public java.lang.String getBasicHttpBinding_IBoDServiceWSDDServiceName() {
+        return BasicHttpBinding_IBoDServiceWSDDServiceName;
     }
 
-    public void setBasicHttpBinding_IBoDServerWSDDServiceName(java.lang.String name) {
-        BasicHttpBinding_IBoDServerWSDDServiceName = name;
+    public void setBasicHttpBinding_IBoDServiceWSDDServiceName(java.lang.String name) {
+        BasicHttpBinding_IBoDServiceWSDDServiceName = name;
     }
 
-    public org.tempuri.IBoDServer getBasicHttpBinding_IBoDServer() throws javax.xml.rpc.ServiceException {
+    public org.tempuri.IBoDService getBasicHttpBinding_IBoDService() throws javax.xml.rpc.ServiceException {
        java.net.URL endpoint;
         try {
-            endpoint = new java.net.URL(BasicHttpBinding_IBoDServer_address);
+            endpoint = new java.net.URL(BasicHttpBinding_IBoDService_address);
         }
         catch (java.net.MalformedURLException e) {
             throw new javax.xml.rpc.ServiceException(e);
         }
-        return getBasicHttpBinding_IBoDServer(endpoint);
+        return getBasicHttpBinding_IBoDService(endpoint);
     }
 
-    public org.tempuri.IBoDServer getBasicHttpBinding_IBoDServer(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
+    public org.tempuri.IBoDService getBasicHttpBinding_IBoDService(java.net.URL portAddress) throws javax.xml.rpc.ServiceException {
         try {
-            org.tempuri.BasicHttpBinding_IBoDServerStub _stub = new org.tempuri.BasicHttpBinding_IBoDServerStub(portAddress, this);
-            _stub.setPortName(getBasicHttpBinding_IBoDServerWSDDServiceName());
+            org.tempuri.BasicHttpBinding_IBoDServiceStub _stub = new org.tempuri.BasicHttpBinding_IBoDServiceStub(portAddress, this);
+            _stub.setPortName(getBasicHttpBinding_IBoDServiceWSDDServiceName());
             return _stub;
         }
         catch (org.apache.axis.AxisFault e) {
@@ -61,8 +61,8 @@ public class BoDServerLocator extends org.apache.axis.client.Service implements 
         }
     }
 
-    public void setBasicHttpBinding_IBoDServerEndpointAddress(java.lang.String address) {
-        BasicHttpBinding_IBoDServer_address = address;
+    public void setBasicHttpBinding_IBoDServiceEndpointAddress(java.lang.String address) {
+        BasicHttpBinding_IBoDService_address = address;
     }
 
     /**
@@ -72,9 +72,9 @@ public class BoDServerLocator extends org.apache.axis.client.Service implements 
      */
     public java.rmi.Remote getPort(Class serviceEndpointInterface) throws javax.xml.rpc.ServiceException {
         try {
-            if (org.tempuri.IBoDServer.class.isAssignableFrom(serviceEndpointInterface)) {
-                org.tempuri.BasicHttpBinding_IBoDServerStub _stub = new org.tempuri.BasicHttpBinding_IBoDServerStub(new java.net.URL(BasicHttpBinding_IBoDServer_address), this);
-                _stub.setPortName(getBasicHttpBinding_IBoDServerWSDDServiceName());
+            if (org.tempuri.IBoDService.class.isAssignableFrom(serviceEndpointInterface)) {
+                org.tempuri.BasicHttpBinding_IBoDServiceStub _stub = new org.tempuri.BasicHttpBinding_IBoDServiceStub(new java.net.URL(BasicHttpBinding_IBoDService_address), this);
+                _stub.setPortName(getBasicHttpBinding_IBoDServiceWSDDServiceName());
                 return _stub;
             }
         }
@@ -94,8 +94,8 @@ public class BoDServerLocator extends org.apache.axis.client.Service implements 
             return getPort(serviceEndpointInterface);
         }
         java.lang.String inputPortName = portName.getLocalPart();
-        if ("BasicHttpBinding_IBoDServer".equals(inputPortName)) {
-            return getBasicHttpBinding_IBoDServer();
+        if ("BasicHttpBinding_IBoDService".equals(inputPortName)) {
+            return getBasicHttpBinding_IBoDService();
         }
         else  {
             java.rmi.Remote _stub = getPort(serviceEndpointInterface);
@@ -105,7 +105,7 @@ public class BoDServerLocator extends org.apache.axis.client.Service implements 
     }
 
     public javax.xml.namespace.QName getServiceName() {
-        return new javax.xml.namespace.QName("http://tempuri.org/", "BoDServer");
+        return new javax.xml.namespace.QName("http://tempuri.org/", "BoDService");
     }
 
     private java.util.HashSet ports = null;
@@ -113,7 +113,7 @@ public class BoDServerLocator extends org.apache.axis.client.Service implements 
     public java.util.Iterator getPorts() {
         if (ports == null) {
             ports = new java.util.HashSet();
-            ports.add(new javax.xml.namespace.QName("http://tempuri.org/", "BasicHttpBinding_IBoDServer"));
+            ports.add(new javax.xml.namespace.QName("http://tempuri.org/", "BasicHttpBinding_IBoDService"));
         }
         return ports.iterator();
     }
@@ -123,8 +123,8 @@ public class BoDServerLocator extends org.apache.axis.client.Service implements 
     */
     public void setEndpointAddress(java.lang.String portName, java.lang.String address) throws javax.xml.rpc.ServiceException {
         
-if ("BasicHttpBinding_IBoDServer".equals(portName)) {
-            setBasicHttpBinding_IBoDServerEndpointAddress(address);
+if ("BasicHttpBinding_IBoDService".equals(portName)) {
+            setBasicHttpBinding_IBoDServiceEndpointAddress(address);
         }
         else 
 { // Unknown Port Name

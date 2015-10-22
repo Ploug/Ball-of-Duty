@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
-import org.tempuri.BoDServerLocator;
-import org.tempuri.IBoDServer;
+import org.tempuri.BoDServiceLocator;
+import org.tempuri.IBoDService;
 
 import javafx.scene.layout.BorderPane;
 
@@ -17,17 +17,17 @@ public class GameClient
     public List<Player> enemyPlayers;
     public Player clientPlayer;
     public CharacterController characterController;
-    IBoDServer ibs;
+    IBoDService ibs;
 
     public GameClient()
     {
         
         
-        BoDServerLocator server1 = new BoDServerLocator();
+        BoDServiceLocator server1 = new BoDServiceLocator();
 
         try
         {
-            ibs = server1.getBasicHttpBinding_IBoDServer();
+            ibs = server1.getBasicHttpBinding_IBoDService();
             clientPlayer = new Player(ibs.newGuest());
            
         }
@@ -51,7 +51,7 @@ public class GameClient
 
         try
         {
-            this.cMap = new ClientMap(ibs.joinGame(clientPlayer), gameBox, clientPlayer.getCharacter());
+            this.cMap = new ClientMap(ibs.joinGame(clientPlayer.getId()), gameBox, clientPlayer.getCharacter());
         }
         catch (RemoteException e)
         {

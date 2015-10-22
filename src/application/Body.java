@@ -1,15 +1,14 @@
 package application;
 
-import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain.ServerBody;
-import org.datacontract.schemas._2004._07.System_Windows.Point;
+import java.awt.geom.Point2D;
 
-public class Body extends ServerBody
+public class Body
 {
     public GameObject gameObject;
-    private Point position;
+    private Point2D.Double position;
     private double orientation;
 
-    public Body(GameObject gO, Point position)
+    public Body(GameObject gO, Point2D.Double position)
     {
         this.position = position;
         this.gameObject = gO;
@@ -21,7 +20,7 @@ public class Body extends ServerBody
 
     }
 
-    public Point getPosition()
+    public Point2D.Double getPosition()
     {
         return position;
     }
@@ -38,11 +37,10 @@ public class Body extends ServerBody
 
     public void increasePosition(double xIncrease, double yIncrease)
     {
-        position.set_x(position.get_x() + xIncrease);
-        position.set_y(position.get_y() + yIncrease);
+        position.setLocation(position.getX() + xIncrease, position.getY() + yIncrease);
     }
 
-    public void setPosition(Point position)
+    public void setPosition(Point2D.Double position)
     {
         this.position = position;
     }

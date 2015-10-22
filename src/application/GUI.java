@@ -1,10 +1,5 @@
 package application;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
-import org.tempuri.BoDServer;
-import org.tempuri.IBoDServer;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -18,9 +13,7 @@ import javafx.stage.Stage;
 public class GUI extends Application
 {
 
-    public static IGame game;
     public static GameClient gameManager;
-    private static BoDServer server;
     private static int windowWidth = 800;
     private static int windowHeight = 600;
 

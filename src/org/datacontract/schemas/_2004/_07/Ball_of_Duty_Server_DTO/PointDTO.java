@@ -1,71 +1,71 @@
 /**
- * Point.java
+ * PointDTO.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
  */
 
-package org.datacontract.schemas._2004._07.System_Windows;
+package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
-public class Point  implements java.io.Serializable {
-    private double _x;
+public class PointDTO  implements java.io.Serializable {
+    private double x;
 
-    private double _y;
+    private double y;
 
-    public Point() {
+    public PointDTO() {
     }
 
-    public Point(
-           double _x,
-           double _y) {
-           this._x = _x;
-           this._y = _y;
-    }
-
-
-    /**
-     * Gets the _x value for this Point.
-     * 
-     * @return _x
-     */
-    public double get_x() {
-        return _x;
+    public PointDTO(
+           double x,
+           double y) {
+           this.x = x;
+           this.y = y;
     }
 
 
     /**
-     * Sets the _x value for this Point.
+     * Gets the x value for this PointDTO.
      * 
-     * @param _x
+     * @return x
      */
-    public void set_x(double _x) {
-        this._x = _x;
+    public double getX() {
+        return x;
     }
 
 
     /**
-     * Gets the _y value for this Point.
+     * Sets the x value for this PointDTO.
      * 
-     * @return _y
+     * @param x
      */
-    public double get_y() {
-        return _y;
+    public void setX(double x) {
+        this.x = x;
     }
 
 
     /**
-     * Sets the _y value for this Point.
+     * Gets the y value for this PointDTO.
      * 
-     * @param _y
+     * @return y
      */
-    public void set_y(double _y) {
-        this._y = _y;
+    public double getY() {
+        return y;
+    }
+
+
+    /**
+     * Sets the y value for this PointDTO.
+     * 
+     * @param y
+     */
+    public void setY(double y) {
+        this.y = y;
     }
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof Point)) return false;
-        Point other = (Point) obj;
+        if (!(obj instanceof PointDTO)) return false;
+        PointDTO other = (PointDTO) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -74,8 +74,8 @@ public class Point  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            this._x == other.get_x() &&
-            this._y == other.get_y();
+            this.x == other.getX() &&
+            this.y == other.getY();
         __equalsCalc = null;
         return _equals;
     }
@@ -87,27 +87,27 @@ public class Point  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        _hashCode += new Double(get_x()).hashCode();
-        _hashCode += new Double(get_y()).hashCode();
+        _hashCode += new Double(getX()).hashCode();
+        _hashCode += new Double(getY()).hashCode();
         __hashCodeCalc = false;
         return _hashCode;
     }
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(Point.class, true);
+        new org.apache.axis.description.TypeDesc(PointDTO.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/System.Windows", "Point"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PointDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_x");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/System.Windows", "_x"));
+        elemField.setFieldName("x");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "X"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_y");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/System.Windows", "_y"));
+        elemField.setFieldName("y");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Y"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
