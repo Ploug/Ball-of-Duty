@@ -108,10 +108,33 @@ public class ClientMap
 
     public void updatePositions(List<ObjectPosition> positions)
     {
+        if(positions.size()<gameObjects.values().size())
+        {
+            boolean isInGame = false; 
+            for (GameObject go : gameObjects.values())
+            {
+                isInGame = false; 
+                for (ObjectPosition pos : positions)
+                {
+                    if(go.getId() == pos.getId())
+                    {
+                        isInGame = true;
+                        break;
+                    }
+                    
+                }
+                if(!isInGame)
+                {
+                   gameObjects.remove(go.getId());
+                }
+                
+            }
+        }
         for (ObjectPosition pos : positions)
         {
             GameObject go = gameObjects.get(pos.getId());
 
+            
             if(go == null)
             {
                 go = new BoDCharacter(pos.getId());
