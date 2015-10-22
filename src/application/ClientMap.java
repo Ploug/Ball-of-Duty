@@ -27,6 +27,9 @@ public class ClientMap
     public Timer timer;
     Label fpsLabel;
     private BoDCharacter clientChar;
+    private Thread updateThread;
+    private AnimationTimer animationTimer;
+    
 
     public ClientMap(MapDTO serverMap, BorderPane gameBox, BoDCharacter clientChar)
     {
@@ -59,7 +62,7 @@ public class ClientMap
     public void activate()
     {
         Image space = new Image("images/space.png");
-        new AnimationTimer()
+        animationTimer = new AnimationTimer()
         {
             int frames = 0;
 
@@ -82,21 +85,25 @@ public class ClientMap
                 }
 
             }
-        }.start();
+        };
+        animationTimer.start();
 
-        new Thread(() ->
+        updateThread = new Thread(() ->
         {
             while (true)
             {
                 sendPositionUpdate();
 
             }
-        }).start();
+        });
+        updateThread.start();
     }
 
     public void deactivate()
     {
-
+        animationTimer.stop();
+        //animationTimer = null;
+        updateThread.interrupt();
     }
 
     public void updatePositions(List<ObjectPosition> positions)
@@ -105,7 +112,12 @@ public class ClientMap
         {
             GameObject go = gameObjects.get(pos.getId());
 
-            if (go != null && go.getId() != clientChar.getId())
+            if(go == null)
+            {
+                go = new BoDCharacter(pos.getId());
+                gameObjects.put(go.getId(), go);
+            }
+            if (go.getId() != clientChar.getId())
             {
                 go.getBody().setPosition(pos.getPosition());
             }

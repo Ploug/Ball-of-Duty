@@ -56,5 +56,11 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     return iBoDService.joinGame(clientPlayerId);
   }
   
+  public void quitGame(java.lang.Integer clientPlayerId) throws java.rmi.RemoteException{
+    if (iBoDService == null)
+      _initIBoDServiceProxy();
+    iBoDService.quitGame(clientPlayerId);
+  }
+  
   
 }
