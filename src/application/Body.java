@@ -30,6 +30,7 @@ public class Body
         return orientation;
     }
 
+   
     public void setOrientation(double orientation)
     {
         this.orientation = orientation;
@@ -44,4 +45,24 @@ public class Body
     {
         this.position = position;
     }
+
+   
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        Body other = (Body) obj;
+        if (Double.doubleToLongBits(orientation) != Double.doubleToLongBits(other.orientation)) return false;
+        if (position == null)
+        {
+            if (other.position != null) return false;
+        }
+        else if (!position.equals(other.position)) return false;
+        return true;
+    }
+    
+
 }

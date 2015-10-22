@@ -29,31 +29,31 @@ public class ClientMap
     private BoDCharacter clientChar;
     private Thread updateThread;
     private AnimationTimer animationTimer;
-    
+    private boolean mapActive = false;
 
     public ClientMap(MapDTO serverMap, BorderPane gameBox, BoDCharacter clientChar)
     {
         this.clientChar = clientChar;
-
+        mapActive = true;
         gameObjects = new HashMap<>();
+        gameObjects.put(clientChar.getId(), clientChar);
 
         this.broker = new Broker(this, serverMap.getIPAddress());
         timer = new Timer();
         timer.start();
-        gameObjects.put(clientChar.getId(), clientChar);
 
-        
         for (GameObjectDTO sgo : serverMap.getGameObjects())
         {
             if (sgo.getId() != clientChar.getId())
             {
                 gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
             }
-            System.out.println("objects received: "+sgo.getId());
+            System.out.println("id of object received: " + sgo.getId() + " my id = "+clientChar.getId());
 
         }
 
         fpsLabel = new Label();
+        fpsLabel.setPrefSize(50, 20);
         gameBox.setLeft(fpsLabel);
         this.canvas = (Canvas) gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
@@ -90,7 +90,7 @@ public class ClientMap
 
         updateThread = new Thread(() ->
         {
-            while (true)
+            while (mapActive)
             {
                 sendPositionUpdate();
 
@@ -101,47 +101,63 @@ public class ClientMap
 
     public void deactivate()
     {
+        mapActive = false;
         animationTimer.stop();
-        //animationTimer = null;
         updateThread.interrupt();
+        broker.stop();
     }
 
     public void updatePositions(List<ObjectPosition> positions)
     {
-        if(positions.size()<gameObjects.values().size())
+        
+        if (positions.size() < gameObjects.values().size())
         {
-            boolean isInGame = false; 
+            boolean isInGame = false;
             for (GameObject go : gameObjects.values())
             {
-                isInGame = false; 
+                isInGame = false;
                 for (ObjectPosition pos : positions)
                 {
-                    if(go.getId() == pos.getId())
+                    if (go.getId() == pos.getId())
                     {
                         isInGame = true;
                         break;
                     }
-                    
+
                 }
-                if(!isInGame)
+                if (!isInGame)
                 {
-                   gameObjects.remove(go.getId());
+                    if (go.getId() != clientChar.getId())
+                    {
+                        gameObjects.remove(go.getId());
+                    }
+                    break;
                 }
-                
+
             }
         }
         for (ObjectPosition pos : positions)
         {
-            GameObject go = gameObjects.get(pos.getId());
 
-            
-            if(go == null)
+            GameObject go = gameObjects.get(pos.getId());
+            if(go != null)
             {
-                go = new BoDCharacter(pos.getId());
-                gameObjects.put(go.getId(), go);
+
+//                System.out.println(pos.getId() +"  "+go.getId());
             }
-            if (go.getId() != clientChar.getId())
+            else
             {
+//                System.out.println("its null");
+            }
+
+            if (pos.getId() != clientChar.getId())
+            {
+                if (go == null)
+                {
+                    go = new BoDCharacter(pos.getId()); // We need to talk how to handle different objects over network.
+                    gameObjects.put(go.getId(), go);
+                }
+
                 go.getBody().setPosition(pos.getPosition());
             }
         }

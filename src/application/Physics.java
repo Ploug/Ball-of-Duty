@@ -29,6 +29,7 @@ public class Physics
         double secondsSinceLast = timer.getDuration() / 1000;// compensating for
                                                              // lag
         gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        
         timer.reset();
 
         for (CallBack cb : calculations)
@@ -38,6 +39,7 @@ public class Physics
 
     }
 
+   
     public void addCalculation(CallBack cb)
     {
         calculations.add(cb);
@@ -79,6 +81,33 @@ public class Physics
         updateVelocity();
     }
 
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        Physics other = (Physics) obj;
+        if (calculations == null)
+        {
+            if (other.calculations != null) return false;
+        }
+        else if (!calculations.equals(other.calculations)) return false;
+        if (directionVectors == null)
+        {
+            if (other.directionVectors != null) return false;
+        }
+        else if (!directionVectors.equals(other.directionVectors)) return false;
+        if (speed != other.speed) return false;
+        if (velocity == null)
+        {
+            if (other.velocity != null) return false;
+        }
+        else if (!velocity.equals(other.velocity)) return false;
+        return true;
+    }
+    
     // public void addVelocity(Vector2 inputVelocity)
     // {
     //
