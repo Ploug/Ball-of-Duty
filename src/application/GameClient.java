@@ -67,7 +67,16 @@ public class GameClient
 
     public void quitGame()
     {
-
+        try
+        {
+            ibs.quitGame(clientPlayer.getId());
+        } catch (RemoteException e)
+        {
+            System.out.println("I was unable to quit the game " + e);
+            e.printStackTrace();
+        }
+        cMap.deactivate();
+        //cMap = null;
     }
 
     public CharacterController getCharacterController()

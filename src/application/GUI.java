@@ -58,7 +58,7 @@ public class GUI extends Application
         quitBtn.setId("join-game");
         quitBtn.setOnAction(ActionEvent ->
         {
-
+            gameManager.quitGame();
             theStage.setScene(startMenu);
         });
         Canvas canvas = new Canvas(600, 500);
