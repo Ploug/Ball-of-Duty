@@ -2,10 +2,17 @@ package application;
 
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -15,8 +22,8 @@ public class GUI extends Application
 {
 
     public static GameClient gameManager;
-    private static int windowWidth = 800;
-    private static int windowHeight = 600;
+    private static int windowWidth = 1280;
+    private static int windowHeight = 720;
 
     public static void main(String[] args)
     {
@@ -45,11 +52,20 @@ public class GUI extends Application
         Scene gameScene = new Scene(gameBox);
 
         theStage.setScene(startMenu);
+        Image image = new Image("images/frontpage.png");
+        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+        // new BackgroundImage(image, repeatX, repeatY, position, size)
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER, backgroundSize);
+        // new Background(images...)
+        Background background = new Background(backgroundImage);
+        startMenuRoot.setBackground(background);
 
         VBox buttonBox = new VBox();
         Button joinBtn = new Button("Join game");
-        joinBtn.setPrefSize(200, 100);
+        joinBtn.setPrefSize(150, 50);
         joinBtn.setId("join-game");
+        joinBtn.setStyle("-fx-font: 22 arial; -fx-base: #ff0717;");
         joinBtn.setOnAction(ActionEvent ->
         {
             gameManager.joinGame(gameBox);
@@ -58,22 +74,24 @@ public class GUI extends Application
         });
 
         buttonBox.getChildren().add(joinBtn);
-        startMenuRoot.setCenter(buttonBox);
-        buttonBox.setAlignment(Pos.CENTER);
+        startMenuRoot.setLeft(buttonBox);
+        BorderPane.setMargin(buttonBox, new Insets(400,0,0,180));
+        
 
         Button quitBtn = new Button("Quit game");
         quitBtn.setPrefSize(80, 40);
-        quitBtn.setId("join-game");
+        quitBtn.setId("quit-game");
+        
         quitBtn.setOnAction(ActionEvent ->
         {
             gameManager.quitGame();
             theStage.setScene(startMenu);
         });
-        Canvas canvas = new Canvas(600, 500);
+        Canvas canvas = new Canvas(1100, 660);
 
         gameBox.setCenter(canvas);
         gameBox.setBottom(quitBtn);
-        BorderPane.setAlignment(quitBtn, Pos.BASELINE_RIGHT);
+        BorderPane.setAlignment(quitBtn, Pos.BASELINE_LEFT);
         theStage.show();
     }
 }

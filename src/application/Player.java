@@ -32,7 +32,7 @@ public class Player implements Serializable
 
     public void createNewCharacter()
     {
-        this.character = new BoDCharacter(this.id, new Point2D.Double(100,100),50,50,200);
+        this.character = new BoDCharacter(this.id, new Point2D.Double(10,10),50,50,200);
     }
 
     public int getId()
