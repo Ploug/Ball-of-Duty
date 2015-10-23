@@ -2,6 +2,8 @@ package application;
 
 import java.awt.geom.Point2D;
 
+import application.Body.Type;
+
 public class Body
 {
     public GameObject gameObject;
@@ -10,12 +12,17 @@ public class Body
     private double length;
     private double width;
     private double orientation;
-
-    public Body(GameObject gO, Point2D.Double position, double length, double width)
+    private Type type;
+    public enum Type
     {
+        CIRCLE, RECTANGLE
+    }
+
+    public Body(GameObject gO, Point2D.Double position, double length, double width, Type type)
+    {
+        this.type = type;
         this.gameObject = gO;
     	this.position = position;
-        setCenter();
         this.length = length;
         this.width = width;
         this.orientation = 0;
@@ -33,14 +40,10 @@ public class Body
     
     public Point2D.Double getCenter()
     {
+        center = new Point2D.Double((position.getX() + (width / 2)), position.getY() + (length / 2));
         return center;
     }
 
-    public void setCenter()
-    {
-    	center = new Point2D.Double((position.getX() + (width / 2)), position.getY() + (length / 2));
-    }
-    
     public double getLength()
     {
         return length;
@@ -93,6 +96,16 @@ public class Body
         }
         else if (!position.equals(other.position)) return false;
         return true;
+    }
+
+    public Type getType()
+    {
+        return this.type;
+    }
+    public void setType(Type type)
+    {
+        this.type = type;
+        
     }
     
 

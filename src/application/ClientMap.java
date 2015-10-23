@@ -1,6 +1,5 @@
 package application;
 
-import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +44,6 @@ public class ClientMap
         this.broker = new Broker(this, serverMap.getIPAddress());
         timer = new Timer();
         timer.start();
-        gameObjects.put(clientChar.getId(), clientChar);
 
         for (GameObjectDTO sgo : serverMap.getGameObjects())
         {
@@ -62,7 +60,7 @@ public class ClientMap
         gameBox.setLeft(fpsLabel);
         this.canvas = (Canvas) gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
-        
+        images = new HashMap<>();
         images.put("map_field", new Image("images/map_field.png"));
         images.put("ball_red", new Image("images/ball_red.png"));
         images.put("ball_blue", new Image("images/ball_blue.png"));

@@ -17,22 +17,21 @@ public abstract class GameObject
     protected Physics physics;
     protected View view;
     private int id;
-    public String type;
     private boolean destroyed;
     
-	public GameObject(GameObjectDTO goDTO, String type)
+	public GameObject(GameObjectDTO goDTO, Body.Type type)
     {
         destroyed = false;
         Point2D.Double newPoint = new Point2D.Double(goDTO.getBody().getPoint().getX(),goDTO.getBody().getPoint().getY());
-        this.body = new Body(this,newPoint,50,50);
+        this.body = new Body(this,newPoint,50,50, type);
         this.id = goDTO.getId();
-        this.type = type;
         
     }
-    public GameObject(int id, String type)
+    public GameObject(int id, Body.Type type)
     {
         this.id = id;
-        this.type = type;
+        Point2D.Double newPoint = new Point2D.Double(100, 100);
+        this.body = new Body(this,newPoint,50,50, type);
     }
     
     public int getId()
@@ -102,13 +101,26 @@ public abstract class GameObject
     {
         this.view = view;
     }
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        return result;
+    }
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+        GameObject other = (GameObject) obj;
+        if (id != other.id) return false;
+        return true;
+    }
     
-    public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
+   
 
 
 }
