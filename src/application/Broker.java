@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -20,7 +20,7 @@ public class Broker extends Observable
     private ClientMap map;
     private DatagramSocket _sender;
     private InetAddress ina;
-    private MulticastSocket _socket;
+    private DatagramSocket _socket;
     private Thread receiveThread;
 
     public Broker(ClientMap map, String serverIP)
@@ -31,7 +31,7 @@ public class Broker extends Observable
         try
         {
             ina = InetAddress.getByName(serverIP);
-            group = InetAddress.getByName("235.1.2.87");
+            group = InetAddress.getByName("10.126.24.255");
         }
         catch (UnknownHostException e1)
         {
@@ -42,7 +42,10 @@ public class Broker extends Observable
         {
             // _sender = new DatagramSocket(15001, ina);
             _sender = new DatagramSocket();
-            _socket = new MulticastSocket(15000);
+            InetSocketAddress sa = new InetSocketAddress(InetAddress.getByName("10.126.24.174"), 15000);
+            _socket = new DatagramSocket(sa);
+            _socket.setBroadcast(true);
+            // _socket.bind(sa);
             receiveThread = new Thread(() ->
             {
 
@@ -56,16 +59,7 @@ public class Broker extends Observable
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        try
-        {
-            _socket.joinGroup(group);
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
+
     }
 
     public ClientMap getMap()
@@ -87,18 +81,20 @@ public class Broker extends Observable
         ByteBuffer buffer = ByteBuffer.allocate(256); // more bytes pls
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put((byte) 1); // ASCII Standard for Start of heading
-        buffer.put((byte) Opcodes.POSITION_UPDATE.getCode());
-        buffer.put((byte) 2); // ASCII Standard for Start of text
+        buffer.put((byte)1); // ASCII Standard for Start of heading
+        buffer.put((byte)Opcodes.POSITION_UPDATE.getCode());
+        buffer.put((byte)2); // ASCII Standard for Start of text
         buffer.putInt(id);
         buffer.putDouble(position.getX());
         buffer.putDouble(position.getY());
 
-        buffer.put((byte) 4); // ASCII Standard for End of transmission
+        buffer.put((byte)4); // ASCII Standard for End of transmission
 
         send(buffer.array());
     }
+
     private boolean isActive = false;
+
     public void stop()
     {
         receiveThread.interrupt();
@@ -145,8 +141,8 @@ public class Broker extends Observable
                     positions.add(new ObjectPosition(id, position));
                 }
                 while (buffer.get() == 31); // unit separator
-//                System.out.println(count);
-                
+                // System.out.println(count);
+
                 map.updatePositions(positions);
 
             }
