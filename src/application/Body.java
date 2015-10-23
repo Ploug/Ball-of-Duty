@@ -6,23 +6,59 @@ public class Body
 {
     public GameObject gameObject;
     private Point2D.Double position;
+    private Point2D.Double center;
+    private double length;
+    private double width;
     private double orientation;
 
-    public Body(GameObject gO, Point2D.Double position)
+    public Body(GameObject gO, Point2D.Double position, double length, double width)
     {
-        this.position = position;
         this.gameObject = gO;
+    	this.position = position;
+        setCenter();
+        this.length = length;
+        this.width = width;
         this.orientation = 0;
-    }
-
-    public void collidesWith(GameObject gO)
-    {
-
     }
 
     public Point2D.Double getPosition()
     {
         return position;
+    }
+
+    public void setPosition(Point2D.Double position)
+    {
+        this.position = position;
+    }
+    
+    public Point2D.Double getCenter()
+    {
+        return center;
+    }
+
+    public void setCenter()
+    {
+    	center = new Point2D.Double((position.getX() + (width / 2)), position.getY() + (length / 2));
+    }
+    
+    public double getLength()
+    {
+        return length;
+    }
+
+    public void setLength(double length)
+    {
+        this.length = length;
+    }
+    
+    public double getWidth()
+    {
+        return width;
+    }
+
+    public void setWidth(double width)
+    {
+        this.width = width;
     }
 
     public double getOrientation()
@@ -39,11 +75,6 @@ public class Body
     public void increasePosition(double xIncrease, double yIncrease)
     {
         position.setLocation(position.getX() + xIncrease, position.getY() + yIncrease);
-    }
-
-    public void setPosition(Point2D.Double position)
-    {
-        this.position = position;
     }
 
    
