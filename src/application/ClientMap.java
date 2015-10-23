@@ -21,8 +21,8 @@ public class ClientMap
     private Broker broker;
     private GraphicsContext gc;
     private Canvas canvas;
-    private int mapWidth = 600;
-    private int mapHeight = 500;
+    private int mapWidth = 1280;
+    private int mapHeight = 720;
     public HashMap<Integer, GameObject> gameObjects;
     public ArrayList<Wall> walls;
     public HashMap<String, Image> images;
@@ -69,13 +69,14 @@ public class ClientMap
 
     public void activate()
     {
+        Image mapImage = new Image("images/map_field.png");
         animationTimer = new AnimationTimer()
         {
             int frames = 0;
 
             public void handle(long currentNanoTime)
             {
-                gc.drawImage(images.get("map_field"), 0, 0, mapWidth, mapHeight);
+                gc.drawImage(mapImage, 0, 0, mapWidth, mapHeight);
                 for (GameObject go : gameObjects.values())
                 {
                 	if (go != clientChar)
