@@ -61,6 +61,7 @@ public class GUI extends Application
         Background background = new Background(backgroundImage);
         startMenuRoot.setBackground(background);
 
+        theStage.getIcons().add(new Image("images/ball_red.png"));
         VBox buttonBox = new VBox();
         Button joinBtn = new Button("Join game");
         joinBtn.setPrefSize(150, 50);
