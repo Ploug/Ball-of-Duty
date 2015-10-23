@@ -21,15 +21,14 @@ public class GameClient
 
     public GameClient()
     {
-        
-        
+
         BoDServiceLocator server1 = new BoDServiceLocator();
 
         try
         {
             ibs = server1.getBasicHttpBinding_IBoDService();
             clientPlayer = new Player(ibs.newGuest());
-           
+
         }
         catch (ServiceException e)
         {
@@ -44,14 +43,16 @@ public class GameClient
 
     }
 
-    public ClientMap joinGame(BorderPane gameBox)
+    public void joinGame(BorderPane gameBox)
     {
 
+        System.out.println("trying to join game");
         clientPlayer.createNewCharacter();
-
         try
         {
-            this.cMap = new ClientMap(ibs.joinGame(clientPlayer.getId()), gameBox, clientPlayer.getCharacter());
+
+            cMap = new ClientMap(ibs.joinGame(clientPlayer.getId()), gameBox, clientPlayer.getCharacter());
+
         }
         catch (RemoteException e)
         {
@@ -62,7 +63,6 @@ public class GameClient
         characterController = new CharacterController(clientPlayer.getCharacter(), gameBox);
 
         cMap.activate();
-        return cMap;
     }
 
     public void quitGame()
@@ -70,13 +70,18 @@ public class GameClient
         try
         {
             ibs.quitGame(clientPlayer.getId());
-        } catch (RemoteException e)
+        }
+        catch (RemoteException e)
         {
             System.out.println("I was unable to quit the game " + e);
             e.printStackTrace();
         }
-        cMap.deactivate();
-        //cMap = null;
+        if (cMap != null)
+        {
+            cMap.deactivate();
+        }
+
+        // cMap = null;
     }
 
     public CharacterController getCharacterController()

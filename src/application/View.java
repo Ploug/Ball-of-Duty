@@ -5,7 +5,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 public class View {
-	public GameObject gameObject;
+	
+    public GameObject gameObject;
 
 	public View(GameObject gO) {
 		this.gameObject = gO;
@@ -20,4 +21,7 @@ public class View {
 
 		gc.setFill(oldPaint);
 	}
+	
+	
+
 }

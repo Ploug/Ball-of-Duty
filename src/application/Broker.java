@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
 
-
-
 public class Broker extends Observable
 {
 
@@ -26,10 +24,12 @@ public class Broker extends Observable
     private DatagramSocket _sender;
     private InetAddress ina;
     private MulticastSocket _socket;
+    private Thread receiveThread;
 
     public Broker(ClientMap map, String serverIP)
     {
         this.map = map;
+        isActive = true;
         InetAddress group = null;
         try
         {
@@ -46,10 +46,13 @@ public class Broker extends Observable
             // _sender = new DatagramSocket(15001, ina);
             _sender = new DatagramSocket();
             _socket = new MulticastSocket(15000);
-            new Thread(() ->
+            receiveThread = new Thread(() ->
             {
+
                 receive();
-            }).start();
+
+            });
+            receiveThread.start();
         }
         catch (IOException e)
         {
@@ -65,6 +68,7 @@ public class Broker extends Observable
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
     }
 
     public ClientMap getMap()
@@ -81,28 +85,33 @@ public class Broker extends Observable
         }
         catch (InterruptedException e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
         }
         ByteBuffer buffer = ByteBuffer.allocate(256); // more bytes pls
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.put((byte)1); // ASCII Standard for Start of heading
-        buffer.put((byte)Opcodes.POSITION_UPDATE.getCode());
-        buffer.put((byte)2); // ASCII Standard for Start of text
+        buffer.put((byte) 1); // ASCII Standard for Start of heading
+        buffer.put((byte) Opcodes.POSITION_UPDATE.getCode());
+        buffer.put((byte) 2); // ASCII Standard for Start of text
         buffer.putInt(id);
         buffer.putDouble(position.getX());
         buffer.putDouble(position.getY());
 
-        buffer.put((byte)4); // ASCII Standard for End of transmission
+        buffer.put((byte) 4); // ASCII Standard for End of transmission
 
         send(buffer.array());
+    }
+    private boolean isActive = false;
+    public void stop()
+    {
+        receiveThread.interrupt();
+        isActive = false;
     }
 
     public void receive()
     {
 
-        while (true)
+        while (isActive)
         {
             DatagramPacket packet;
 
@@ -127,17 +136,20 @@ public class Broker extends Observable
                 buffer.get(); // start of text
 
                 List<ObjectPosition> positions = new ArrayList<>();
+                int count = 0;
                 do
                 {
+                    count++;
                     int id = buffer.getInt();
                     double x = buffer.getDouble();
                     double y = buffer.getDouble();
-                    Point2D.Double position = new Point2D.Double(x,y);
-                    
+                    Point2D.Double position = new Point2D.Double(x, y);
+
                     positions.add(new ObjectPosition(id, position));
                 }
                 while (buffer.get() == 31); // unit separator
-
+//                System.out.println(count);
+                
                 map.updatePositions(positions);
 
             }

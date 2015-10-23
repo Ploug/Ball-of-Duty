@@ -1,7 +1,7 @@
 package application;
 
-
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class GUI extends Application
 {
@@ -24,12 +25,19 @@ public class GUI extends Application
 
     public void start(Stage theStage)
     {
-       gameManager = new GameClient();
+        gameManager = new GameClient();
 
-       
         theStage.setTitle("Ball of Duty");
         theStage.setHeight(windowHeight);
         theStage.setWidth(windowWidth);
+        theStage.setOnCloseRequest(new EventHandler<WindowEvent>()
+        {
+            public void handle(WindowEvent we)
+            {
+                gameManager.quitGame();
+                System.exit(0);
+            }
+        });
 
         BorderPane startMenuRoot = new BorderPane();
         Scene startMenu = new Scene(startMenuRoot);
@@ -44,8 +52,8 @@ public class GUI extends Application
         joinBtn.setId("join-game");
         joinBtn.setOnAction(ActionEvent ->
         {
-               gameManager.joinGame(gameBox);
-               theStage.setScene(gameScene);
+            gameManager.joinGame(gameBox);
+            theStage.setScene(gameScene);
 
         });
 
