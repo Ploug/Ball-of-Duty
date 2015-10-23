@@ -2,38 +2,41 @@ package application;
 
 public class CollisionTester
 {
-	public static boolean testCollision(GameObject gO1, GameObject gO2)
-	{
-		if (gO1.type.equals("Circle") && gO2.type.equals("Circle"))
-		{
-			return collisionCircleCircle(gO1,gO2);
-		} else if (gO1.getType().equals("Circle") && gO2.type.equals("Rectangle"))
-		{
-			return collisionCircleRectangle(gO1,gO2);
-		} else if (gO1.type.equals("Rectangle") && gO2.type.equals("Circle"))
-		{
-			return collisionCircleRectangle(gO2,gO1);
-		} else if (gO1.type.equals("Rectangle") && gO2.type.equals("Rectangle"))
-		{
-			return collisionRectangleRectangle(gO1,gO2);
-		}
-		return false;
-	}
-	
+    public static boolean testCollision(GameObject gO1, GameObject gO2)
+    {
+
+        if (gO1.getBody().getType() == Body.Type.CIRCLE && gO2.getBody().getType() == Body.Type.CIRCLE)
+        {
+            return collisionCircleCircle(gO1, gO2);
+        }
+        else if (gO1.getBody().getType() == Body.Type.CIRCLE && gO2.getBody().getType() == Body.Type.RECTANGLE)
+        {
+            return collisionCircleRectangle(gO1, gO2);
+        }
+        else if (gO1.getBody().getType() == Body.Type.RECTANGLE && gO2.getBody().getType() == Body.Type.CIRCLE)
+        {
+            return collisionCircleRectangle(gO2, gO1);
+        }
+        else if (gO1.getBody().getType() == Body.Type.RECTANGLE && gO2.getBody().getType() == Body.Type.RECTANGLE)
+        {
+            return collisionRectangleRectangle(gO1, gO2);
+        }
+        return false;
+    }
+
     public static boolean collisionCircleCircle(GameObject c1, GameObject c2)
     {
         double dx = c1.getBody().getPosition().getX() - c2.getBody().getPosition().getX();
         double dy = c1.getBody().getPosition().getY() - c2.getBody().getPosition().getY();
-        
+
         return Math.sqrt((dx * dx) + (dy * dy)) <= (c1.getBody().getLength() / 2) + (c2.getBody().getLength() / 2);
     }
 
     public static boolean collisionCircleRectangle(GameObject c, GameObject r)
     {
-    	double circleDistanceX = Math.abs(r.getBody().getCenter().getX() - c.getBody().getCenter().getX());
+        double circleDistanceX = Math.abs(r.getBody().getCenter().getX() - c.getBody().getCenter().getX());
         double circleDistanceY = Math.abs(r.getBody().getCenter().getY() - c.getBody().getCenter().getY());
-        
-        
+
         if (circleDistanceX > (r.getBody().getLength() / 2 + c.getBody().getLength()))
         {
             return false;
@@ -51,7 +54,8 @@ public class CollisionTester
             return true;
         }
 
-        double cornerDistanceSq = Math.pow((circleDistanceX - (r.getBody().getLength() / 2)),2) + Math.pow((circleDistanceY - (r.getBody().getWidth() / 2)),2);
+        double cornerDistanceSq = Math.pow((circleDistanceX - (r.getBody().getLength() / 2)), 2)
+                + Math.pow((circleDistanceY - (r.getBody().getWidth() / 2)), 2);
 
         return (cornerDistanceSq <= (Math.pow(c.getBody().getLength(), 2)));
     }
