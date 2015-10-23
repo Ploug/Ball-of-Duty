@@ -2,6 +2,7 @@ package application;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class ClientMap
     private int mapWidth = 600;
     private int mapHeight = 500;
     public HashMap<Integer, GameObject> gameObjects;
+    public ArrayList<Wall> walls;
+    public HashMap<String, Image> images;
     public Timer timer;
     Label fpsLabel;
     private BoDCharacter clientChar;
@@ -37,16 +40,18 @@ public class ClientMap
         mapActive = true;
         gameObjects = new HashMap<>();
         gameObjects.put(clientChar.getId(), clientChar);
+		walls = new ArrayList<>();
 
         this.broker = new Broker(this, serverMap.getIPAddress());
         timer = new Timer();
         timer.start();
+        gameObjects.put(clientChar.getId(), clientChar);
 
         for (GameObjectDTO sgo : serverMap.getGameObjects())
         {
             if (sgo.getId() != clientChar.getId())
             {
-                gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
+            	gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
             }
             System.out.println("id of object received: " + sgo.getId() + " my id = "+clientChar.getId());
 
@@ -57,22 +62,35 @@ public class ClientMap
         gameBox.setLeft(fpsLabel);
         this.canvas = (Canvas) gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
+        
+        images.put("map_field", new Image("images/map_field.png"));
+        images.put("ball_red", new Image("images/ball_red.png"));
+        images.put("ball_blue", new Image("images/ball_blue.png"));
+        images.put("wall_box", new Image("images/wall_box.png"));
     }
 
     public void activate()
     {
-        Image space = new Image("images/space.png");
         animationTimer = new AnimationTimer()
         {
             int frames = 0;
 
             public void handle(long currentNanoTime)
             {
-                gc.drawImage(space, 0, 0, mapWidth, mapHeight);
-                for (GameObject character : gameObjects.values())
+                gc.drawImage(images.get("map_field"), 0, 0, mapWidth, mapHeight);
+                for (GameObject go : gameObjects.values())
                 {
-                    character.update(gc);
+                	if (go != clientChar)
+                	{
+                		go.update(gc, images.get("ball_red"));
+                	}
                 }
+                
+                clientChar.update(gc, gameObjects, walls, images.get("ball_blue"));
+                
+                for (Wall wall : walls) {
+					wall.update(gc, images.get("wall_box"));
+				}
                 if (timer.getDuration() > 1000)
                 {
                     fpsLabel.setText("fps: " + frames);
@@ -138,8 +156,8 @@ public class ClientMap
         }
         for (ObjectPosition pos : positions)
         {
+        	GameObject go = gameObjects.get(pos.getId());
 
-            GameObject go = gameObjects.get(pos.getId());
             if(go != null)
             {
 
