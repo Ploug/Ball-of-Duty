@@ -1,13 +1,12 @@
 package application;
-import java.awt.geom.Point2D;
 
-
+import javafx.geometry.Point2D;
 
 public class ObjectPosition {
 	public final int Id;
-	public final Point2D.Double Position;
+	public final Point2D Position;
 	
-	public ObjectPosition(int id, Point2D.Double position) 
+	public ObjectPosition(int id, Point2D position) 
 	{
 		this.Id = id;
 		this.Position = position;
@@ -18,7 +17,7 @@ public class ObjectPosition {
 		return Id;
 	}
 	
-	public Point2D.Double getPosition()
+	public Point2D getPosition()
 	{
 		return Position;
 	}

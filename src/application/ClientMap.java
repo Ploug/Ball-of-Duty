@@ -39,7 +39,7 @@ public class ClientMap
         mapActive = true;
         gameObjects = new HashMap<>();
         gameObjects.put(clientChar.getId(), clientChar);
-		walls = new ArrayList<>();
+        walls = new ArrayList<>();
 
         this.broker = new Broker(this, serverMap.getIPAddress());
         timer = new Timer();
@@ -49,9 +49,9 @@ public class ClientMap
         {
             if (sgo.getId() != clientChar.getId())
             {
-            	gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
+                gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
             }
-            System.out.println("id of object received: " + sgo.getId() + " my id = "+clientChar.getId());
+            System.out.println("id of object received: " + sgo.getId() + " my id = " + clientChar.getId());
 
         }
 
@@ -79,17 +79,24 @@ public class ClientMap
                 gc.drawImage(mapImage, 0, 0, mapWidth, mapHeight);
                 for (GameObject go : gameObjects.values())
                 {
-                	if (go != clientChar)
-                	{
-                		go.update(gc, images.get("ball_red"));
-                	}
+                    if (go != clientChar)
+                    {
+                        go.update(gc, images.get("ball_red"));
+                    }
                 }
+
                 
                 clientChar.update(gc, gameObjects, walls, images.get("ball_blue"));
-                
-                for (Wall wall : walls) {
-					wall.update(gc, images.get("wall_box"));
-				}
+
+//                System.out.println(MouseInfo.getPointerInfo().getLocation().getX()
+//                        - (GUI.stage.getX() + GUI.stage.getScene().getX() + canvas.getLayoutX()));
+//                System.out.println(MouseInfo.getPointerInfo().getLocation().getY()
+//                        - (GUI.stage.getY() + GUI.stage.getScene().getY() + canvas.getLayoutY())); // gets mouse position even out of window. GUI.stage is not the proper way to do this.
+
+                for (Wall wall : walls)
+                {
+                    wall.update(gc, images.get("wall_box"));
+                }
                 if (timer.getDuration() > 1000)
                 {
                     fpsLabel.setText("fps: " + frames);
@@ -126,7 +133,7 @@ public class ClientMap
 
     public void updatePositions(List<ObjectPosition> positions)
     {
-        
+
         if (positions.size() < gameObjects.values().size())
         {
             boolean isInGame = false;
@@ -155,16 +162,16 @@ public class ClientMap
         }
         for (ObjectPosition pos : positions)
         {
-        	GameObject go = gameObjects.get(pos.getId());
+            GameObject go = gameObjects.get(pos.getId());
 
-            if(go != null)
+            if (go != null)
             {
 
-//                System.out.println(pos.getId() +"  "+go.getId());
+                // System.out.println(pos.getId() +" "+go.getId());
             }
             else
             {
-//                System.out.println("its null");
+                // System.out.println("its null");
             }
 
             if (pos.getId() != clientChar.getId())

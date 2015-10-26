@@ -3,6 +3,7 @@ package application;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -30,9 +31,13 @@ public class GUI extends Application
         launch(args);
     }
 
+    private Point2D getAbsoluteSceneLocation(Stage stage)
+    {
+        return new Point2D(stage.getX() + stage.getScene().getX(), stage.getY() + stage.getScene().getY());
+    }
+
     public void start(Stage theStage)
     {
-        gameManager = new GameClient();
 
         theStage.setTitle("Ball of Duty");
         theStage.setHeight(windowHeight);
@@ -52,6 +57,24 @@ public class GUI extends Application
         Scene gameScene = new Scene(gameBox);
 
         theStage.setScene(startMenu);
+
+        gameManager = new GameClient(getAbsoluteSceneLocation(theStage));
+        theStage.xProperty().addListener(e ->
+        {
+            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+        });
+        theStage.yProperty().addListener(e ->
+        {
+            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+        });
+        gameScene.xProperty().addListener(e ->
+        {
+            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+        });
+        gameScene.yProperty().addListener(e ->
+        {
+            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+        });
         Image image = new Image("images/frontpage.png");
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
         // new BackgroundImage(image, repeatX, repeatY, position, size)
@@ -69,20 +92,20 @@ public class GUI extends Application
         joinBtn.setStyle("-fx-font: 22 arial; -fx-base: #ff0717;");
         joinBtn.setOnAction(ActionEvent ->
         {
-            gameManager.joinGame(gameBox);
             theStage.setScene(gameScene);
+
+            gameManager.joinGame(gameBox);
 
         });
 
         buttonBox.getChildren().add(joinBtn);
         startMenuRoot.setLeft(buttonBox);
-        BorderPane.setMargin(buttonBox, new Insets(400,0,0,180));
-        
+        BorderPane.setMargin(buttonBox, new Insets(400, 0, 0, 180));
 
         Button quitBtn = new Button("Quit game");
         quitBtn.setPrefSize(80, 40);
         quitBtn.setId("quit-game");
-        
+
         quitBtn.setOnAction(ActionEvent ->
         {
             gameManager.quitGame();

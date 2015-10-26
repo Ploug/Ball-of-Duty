@@ -1,46 +1,45 @@
 package application;
 
-import java.awt.geom.Point2D;
 
-import application.Body.Type;
+import javafx.geometry.Point2D;
 
 public class Body
 {
     public GameObject gameObject;
-    private Point2D.Double position;
-    private Point2D.Double center;
+    private Point2D position;
+    private Point2D center;
     private double length;
     private double width;
-    private double orientation;
+    private Vector2 orientation;
     private Type type;
     public enum Type
     {
         CIRCLE, RECTANGLE
     }
 
-    public Body(GameObject gO, Point2D.Double position, double length, double width, Type type)
+    public Body(GameObject gO, Point2D position, double length, double width, Type type)
     {
         this.type = type;
         this.gameObject = gO;
     	this.position = position;
         this.length = length;
         this.width = width;
-        this.orientation = 0;
+        this.orientation = new Vector2(0,0);
     }
 
-    public Point2D.Double getPosition()
+    public Point2D getPosition()
     {
         return position;
     }
 
-    public void setPosition(Point2D.Double position)
+    public void setPosition(Point2D position)
     {
         this.position = position;
     }
     
-    public Point2D.Double getCenter()
+    public Point2D getCenter()
     {
-        center = new Point2D.Double((position.getX() + (width / 2)), position.getY() + (length / 2));
+        center = new Point2D((position.getX() + (width / 2)), position.getY() + (length / 2));
         return center;
     }
 
@@ -64,39 +63,25 @@ public class Body
         this.width = width;
     }
 
-    public double getOrientation()
+    public Vector2 getOrientation()
     {
         return orientation;
     }
 
    
-    public void setOrientation(double orientation)
+    public void setOrientation(double x, double y)
     {
-        this.orientation = orientation;
+        this.orientation.setX(x);;
+        this.orientation.setY(y);;
     }
 
     public void increasePosition(double xIncrease, double yIncrease)
     {
-        position.setLocation(position.getX() + xIncrease, position.getY() + yIncrease);
+        position = new Point2D(position.getX() + xIncrease, position.getY() + yIncrease);
     }
 
    
 
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        Body other = (Body) obj;
-        if (Double.doubleToLongBits(orientation) != Double.doubleToLongBits(other.orientation)) return false;
-        if (position == null)
-        {
-            if (other.position != null) return false;
-        }
-        else if (!position.equals(other.position)) return false;
-        return true;
-    }
 
     public Type getType()
     {

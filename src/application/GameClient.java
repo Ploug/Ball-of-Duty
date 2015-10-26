@@ -8,6 +8,7 @@ import javax.xml.rpc.ServiceException;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
+import javafx.geometry.Point2D;
 import javafx.scene.layout.BorderPane;
 
 public class GameClient
@@ -17,11 +18,13 @@ public class GameClient
     public List<Player> enemyPlayers;
     public Player clientPlayer;
     public CharacterController characterController;
+    public Point2D sceneAbsoluteLocation;
     IBoDService ibs;
 
-    public GameClient()
+    public GameClient(Point2D windowAbsoluteLocation)
     {
 
+        this.sceneAbsoluteLocation = windowAbsoluteLocation;
         BoDServiceLocator server1 = new BoDServiceLocator();
 
         try
@@ -43,6 +46,16 @@ public class GameClient
 
     }
 
+    public void setSceneAbsoluteLocation(Point2D sceneAbsoluteLocation)
+    {
+        this.sceneAbsoluteLocation = sceneAbsoluteLocation;
+        if (characterController != null)
+        {
+            characterController.setCanvasAbsoluteLocation(sceneAbsoluteLocation);
+        }
+
+    }
+
     public void joinGame(BorderPane gameBox)
     {
 
@@ -60,9 +73,9 @@ public class GameClient
             e.printStackTrace();
         }
 
-        characterController = new CharacterController(clientPlayer.getCharacter(), gameBox);
-
+        characterController = new CharacterController(clientPlayer.getCharacter(), gameBox, sceneAbsoluteLocation);
         cMap.activate();
+
     }
 
     public void quitGame()

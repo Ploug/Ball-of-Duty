@@ -10,7 +10,24 @@ public class Vector2
         this.x = x;
         this.y = y;
     }
+    public void setX(double x)
+    {
+        this.x = x;;
+    }
 
+    public void rotateDegrees(double degrees)
+    {
+        double radians = Math.toRadians(degrees);
+        double px = x*Math.cos(radians)-y*Math.sin(radians);
+        double py = x*Math.sin(radians)+y*Math.cos(radians);
+        x = px;
+        y = py;
+        
+    }
+    public void setY(double y)
+    {
+        this.y = y;;
+    }
     public double getX()
     {
         return this.x;
@@ -28,7 +45,7 @@ public class Vector2
 
     public double getAngle()
     {
-        return Math.atan2(y, x);
+        return Math.toDegrees(Math.atan2(y, x));
     }
 
     /**
@@ -139,10 +156,11 @@ public class Vector2
         return new Vector2(xTotal, yTotal);
     }
 
-    public void setMagnitude(int i)
+    public Vector2 setMagnitude(double i)
     {
         this.normalize();
         this.scalarMultiply(i);
+        return this;
     }
 
 }

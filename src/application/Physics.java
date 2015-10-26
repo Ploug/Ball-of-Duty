@@ -1,101 +1,132 @@
 package application;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-public class Physics {
-	public GameObject gameObject;
-	private Vector2 velocity;
-	private int speed;
-	private HashSet<Vector2> directionVectors;
-	private Timer timer;
-	private List<CallBack> calculations;
+public class Physics
+{
+    public GameObject gameObject;
+    private Vector2 velocity;
+    private int topspeed;
+    private HashSet<Vector2> directionVectors;
+    private Timer timer;
+    private List<CallBack> calculations;
+    boolean colliding = false;
 
-	public Physics(GameObject gO, int speed) {
-		this.gameObject = gO;
-		this.speed = speed;
-		this.velocity = new Vector2(0, 0);
-		this.calculations = new ArrayList<>();
-		directionVectors = new HashSet<>();
-		timer = new Timer();
-		timer.start();
-	}
+    public Physics(GameObject gO, int topspeed)
+    {
+        this.gameObject = gO;
+        this.topspeed = topspeed;
+        this.velocity = new Vector2(0, 0);
+        this.calculations = new ArrayList<>();
+        directionVectors = new HashSet<>();
+        timer = new Timer();
+        timer.start();
+    }
 
-	public void update() {
-		double secondsSinceLast = timer.getDuration() / 1000;// compensating for
-																// lag
-		gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
-        
-		timer.reset();
+    public void update()
+    {
 
-		for (CallBack cb : calculations) {
-			cb.call();
-		}
+        double secondsSinceLast = timer.getDuration() / 1000;// compensating for
+                                                             // lag
+        gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
 
-	}
+        timer.reset();
 
-	public void update(HashMap<Integer, GameObject> characters, ArrayList<Wall> walls) {
-		double secondsSinceLast = timer.getDuration() / 1000;// compensating for
-																// lag
+        for (CallBack cb : calculations)
+        {
+            cb.call();
+        }
 
-		double newPositionX = gameObject.getBody().getPosition().getX() + (velocity.getX() * secondsSinceLast);
-		double newPositionY = gameObject.getBody().getPosition().getY() + (velocity.getY() * secondsSinceLast);
-		BoDCharacter tempChar = new BoDCharacter(0, new Point2D.Double(newPositionX, newPositionY), 50, 50, 200);
+    }
 
-		boolean collision = false;
-		for (GameObject cha : characters.values()) {
-			if (CollisionTester.collisionCircleCircle(tempChar, cha)) {
-				if (cha.getId() != gameObject.getId()) {
-					collision = true;
-					timer.reset();
-					break;
-				}
-			}
-		}
-		for (Wall wall : walls) {
-			// System.out.println(wall.getID() + " " + wall.getCenter().getX() +
-			// "," + wall.getCenter().getY() + " "
-			// + wall.getBody().getPosition().getX() + "," +
-			// wall.getBody().getPosition().getY() + "" +
-			// wall.getBody().getHeight() + "" + wall.getBody().getLength());
-			if (CollisionTester.collisionCircleRectangle(tempChar, wall)) {
-				collision = true;
-				timer.reset();
-			}
-		}
+    public void update(HashMap<Integer, GameObject> characters, ArrayList<Wall> walls)
+    {
+        double secondsSinceLast = timer.getDuration() / 1000;// compensating for
+                                                             // lag
+        // System.out.println(colliding);
+        // gameObject.body.setPosition(new Point2D(400, 400));
+        gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        boolean collision = false;
+        for (GameObject cha : characters.values())
+        {
+            if (cha.getId() != gameObject.getId())
+            {
+                if (CollisionHandler.testCollision(gameObject, cha))
+                {
 
-		if (!collision) {
-			gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
-			timer.reset();
-		}
+                    if (!colliding)
+                    {
+                        colliding = true;
 
-		for (CallBack cb : calculations) {
-			cb.call();
-		}
+                        gameObject.physics.setVelocity(CollisionHandler.collisionResponse(gameObject, cha));
+                    }
+                    collision = true;
+                    break;
 
-	}
+                }
+            }
+        }
 
-	public void addCalculation(CallBack cb) {
-		calculations.add(cb);
-	}
+        for (Wall wall : walls)
+        {
+            // System.out.println(wall.getID() + " " + wall.getCenter().getX() +
+            // "," + wall.getCenter().getY() + " "
+            // + wall.getBody().getPosition().getX() + "," +
+            // wall.getBody().getPosition().getY() + "" +
+            // wall.getBody().getHeight() + "" + wall.getBody().getLength());
+            if (CollisionHandler.testCollision(gameObject, wall))
+            {
+                collision = true;
+            }
+        }
+//        System.out.println(colliding);
+//        System.out.println(gameObject.physics.velocity);
+        if (!collision)
+        {
+            colliding = false;
+            updateVelocity();
+        }
 
-    public Vector2 getVelolicity()
+        timer.reset();
+        for (CallBack cb : calculations)
+        {
+            cb.call();
+        }
+
+    }
+
+    public void addCalculation(CallBack cb)
+    {
+        calculations.add(cb);
+    }
+
+    public Vector2 getVelocity()
     {
         return velocity;
     }
 
-    public void updateVelocity()
+    public void setVelocity(Vector2 velocity)
     {
-        velocity = Vector2.averageVector(directionVectors.toArray(new Vector2[directionVectors.size()]));
-        velocity.setMagnitude(speed);
+        this.velocity = velocity;
+      
     }
 
-    public void setSpeed(int amount)
+    public void updateVelocity()
     {
-        speed = amount;
+        if (!colliding)
+        {
+            velocity = Vector2.averageVector(directionVectors.toArray(new Vector2[directionVectors.size()]));
+            velocity.setMagnitude(topspeed);
+        }
+
+    }
+
+    public void setTopSpeed(int amount)
+    {
+        topspeed = amount;
     }
 
     public void addDirection(Vector2 direction)
@@ -110,15 +141,12 @@ public class Physics {
 
     public void removeDirection(Vector2 direction)
     {
+
         directionVectors.remove(direction);
-        if (directionVectors.isEmpty())
-        {
-            velocity.setMagnitude(0);
-        }
+
         updateVelocity();
     }
 
-    
     @Override
     public boolean equals(Object obj)
     {
@@ -136,7 +164,7 @@ public class Physics {
             if (other.directionVectors != null) return false;
         }
         else if (!directionVectors.equals(other.directionVectors)) return false;
-        if (speed != other.speed) return false;
+        if (topspeed != other.topspeed) return false;
         if (velocity == null)
         {
             if (other.velocity != null) return false;
@@ -144,15 +172,20 @@ public class Physics {
         else if (!velocity.equals(other.velocity)) return false;
         return true;
     }
-    
-	// public void addVelocity(Vector2 inputVelocity)
-	// {
-	//
-	// if (Vector2.getAddedVectors(velocity, inputVelocity).getMagnitude() <
-	// maxSpeed)
-	// {
-	// velocity.addVector(inputVelocity);
-	// }
-	//
-	// }
+
+    public int getTopspeed()
+    {
+        return this.topspeed;
+    }
+
+    // public void addVelocity(Vector2 inputVelocity)
+    // {
+    //
+    // if (Vector2.getAddedVectors(velocity, inputVelocity).getMagnitude() <
+    // maxSpeed)
+    // {
+    // velocity.addVector(inputVelocity);
+    // }
+    //
+    // }
 }
