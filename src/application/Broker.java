@@ -1,6 +1,5 @@
 package application;
 
-import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
+
+import javafx.geometry.Point2D;
 
 public class Broker extends Observable
 {
@@ -42,7 +43,7 @@ public class Broker extends Observable
         {
             // _sender = new DatagramSocket(15001, ina);
             _sender = new DatagramSocket();
-            InetSocketAddress sa = new InetSocketAddress(InetAddress.getByName("10.126.24.174"), 15000);
+            InetSocketAddress sa = new InetSocketAddress(InetAddress.getByName("localhost"), 15002);
             _socket = new DatagramSocket(sa);
             _socket.setBroadcast(true);
             // _socket.bind(sa);
@@ -67,7 +68,7 @@ public class Broker extends Observable
         return map;
     }
 
-    public void sendPositionUpdate(Point2D.Double position, int id) throws IOException
+    public void sendPositionUpdate(Point2D position, int id) throws IOException
     {
 
         try
@@ -136,7 +137,7 @@ public class Broker extends Observable
                     int id = buffer.getInt();
                     double x = buffer.getDouble();
                     double y = buffer.getDouble();
-                    Point2D.Double position = new Point2D.Double(x, y);
+                    Point2D position = new Point2D(x, y);
 
                     positions.add(new ObjectPosition(id, position));
                 }

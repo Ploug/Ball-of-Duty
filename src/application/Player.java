@@ -4,7 +4,8 @@ import java.io.Serializable;
 
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 
-import java.awt.geom.Point2D;
+import javafx.geometry.Point2D;
+
 
 public class Player implements Serializable
 {
@@ -32,7 +33,7 @@ public class Player implements Serializable
 
     public void createNewCharacter()
     {
-        this.character = new BoDCharacter(this.id, new Point2D.Double(10,10),50,50,200);
+        this.character = new BoDCharacter(this.id, new Point2D(10,10),50,50,200);
     }
 
     public int getId()

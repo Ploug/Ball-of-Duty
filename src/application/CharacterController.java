@@ -1,7 +1,8 @@
 package application;
 
-import java.awt.geom.Point2D;
+import java.awt.MouseInfo;
 
+import javafx.geometry.Point2D;
 import javafx.scene.layout.BorderPane;
 
 public class CharacterController
@@ -12,9 +13,12 @@ public class CharacterController
     private static final Vector2 RIGHT_VECTOR = new Vector2(1, 0);
     private static final Vector2 LEFT_VECTOR = new Vector2(-1, 0);
     private KeyHandler keyHandler;
+    private Point2D canvasAbsoluteLocation;
 
-    public CharacterController(BoDCharacter inputChar, BorderPane gameBox)
+    public CharacterController(BoDCharacter inputChar, BorderPane gameBox, Point2D windowAbsoluteLocation)
     {
+        this.canvasAbsoluteLocation = windowAbsoluteLocation.add(gameBox.getCenter().getLayoutX(), gameBox.getCenter().getLayoutY());
+
         character = inputChar;
         keyHandler = new KeyHandler();
 
@@ -62,19 +66,25 @@ public class CharacterController
             }
         });
 
-        gameBox.setOnMouseMoved(actionEvent ->
-        {
-            character.mousePosition.setMouseX(actionEvent.getX());
-            character.mousePosition.setMouseY(actionEvent.getY());
-        });
-
         character.physics.addCalculation(() ->
         {
-            Point2D.Double position = character.body.getPosition();
-            double deltaX = character.mousePosition.getMouseX() - position.getX();
-            double deltaY = character.mousePosition.getMouseY() - position.getY();
+            Point2D position = character.body.getCenter();
 
-            character.body.setOrientation(Math.atan2(deltaY, deltaX)); // har ikke tjekket om orientation vender rigtigt.
+            double deltaX = MouseInfo.getPointerInfo().getLocation().getX()
+                    - (canvasAbsoluteLocation.getX() + gameBox.getCenter().getLayoutX()) - position.getX();
+            
+            double deltaY = MouseInfo.getPointerInfo().getLocation().getY()
+                    - (canvasAbsoluteLocation.getY() + gameBox.getCenter().getLayoutY()) - position.getY();
+
+            character.body.setOrientation(deltaX, deltaY);
         });
+    }
+
+    public void setCanvasAbsoluteLocation(Point2D windowAbsoluteLocation)
+    {
+        // this.canvasAbsoluteLocation = windowAbsoluteLocation.add(gameBox.getCenter().getLayoutX(),gameBox.getCenter().getLayoutY()); //
+        // ^ bliver ikke updated ordentlig pt.
+        
+        this.canvasAbsoluteLocation = windowAbsoluteLocation;
     }
 }
