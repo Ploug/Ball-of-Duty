@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -19,20 +18,15 @@ public class Broker extends Observable
 {
 
     private ClientMap map;
-    private DatagramSocket _sender;
     private InetAddress ina;
     private DatagramSocket _socket;
     private Thread receiveThread;
 
-    public Broker(ClientMap map, String serverIP)
+    public Broker()
     {
-        this.map = map;
-        isActive = true;
-        InetAddress group = null;
         try
         {
-            ina = InetAddress.getByName(serverIP);
-            group = InetAddress.getByName("10.126.24.255");
+            ina = InetAddress.getByName("127.0.0.1"); // halløj
         }
         catch (UnknownHostException e1)
         {
@@ -41,26 +35,33 @@ public class Broker extends Observable
         }
         try
         {
-            // _sender = new DatagramSocket(15001, ina);
-            _sender = new DatagramSocket();
-            InetSocketAddress sa = new InetSocketAddress(InetAddress.getByName("localhost"), 15002);
-            _socket = new DatagramSocket(sa);
-            _socket.setBroadcast(true);
-            // _socket.bind(sa);
-            receiveThread = new Thread(() ->
-            {
-
-                receive();
-
-            });
-            receiveThread.start();
+            _socket = new DatagramSocket(null); // force _socket not to bind to
+                                                // an address.
+            _socket.bind(null); // force _socket to pick up a free port and an
+                                // address determined by the operating system.
         }
         catch (IOException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
+    public void activate(ClientMap map)
+    {
+        this.map = map;
+
+        isActive = true;
+        receiveThread = new Thread(() ->
+        {
+            receive();
+        });
+        receiveThread.start();
+    }
+
+    public int getPort()
+    {
+        return _socket.getLocalPort();
     }
 
     public ClientMap getMap()
@@ -70,7 +71,6 @@ public class Broker extends Observable
 
     public void sendPositionUpdate(Point2D position, int id) throws IOException
     {
-
         try
         {
             Thread.sleep(20);
@@ -104,7 +104,6 @@ public class Broker extends Observable
 
     public void receive()
     {
-
         while (isActive)
         {
             DatagramPacket packet;
@@ -153,16 +152,22 @@ public class Broker extends Observable
                 e.printStackTrace();
             }
         }
-
     }
 
     public void send(byte[] buf)
     {
         DatagramPacket packet;
-        packet = new DatagramPacket(buf, buf.length, ina, 15001);
+        packet = new DatagramPacket(buf, buf.length, ina, 15001); // put this
+                                                                  // port
+                                                                  // somewhere
+                                                                  // else,
+                                                                  // possibly
+                                                                  // receive it
+                                                                  // from server
+                                                                  // on joingame
         try
         {
-            _sender.send(packet);
+            _socket.send(packet);
         }
         catch (IOException e)
         {
@@ -170,5 +175,4 @@ public class Broker extends Observable
             e.printStackTrace();
         }
     }
-
 }

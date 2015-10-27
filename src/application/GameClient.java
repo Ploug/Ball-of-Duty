@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
@@ -63,8 +64,9 @@ public class GameClient
         clientPlayer.createNewCharacter();
         try
         {
-
-            cMap = new ClientMap(ibs.joinGame(clientPlayer.getId()), gameBox, clientPlayer.getCharacter());
+            Broker broker = new Broker();
+            MapDTO map = ibs.joinGame(clientPlayer.getId(), broker.getPort());
+            cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());
 
         }
         catch (RemoteException e)

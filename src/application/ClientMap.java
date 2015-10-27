@@ -33,7 +33,7 @@ public class ClientMap
     private AnimationTimer animationTimer;
     private boolean mapActive = false;
 
-    public ClientMap(MapDTO serverMap, BorderPane gameBox, BoDCharacter clientChar)
+    public ClientMap(MapDTO serverMap, BorderPane gameBox, Broker broker, BoDCharacter clientChar)
     {
         this.clientChar = clientChar;
         mapActive = true;
@@ -41,7 +41,9 @@ public class ClientMap
         gameObjects.put(clientChar.getId(), clientChar);
         walls = new ArrayList<>();
 
-        this.broker = new Broker(this, serverMap.getIPAddress());
+        this.broker = broker;
+        broker.activate(this);
+
         timer = new Timer();
         timer.start();
 
@@ -58,13 +60,18 @@ public class ClientMap
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         gameBox.setLeft(fpsLabel);
-        this.canvas = (Canvas) gameBox.getCenter();
+        this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
         images = new HashMap<>();
         images.put("map_field", new Image("images/map_field.png"));
         images.put("ball_red", new Image("images/ball_red.png"));
         images.put("ball_blue", new Image("images/ball_blue.png"));
         images.put("wall_box", new Image("images/wall_box.png"));
+    }
+
+    public int getPort()
+    {
+        return broker.getPort();
     }
 
     public void activate()
@@ -85,13 +92,15 @@ public class ClientMap
                     }
                 }
 
-                
                 clientChar.update(gc, gameObjects, walls, images.get("ball_blue"));
 
-//                System.out.println(MouseInfo.getPointerInfo().getLocation().getX()
-//                        - (GUI.stage.getX() + GUI.stage.getScene().getX() + canvas.getLayoutX()));
-//                System.out.println(MouseInfo.getPointerInfo().getLocation().getY()
-//                        - (GUI.stage.getY() + GUI.stage.getScene().getY() + canvas.getLayoutY())); // gets mouse position even out of window. GUI.stage is not the proper way to do this.
+                // System.out.println(MouseInfo.getPointerInfo().getLocation().getX()
+                // - (GUI.stage.getX() + GUI.stage.getScene().getX() +
+                // canvas.getLayoutX()));
+                // System.out.println(MouseInfo.getPointerInfo().getLocation().getY()
+                // - (GUI.stage.getY() + GUI.stage.getScene().getY() +
+                // canvas.getLayoutY())); // gets mouse position even out of
+                // window. GUI.stage is not the proper way to do this.
 
                 for (Wall wall : walls)
                 {
@@ -178,7 +187,9 @@ public class ClientMap
             {
                 if (go == null)
                 {
-                    go = new BoDCharacter(pos.getId()); // We need to talk how to handle different objects over network.
+                    go = new BoDCharacter(pos.getId()); // We need to talk how
+                                                        // to handle different
+                                                        // objects over network.
                     gameObjects.put(go.getId(), go);
                 }
 
