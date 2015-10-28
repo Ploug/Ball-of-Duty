@@ -14,7 +14,7 @@ public class KeyHandler
 {
     public enum Action
     {
-        MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, SHOOT;
+        MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, SHOOT, BLINK;
     }
 
     public HashMap<KeyCode, Action> keyMap;
@@ -25,6 +25,7 @@ public class KeyHandler
     public KeyHandler()
     {
         keyMap = new HashMap<>();
+        keyMap.put(KeyCode.SPACE, Action.BLINK);
         keyMap.put(KeyCode.W, Action.MOVE_UP);
         keyMap.put(KeyCode.UP, Action.MOVE_UP);
         keyMap.put(KeyCode.S, Action.MOVE_DOWN);

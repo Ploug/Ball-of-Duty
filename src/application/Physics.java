@@ -42,69 +42,68 @@ public class Physics
 
     }
 
-    public void update(HashMap<Integer, GameObject> gameobjects, ArrayList<Wall> walls)
+    public void update(HashMap<Integer, GameObject> gameobjects)
     {
         double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
         timer.reset();
 
-        // System.out.println(colliding);
-        // gameObject.body.setPosition(new Point2D(400, 400));
         GameObject temp = new GameObject(gameObject);
         temp.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
-        int collidedWith = -1;
         boolean collision = false;
-        for (GameObject obj : gameobjects.values()) // Checks if it collides with anything.
+        for (GameObject obj : gameobjects.values()) // Checks if it collides with anything. only O(n^3) on very very rare occasions.
         {
-            if (obj.getId() != temp.getId())
+            if (obj.getId() == temp.getId())
             {
-                if (CollisionHandler.testCollision(temp, obj))
-                {
-                    collidedWith = obj.getId();
-                    temp.body.setPosition(CollisionHandler.collisionResponse(temp, obj)); // Gives new position so it doesnt collide
-                    collision = true; // with the collided object anymore.
-                    break;
-
-                }
+                continue;
             }
+            if (CollisionHandler.testCollision(temp, obj))
+            {
+                temp.body.setPosition(CollisionHandler.collisionResponse(temp, obj)); // Gives new position so it doesnt collide
+                for (GameObject obj2 : gameobjects.values()) // Checks if it collides with anything.
+                {
+                    if (obj2.getId() == temp.getId() || obj2.getId() == obj.getId())
+                    {
+                        continue;
+                    }
+                    if (CollisionHandler.testCollision(temp, obj2))
+                    {
+                        for (GameObject obj3 : gameobjects.values())
+                        {
+                            if (obj3.getId() == temp.getId() || obj3.getId() == obj.getId() || obj3.getId() == obj2.getId())
+                            {
+                                continue;
+                            }
+                            if (CollisionHandler.testCollision(temp, obj3))
+                            {
+                                collision = true;
+                                break;
+                            }
+
+                        }
+                        if (!collision)
+                        {
+                            gameObject.body.setPosition(CollisionHandler.collisionResponse(temp, obj2)); // if it doesnt collide with a third object, put it to the secondcalculated position.
+                        }
+                        collision = true;
+                        break;
+                    }
+                    
+                    
+                }
+                if(!collision) // if it doesnt collide with a second object, put it to the first calculated position.
+                {
+                    gameObject.body.setPosition(temp.body.getPosition());
+                }
+                collision = true; // with the collided object anymore.
+                break;
+
+            }
+
         }
+
         if (!collision)
         {
             gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
-        }
-        else
-        {
-            collision = false;
-            for (GameObject obj : gameobjects.values()) // Checks if the new position collides with anything else.
-            {
-                if (obj.getId() == temp.getId() || obj.getId() == collidedWith)
-                {
-                    continue;
-                }
-                if (CollisionHandler.testCollision(temp, obj))
-                {
-                    collision = true;
-                    break;
-
-                }
-            }
-            if (!collision)
-            {
-                gameObject.body.setPosition(temp.body.getPosition()); // if it doesnt collide with a second object on the new position it
-                                                                      // will set gameObject position to this.
-            }
-        }
-
-        for (Wall wall : walls)
-        {
-            // System.out.println(wall.getID() + " " + wall.getCenter().getX() +
-            // "," + wall.getCenter().getY() + " "
-            // + wall.getBody().getPosition().getX() + "," +
-            // wall.getBody().getPosition().getY() + "" +
-            // wall.getBody().getHeight() + "" + wall.getBody().getLength());a
-            if (CollisionHandler.testCollision(gameObject, wall))
-            {
-                collision = true;
-            }
         }
 
         for (CallBack cb : calculations)

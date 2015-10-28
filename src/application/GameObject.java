@@ -3,6 +3,7 @@ package application;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 
 import javafx.geometry.Point2D;
@@ -15,14 +16,27 @@ public class GameObject
     protected Body body;
     protected Physics physics;
     protected View view;
+    protected Health health;
+    protected Weapon weapon;
     private int id;
     private boolean destroyed;
 
-    public GameObject(GameObjectDTO goDTO, Body.Type type)
+    public GameObject(GameObjectDTO goDTO)
     {
-        destroyed = false;
-        Point2D newPoint = new Point2D(goDTO.getBody().getPoint().getX(), goDTO.getBody().getPoint().getY());
-        this.body = new Body(this, newPoint, 50, 50, type);
+
+        Point2D newPoint = new Point2D(goDTO.getBody().get_point().getX(), goDTO.getBody().get_point().getY());
+
+        Body.Type bodyType = null;
+        BodyDTO bodyDTO = goDTO.getBody();
+        if (bodyDTO.get_type() == bodyDTO.getCIRCLE())
+        {
+            bodyType = Body.Type.CIRCLE;
+        }
+        else if (bodyDTO.get_type() == bodyDTO.getRECTANGLE())
+        {
+            bodyType = Body.Type.RECTANGLE;
+        }
+        this.body = new Body(this, newPoint, 50, 50, bodyType);
         this.id = goDTO.getId();
 
     }
@@ -30,15 +44,16 @@ public class GameObject
     public GameObject(GameObject go)
     {
         this.id = go.getId();
-	    if(go.physics != null)
-	    {
-	       this.physics = new Physics(this, go.getPhysics().getTopspeed());
-	       this.physics.setVelocity(new Vector2(go.getPhysics().getVelocity().getX(),go.getPhysics().getVelocity().getY()));
-	    }
-	    if(go.body != null)
-	    {
-	        this.body = new Body(this, go.getBody().getPosition(), go.getBody().getLength(), go.getBody().getWidth(), go.getBody().getType());
-	    }
+        if (go.physics != null)
+        {
+            this.physics = new Physics(this, go.getPhysics().getTopspeed());
+            this.physics.setVelocity(new Vector2(go.getPhysics().getVelocity().getX(), go.getPhysics().getVelocity().getY()));
+        }
+        if (go.body != null)
+        {
+            this.body = new Body(this, go.getBody().getPosition(), go.getBody().getHeight(), go.getBody().getWidth(),
+                    go.getBody().getType());
+        }
     }
 
     public GameObject(int id, Body.Type type)
@@ -46,6 +61,11 @@ public class GameObject
         this.id = id;
         Point2D newPoint = new Point2D(100, 100);
         this.body = new Body(this, newPoint, 50, 50, type);
+    }
+
+    public GameObject(int id)
+    {
+        this.id = id;
     }
 
     public int getId()
@@ -65,11 +85,11 @@ public class GameObject
         }
     }
 
-    public void update(GraphicsContext gc, HashMap<Integer, GameObject> characters, ArrayList<Wall> walls, Image image)
+    public void update(GraphicsContext gc, HashMap<Integer, GameObject> objects, Image image)
     {
         if (physics != null)
         {
-            physics.update(characters, walls);
+            physics.update(objects);
         }
         if (view != null)
         {
@@ -84,7 +104,7 @@ public class GameObject
 
     public void destroy()
     {
-        destroyed = true;
+        destroyed = true; // possibly send out callback to listeners (which would be map)
     }
 
     public Body getBody()

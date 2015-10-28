@@ -1,7 +1,6 @@
 package application;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -15,16 +14,16 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 
-public class ClientMap
+public class ClientMap implements Observer
 {
 
     private Broker broker;
     private GraphicsContext gc;
     private Canvas canvas;
-    private int mapWidth = 1280;
-    private int mapHeight = 720;
+    private int mapWidth = 1200;
+    private int mapHeight = 700;
     public HashMap<Integer, GameObject> gameObjects;
-    public ArrayList<Wall> walls;
+    public HashMap<Integer, GameObject> noneCollidable;
     public HashMap<String, Image> images;
     public Timer timer;
     Label fpsLabel;
@@ -36,10 +35,14 @@ public class ClientMap
     public ClientMap(MapDTO serverMap, BorderPane gameBox, Broker broker, BoDCharacter clientChar)
     {
         this.clientChar = clientChar;
+        if (clientChar.weapon != null)
+        {
+            clientChar.weapon.registerObserver(this);
+        }
         mapActive = true;
         gameObjects = new HashMap<>();
+        noneCollidable = new HashMap<>();
         gameObjects.put(clientChar.getId(), clientChar);
-        walls = new ArrayList<>();
 
         this.broker = broker;
         broker.activate(this);
@@ -49,18 +52,31 @@ public class ClientMap
 
         for (GameObjectDTO sgo : serverMap.getGameObjects())
         {
-            if (sgo.getId() != clientChar.getId())
+            synchronized (gameObjects)
             {
-                gameObjects.put(sgo.getId(), new BoDCharacter(sgo));
+                if (sgo.getBody().get_type() == sgo.getBody().getCIRCLE())
+                {
+                    if (sgo.getId() != clientChar.getId())
+                    {
+                        BoDCharacter character = new BoDCharacter(sgo);
+                        gameObjects.put(sgo.getId(), character);
+
+                    }
+                }
+                else if (sgo.getBody().get_type() == sgo.getBody().getRECTANGLE())
+                {
+                    Wall wall = new Wall(sgo);
+                    gameObjects.put(sgo.getId(), wall);
+                }
             }
+
             System.out.println("id of object received: " + sgo.getId() + " my id = " + clientChar.getId());
 
         }
-
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         gameBox.setLeft(fpsLabel);
-        this.canvas = (Canvas)gameBox.getCenter();
+        this.canvas = (Canvas) gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
         images = new HashMap<>();
         images.put("map_field", new Image("images/map_field.png"));
@@ -88,24 +104,42 @@ public class ClientMap
                 {
                     if (go != clientChar)
                     {
-                        go.update(gc, images.get("ball_red"));
+                        if (go instanceof Wall)
+                        {
+                            go.update(gc, images.get("wall_box")); // Skal gøres når view bliver created, ikke her.
+                        }
+                        else if (go instanceof BoDCharacter)
+                        {
+                            go.update(gc, images.get("ball_red"));
+                        }
+
                     }
                 }
-
-                clientChar.update(gc, gameObjects, walls, images.get("ball_blue"));
-
-                // System.out.println(MouseInfo.getPointerInfo().getLocation().getX()
-                // - (GUI.stage.getX() + GUI.stage.getScene().getX() +
-                // canvas.getLayoutX()));
-                // System.out.println(MouseInfo.getPointerInfo().getLocation().getY()
-                // - (GUI.stage.getY() + GUI.stage.getScene().getY() +
-                // canvas.getLayoutY())); // gets mouse position even out of
-                // window. GUI.stage is not the proper way to do this.
-
-                for (Wall wall : walls)
+                synchronized (noneCollidable)
                 {
-                    wall.update(gc, images.get("wall_box"));
+                    GameObject destroy = null;
+                    for (GameObject go : noneCollidable.values())
+                    {
+                        if (go instanceof Bullet)
+                        {
+                            go.update(gc, images.get("ball_red"));
+                            if (((Bullet) go).livedTooLong())
+                            {
+                                destroy = go;
+                               //remove this object
+                            }
+                        }
+                    }
+                    if(destroy != null)
+                    {
+                        noneCollidable.remove(destroy); // Not the right way.
+                    }
+                   
+
                 }
+
+                clientChar.update(gc, gameObjects, images.get("ball_blue"));
+
                 if (timer.getDuration() > 1000)
                 {
                     fpsLabel.setText("fps: " + frames);
@@ -143,57 +177,65 @@ public class ClientMap
     public void updatePositions(List<ObjectPosition> positions)
     {
 
-        if (positions.size() < gameObjects.values().size())
+        synchronized (gameObjects)
         {
-            boolean isInGame = false;
-            for (GameObject go : gameObjects.values())
+
+            if (positions.size() < gameObjects.values().size())
             {
-                isInGame = false;
-                for (ObjectPosition pos : positions)
+                boolean isInGame = false;
+                for (GameObject go : gameObjects.values())
                 {
-                    if (go.getId() == pos.getId())
+                    if (go.getBody().getType() == Body.Type.RECTANGLE)
                     {
-                        isInGame = true;
+                        continue;
+                    }
+                    isInGame = false;
+                    for (ObjectPosition pos : positions)
+                    {
+                        if (go.getId() == pos.getId())
+                        {
+                            isInGame = true;
+                            break;
+                        }
+
+                    }
+                    if (!isInGame)
+                    {
+                        if (go.getId() != clientChar.getId())
+                        {
+                            gameObjects.remove(go.getId());
+                        }
                         break;
                     }
 
                 }
-                if (!isInGame)
+            }
+            for (ObjectPosition pos : positions)
+            {
+                GameObject go = gameObjects.get(pos.getId());
+
+                if (go != null)
                 {
-                    if (go.getId() != clientChar.getId())
+
+                    // System.out.println(pos.getId() +" "+go.getId());
+                }
+                else
+                {
+                    // System.out.println("its null");
+                }
+
+                if (pos.getId() != clientChar.getId())
+                {
+                    if (go == null)
                     {
-                        gameObjects.remove(go.getId());
+                        go = new BoDCharacter(pos.getId()); // We need to talk how
+                                                            // to handle different
+                                                            // objects over network.
+                        gameObjects.put(go.getId(), go);
                     }
-                    break;
+
+                    go.getBody().setPosition(pos.getPosition());
                 }
-
-            }
-        }
-        for (ObjectPosition pos : positions)
-        {
-            GameObject go = gameObjects.get(pos.getId());
-
-            if (go != null)
-            {
-
-                // System.out.println(pos.getId() +" "+go.getId());
-            }
-            else
-            {
-                // System.out.println("its null");
-            }
-
-            if (pos.getId() != clientChar.getId())
-            {
-                if (go == null)
-                {
-                    go = new BoDCharacter(pos.getId()); // We need to talk how
-                                                        // to handle different
-                                                        // objects over network.
-                    gameObjects.put(go.getId(), go);
-                }
-
-                go.getBody().setPosition(pos.getPosition());
             }
         }
     }
@@ -210,4 +252,35 @@ public class ClientMap
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void update(Observable observable, Object args)
+    {
+        if (observable instanceof Weapon)
+        {
+            if (args instanceof Bullet)
+            {
+                synchronized (noneCollidable)
+                {
+                    Bullet bullet = (Bullet) args;
+                    noneCollidable.put(bullet.getId(), bullet);
+                }
+
+            }
+
+            // Shooting occured
+        }
+
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + mapHeight;
+        result = prime * result + mapWidth;
+        return result;
+    }
+
 }
