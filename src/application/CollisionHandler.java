@@ -1,8 +1,10 @@
 package application;
 
+import javafx.geometry.Point2D;
+
 public class CollisionHandler
 {
-    public static Vector2 collisionResponse(GameObject collided, GameObject other)
+    public static Point2D collisionResponse(GameObject collided, GameObject other)
     {
         if (collided.getBody().getType() == Body.Type.CIRCLE && other.getBody().getType() == Body.Type.CIRCLE)
         {
@@ -48,38 +50,17 @@ public class CollisionHandler
         return false;
     }
 
-    // http://ericleong.me/research/circle-circle/
-    public static Vector2 collisionResponseCircleCircle(GameObject collided, GameObject other)
+    // http://ericleong.me/research/circle-circle/  Need this link for bullet bounce or similar.
+    public static Point2D collisionResponseCircleCircle(GameObject collided, GameObject other)
     {
-        Vector2 collidedVelocity = collided.getPhysics().getVelocity();
         double collidedx = collided.getBody().getPosition().getX();
         double otherx = other.getBody().getPosition().getX();
         double collidedy = collided.getBody().getPosition().getY();
         double othery = other.getBody().getPosition().getY();
-        double collidedvx = collidedVelocity.getX();
-        double collidedvy = collidedVelocity.getY();
-        double collisiondist = Math.sqrt(Math.pow(otherx - collidedx, 2) + Math.pow(othery - collidedy, 2));
 
-        // Calculating norm vector
-        double n_x = (otherx - collidedx) / collisiondist;
-        double n_y = (othery - collidedy) / collisiondist;
-        
-        double p = 2 * (collidedvx * n_x + collidedvy * n_y) / (1 + 1); // Should just get tangent here since we dont use mass in our system.
-        
-        // Calculating the new velocity
-        double w_x = collidedvx - p * 1 * n_x - p * 1 * n_x;
-        double w_y = collidedvy - p * 1 * n_y - p * 1 * n_y;
-
-      
-        Vector2[] vectorArray = {new Vector2(w_x, w_y),collidedVelocity};
-        Vector2 retVal = Vector2.averageVector(vectorArray);
-        if(retVal.getMagnitude()<1) // Hvis den modsatte pil 180 grader modsat indgangsvinklen så er det = 0, men pga double er det = cirka nul. Her tjekker vi for det og ændre det så den ikke går i stå.
-        {
-            retVal = collidedVelocity;
-            retVal.rotateDegrees(90);
-        }
-        retVal.setMagnitude(collidedVelocity.getMagnitude());
-        return  retVal; 
+        Vector2 distanceBetweenObjects = new Vector2(collidedx - otherx, collidedy - othery);
+        distanceBetweenObjects.setMagnitude(collided.body.getLength() / 2 + other.body.getLength() / 2);
+        return new Point2D(otherx + distanceBetweenObjects.getX(), othery + distanceBetweenObjects.getY());
     }
 
     public static boolean collisionCircleCircle(GameObject c1, GameObject c2)
@@ -127,21 +108,22 @@ public class CollisionHandler
 
     public static boolean collisionRectangleRectangle(GameObject r1, GameObject r2)
     {
-        int r1X = (int) r1.getBody().getPosition().getX();
-        int r1Y = (int) r1.getBody().getPosition().getY();
-        int r1H = (int) r1.getBody().getWidth();
-        int r1L = (int) r1.getBody().getLength();
-        int r2X = (int) r2.getBody().getPosition().getX();
-        int r2Y = (int) r2.getBody().getPosition().getY();
-        int r2H = (int) r2.getBody().getWidth();
-        int r2L = (int) r2.getBody().getLength();
+
+        double r1X = r1.getBody().getPosition().getX();
+        double r1Y = r1.getBody().getPosition().getY();
+        double r1H = r1.getBody().getWidth();
+        double r1L = r1.getBody().getLength();
+        double r2X = r2.getBody().getPosition().getX();
+        double r2Y = r2.getBody().getPosition().getY();
+        double r2H = r2.getBody().getWidth();
+        double r2L = r2.getBody().getLength();
 
         boolean xOverlap = valueInRange(r1X, r2X, r2X + r2L) || valueInRange(r2X, r1X, r1X + r1L);
         boolean yOverlap = valueInRange(r1Y, r2Y, r2Y + r2H) || valueInRange(r2Y, r1Y, r1Y + r1H);
         return xOverlap && yOverlap;
     }
 
-    private static boolean valueInRange(int value, int min, int max)
+    private static boolean valueInRange(double value, double min, double max)
     {
         return (value >= min) && (value <= max);
     }
