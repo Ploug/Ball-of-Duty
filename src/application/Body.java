@@ -7,7 +7,6 @@ public class Body
 {
     public GameObject gameObject;
     private Point2D position;
-    private Point2D center;
     private double length;
     private double width;
     private Vector2 orientation;
@@ -39,8 +38,7 @@ public class Body
     
     public Point2D getCenter()
     {
-        center = new Point2D((position.getX() + (width / 2)), position.getY() + (length / 2));
-        return center;
+        return new Point2D((position.getX() + (width / 2)), position.getY() + (length / 2));
     }
 
     public double getLength()

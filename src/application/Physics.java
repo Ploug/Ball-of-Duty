@@ -42,31 +42,55 @@ public class Physics
 
     }
 
-    public void update(HashMap<Integer, GameObject> characters, ArrayList<Wall> walls)
+    public void update(HashMap<Integer, GameObject> gameobjects, ArrayList<Wall> walls)
     {
-        double secondsSinceLast = timer.getDuration() / 1000;// compensating for
-                                                             // lag
+        double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
+        timer.reset();
+
         // System.out.println(colliding);
         // gameObject.body.setPosition(new Point2D(400, 400));
-        gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        GameObject temp = new GameObject(gameObject);
+        temp.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        int collidedWith = -1;
         boolean collision = false;
-        for (GameObject cha : characters.values())
+        for (GameObject obj : gameobjects.values()) // Checks if it collides with anything.
         {
-            if (cha.getId() != gameObject.getId())
+            if (obj.getId() != temp.getId())
             {
-                if (CollisionHandler.testCollision(gameObject, cha))
+                if (CollisionHandler.testCollision(temp, obj))
                 {
+                    collidedWith = obj.getId();
+                    temp.body.setPosition(CollisionHandler.collisionResponse(temp, obj)); // Gives new position so it doesnt collide
+                    collision = true; // with the collided object anymore.
+                    break;
 
-                    if (!colliding)
-                    {
-                        colliding = true;
-
-                        gameObject.physics.setVelocity(CollisionHandler.collisionResponse(gameObject, cha));
-                    }
+                }
+            }
+        }
+        if (!collision)
+        {
+            gameObject.body.increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        }
+        else
+        {
+            collision = false;
+            for (GameObject obj : gameobjects.values()) // Checks if the new position collides with anything else.
+            {
+                if (obj.getId() == temp.getId() || obj.getId() == collidedWith)
+                {
+                    continue;
+                }
+                if (CollisionHandler.testCollision(temp, obj))
+                {
                     collision = true;
                     break;
 
                 }
+            }
+            if (!collision)
+            {
+                gameObject.body.setPosition(temp.body.getPosition()); // if it doesnt collide with a second object on the new position it
+                                                                      // will set gameObject position to this.
             }
         }
 
@@ -76,21 +100,13 @@ public class Physics
             // "," + wall.getCenter().getY() + " "
             // + wall.getBody().getPosition().getX() + "," +
             // wall.getBody().getPosition().getY() + "" +
-            // wall.getBody().getHeight() + "" + wall.getBody().getLength());
+            // wall.getBody().getHeight() + "" + wall.getBody().getLength());a
             if (CollisionHandler.testCollision(gameObject, wall))
             {
                 collision = true;
             }
         }
-//        System.out.println(colliding);
-//        System.out.println(gameObject.physics.velocity);
-        if (!collision)
-        {
-            colliding = false;
-            updateVelocity();
-        }
 
-        timer.reset();
         for (CallBack cb : calculations)
         {
             cb.call();
@@ -111,7 +127,7 @@ public class Physics
     public void setVelocity(Vector2 velocity)
     {
         this.velocity = velocity;
-      
+
     }
 
     public void updateVelocity()
