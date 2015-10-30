@@ -77,7 +77,7 @@ public class Broker extends Observable
         }
         catch (InterruptedException e)
         {
-
+            e.printStackTrace();
         }
         ByteBuffer buffer = ByteBuffer.allocate(256); // more bytes pls
 

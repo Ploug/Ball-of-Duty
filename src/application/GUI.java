@@ -38,7 +38,6 @@ public class GUI extends Application
 
     public void start(Stage theStage)
     {
-
         theStage.setTitle("Ball of Duty");
         theStage.setHeight(windowHeight);
         theStage.setWidth(windowWidth);
@@ -95,6 +94,7 @@ public class GUI extends Application
             theStage.setScene(gameScene);
 
             gameManager.joinGame(gameBox);
+            gameBox.requestFocus();
 
         });
 

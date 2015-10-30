@@ -5,6 +5,11 @@ public class Vector2
     private double x;
     private double y;
 
+    public Vector2(Vector2 vec)
+    {
+        this.x = vec.x;
+        this.y = vec.y;
+    }
     public Vector2(double x, double y)
     {
         this.x = x;

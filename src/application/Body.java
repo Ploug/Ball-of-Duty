@@ -7,7 +7,7 @@ public class Body
 {
     public GameObject gameObject;
     private Point2D position;
-    private double length;
+    private double height;
     private double width;
     private Vector2 orientation;
     private Type type;
@@ -21,7 +21,7 @@ public class Body
         this.type = type;
         this.gameObject = gO;
     	this.position = position;
-        this.length = length;
+        this.height = length;
         this.width = width;
         this.orientation = new Vector2(0,0);
     }
@@ -31,6 +31,10 @@ public class Body
         return position;
     }
 
+    public void setCenter(Point2D position)
+    {
+        this.position = new Point2D(position.getX()-width/2,position.getY()-height/2);
+    }
     public void setPosition(Point2D position)
     {
         this.position = position;
@@ -38,17 +42,17 @@ public class Body
     
     public Point2D getCenter()
     {
-        return new Point2D((position.getX() + (width / 2)), position.getY() + (length / 2));
+        return new Point2D((position.getX() + (width / 2)), position.getY() + (height / 2));
     }
 
-    public double getLength()
+    public double getHeight()
     {
-        return length;
+        return height;
     }
 
-    public void setLength(double length)
+    public void setHeight(double length)
     {
-        this.length = length;
+        this.height = length;
     }
     
     public double getWidth()

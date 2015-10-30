@@ -19,24 +19,33 @@ public class View
     double centerY;
     public void draw(GraphicsContext gc, Image image)
     {
+//        System.out.println((int) gameObject.getBody().getPosition().getX()+" "+(int) gameObject.getBody().getPosition().getY()+"  "+
+//                gameObject.getBody().getLength()+"  "+ gameObject.getBody().getWidth());
         gc.drawImage(image, (int) gameObject.getBody().getPosition().getX(), (int) gameObject.getBody().getPosition().getY(),
-                gameObject.getBody().getLength(), gameObject.getBody().getWidth());
-
+                gameObject.getBody().getHeight(), gameObject.getBody().getWidth());
+        // debug info
+//        gc.setLineWidth(2);
+//        gc.setStroke(Color.BLACK);
+//        gc.strokeText(gameObject.getId()+"", gameObject.body.getCenter().getX(),gameObject.body.getCenter().getY());
         
-        /* DEBUG MODE */
-        // Velocity vector drawn.
-        centerX = gameObject.getBody().getCenter().getX();
-        centerY = gameObject.getBody().getCenter().getY();
-        gc.setLineWidth(3);
-        gc.setStroke(Color.BLACK);
-        gc.strokeLine(centerX, centerY,
-                centerX + gameObject.getPhysics().getVelocity().getX(),
-                centerY + gameObject.getPhysics().getVelocity().getY());
-//        Draw orientation vector.
-        gc.setStroke(Color.GREEN);
-        gc.strokeLine(centerX, centerY,
-                centerX + gameObject.getBody().getOrientation().getX(),
-                centerY + gameObject.getBody().getOrientation().getY());
+        if(gameObject.physics != null && gameObject instanceof BoDCharacter)
+        {
+            /* DEBUG MODE */
+            // Velocity vector drawn.
+            centerX = gameObject.getBody().getCenter().getX();
+            centerY = gameObject.getBody().getCenter().getY();
+            gc.setLineWidth(3);
+            gc.setStroke(Color.BLACK);
+            gc.strokeLine(centerX, centerY,
+                    centerX + gameObject.getPhysics().getVelocity().getX(),
+                    centerY + gameObject.getPhysics().getVelocity().getY());
+//            Draw orientation vector.
+            gc.setStroke(Color.GREEN);
+            gc.strokeLine(centerX, centerY,
+                    centerX + gameObject.getBody().getOrientation().getX(),
+                    centerY + gameObject.getBody().getOrientation().getY());
+        }
+        
                 
                
     }

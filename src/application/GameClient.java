@@ -59,7 +59,6 @@ public class GameClient
 
     public void joinGame(BorderPane gameBox)
     {
-
         System.out.println("trying to join game");
         clientPlayer.createNewCharacter();
         try
