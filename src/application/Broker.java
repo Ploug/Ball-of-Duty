@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Observable;
+import java.util.Set;
 
 import javafx.geometry.Point2D;
 
@@ -69,7 +70,7 @@ public class Broker extends Observable
         return map;
     }
 
-    public void sendPositionUpdate(Point2D position, int id) throws IOException
+    public void sendPositionUpdate(Point2D position, int id, Set<Bullet> bullets) throws IOException
     {
         try
         {

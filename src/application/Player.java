@@ -33,7 +33,7 @@ public class Player implements Serializable
 
     public void createNewCharacter()
     {
-        this.character = new BoDCharacter(this.id, new Point2D(100+(int)Math.random()*900, 100+(int)Math.random()*400), 50, 50, 200);
+        this.character = new BoDCharacter(this.id, new Point2D(100+(int)Math.random()*900, 100+(int)Math.random()*400), 50, 50, 400);
     }
 
     public int getId()

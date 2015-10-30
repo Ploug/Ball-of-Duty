@@ -18,17 +18,32 @@ public class Bullet extends GameObject
         physics.setVelocity(velocity);
         this.view = new View(this);
         lifeTime = 5;
-        timer = new Timer();
-        timer.start();
-    }
-    public boolean livedTooLong()
-    {
-        return(timer.getDuration()>1000*lifeTime);
+        new Thread(()->
+        {
+            timer = new Timer();
+            timer.start();
+            while((timer.getDuration()<1000*lifeTime))
+            {
+                try
+                {
+                    Thread.sleep(20);
+                }
+                catch (Exception e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            System.out.println("removed");
+            notifyObservers();
+        }).start();;
+        
     }
 
     public double getDamage()
     {
         return damage;
     }
+    
 
 }
