@@ -5,7 +5,7 @@ import java.util.Set;
 
 import javafx.geometry.Point2D;
 
-public class Weapon implements Observable
+public class Weapon implements Observable, Observer
 {
 
     private double firerate;
@@ -14,6 +14,7 @@ public class Weapon implements Observable
     private GameObject gameObject;
     private double damage;
     private boolean shooting = false;
+    private Set<Bullet> activeBullets;
     Timer timer;
     private Set<Observer> observers;
 
@@ -29,6 +30,7 @@ public class Weapon implements Observable
      */
     public Weapon(GameObject gameObject, double firerate, int magazineSize, double damage)
     {
+        activeBullets = new HashSet<Bullet>();
         timer = new Timer();
         timer.start();
         this.gameObject = gameObject;
@@ -55,14 +57,18 @@ public class Weapon implements Observable
             while (shooting)
             {
 
-                Vector2 orientation = gameObject.body.getOrientation().setMagnitude(gameObject.getBody().getHeight() / 2);
+                Vector2 orientation = gameObject.body.getOrientation().setMagnitude(gameObject.body.getHeight() / 2);
                 Point2D position = new Point2D(gameObject.body.getCenter().getX() + orientation.getX(),
                         gameObject.body.getCenter().getY() + orientation.getY());
                 Vector2 velocity = new Vector2(gameObject.body.getOrientation());
                 velocity.setMagnitude(300); // bullet speed magic number atm
-                velocity.addVector(gameObject.physics.getVelocity()); // Ikker sikker på den her som gamemechanic. Det er fysisk korrekt though.
-
-                notifyObservers(new Bullet(bulletsCreated++, position, 8, 8, velocity, damage)); // Det her skal ske med noget server shit.
+               
+                Bullet bullet = new Bullet(bulletsCreated++, position, 10, 10, velocity, damage);
+                notifyObservers(bullet); // Det her skal ske med noget server shit.
+                activeBullets.add(bullet);
+                bullet.registerObserver(this);
+               
+                
                 try
                 {
                     Thread.sleep((long) (1000 / firerate));
@@ -81,6 +87,10 @@ public class Weapon implements Observable
     public void stopShooting()
     {
         shooting = false;
+    }
+    public Set<Bullet> getActiveBullets()
+    {
+        return activeBullets;
     }
 
     @Override
@@ -115,5 +125,16 @@ public class Weapon implements Observable
     {
         observers.remove(obs);
 
+    }
+
+    
+    @Override
+    public void update(Observable observable, Object args)
+    {
+        if(observable instanceof Bullet)
+        {
+            activeBullets.remove(observable);
+        }
+        
     }
 }

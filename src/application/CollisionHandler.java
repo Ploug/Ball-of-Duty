@@ -6,21 +6,22 @@ public class CollisionHandler
 {
     public static Point2D collisionResponse(GameObject collided, GameObject other)
     {
-        if (collided.getBody().getType() == Body.Type.CIRCLE && other.getBody().getType() == Body.Type.CIRCLE)
+
+        if (collided.body.getType() == Body.Type.CIRCLE && other.body.getType() == Body.Type.CIRCLE)
         {
             return collisionResponseCircleCircle(collided, other);
         }
-        else if (collided.getBody().getType() == Body.Type.CIRCLE && other.getBody().getType() == Body.Type.RECTANGLE)
+        else if (collided.body.getType() == Body.Type.CIRCLE && other.body.getType() == Body.Type.RECTANGLE)
         {
             return collisionResponseCircleRectangle(collided, other);
             // return collisionCircleRectangle(gO1, gO2);
         }
-        else if (collided.getBody().getType() == Body.Type.RECTANGLE && other.getBody().getType() == Body.Type.CIRCLE)
+        else if (collided.body.getType() == Body.Type.RECTANGLE && other.body.getType() == Body.Type.CIRCLE)
         {
             return collisionResponseCircleRectangle(other, collided);
             // return collisionCircleRectangle(gO2, gO1);
         }
-        else if (collided.getBody().getType() == Body.Type.RECTANGLE && other.getBody().getType() == Body.Type.RECTANGLE)
+        else if (collided.body.getType() == Body.Type.RECTANGLE && other.body.getType() == Body.Type.RECTANGLE)
         {
             return null;
             // return collisionRectangleRectangle(gO1, gO2);
@@ -31,32 +32,34 @@ public class CollisionHandler
     public static boolean testCollision(GameObject gO1, GameObject gO2)
     {
 
-        if (gO1.getBody().getType() == Body.Type.CIRCLE && gO2.getBody().getType() == Body.Type.CIRCLE)
+        boolean retval = false;
+        if (gO1.body.getType() == Body.Type.CIRCLE && gO2.body.getType() == Body.Type.CIRCLE)
         {
-            return collisionCircleCircle(gO1, gO2);
+            retval = collisionCircleCircle(gO1, gO2);
         }
-        else if (gO1.getBody().getType() == Body.Type.CIRCLE && gO2.getBody().getType() == Body.Type.RECTANGLE)
+        else if (gO1.body.getType() == Body.Type.CIRCLE && gO2.body.getType() == Body.Type.RECTANGLE)
         {
-            return collisionCircleRectangle(gO1, gO2);
+            retval = collisionCircleRectangle(gO1, gO2);
         }
-        else if (gO1.getBody().getType() == Body.Type.RECTANGLE && gO2.getBody().getType() == Body.Type.CIRCLE)
+        else if (gO1.body.getType() == Body.Type.RECTANGLE && gO2.body.getType() == Body.Type.CIRCLE)
         {
-            return collisionCircleRectangle(gO2, gO1);
+            retval = collisionCircleRectangle(gO2, gO1);
         }
-        else if (gO1.getBody().getType() == Body.Type.RECTANGLE && gO2.getBody().getType() == Body.Type.RECTANGLE)
+        else if (gO1.body.getType() == Body.Type.RECTANGLE && gO2.body.getType() == Body.Type.RECTANGLE)
         {
-            return collisionRectangleRectangle(gO1, gO2);
+            retval = collisionRectangleRectangle(gO1, gO2);
         }
-        return false;
+
+        return retval;
     }
 
     // http://ericleong.me/research/circle-circle/ Need this link for bullet bounce or similar.
     public static Point2D collisionResponseCircleCircle(GameObject collided, GameObject other)
     {
-        double collidedx = collided.getBody().getPosition().getX();
-        double otherx = other.getBody().getPosition().getX();
-        double collidedy = collided.getBody().getPosition().getY();
-        double othery = other.getBody().getPosition().getY();
+        double collidedx = collided.body.getPosition().getX();
+        double otherx = other.body.getPosition().getX();
+        double collidedy = collided.body.getPosition().getY();
+        double othery = other.body.getPosition().getY();
 
         Vector2 distanceBetweenObjects = new Vector2(collidedx - otherx, collidedy - othery);
         distanceBetweenObjects.setMagnitude(collided.body.getHeight() / 2 + other.body.getHeight() / 2);
@@ -65,14 +68,14 @@ public class CollisionHandler
 
     public static Point2D collisionResponseCircleRectangle(GameObject collided, GameObject other)
     {
-        double collidedx = collided.getBody().getPosition().getX();
-        double collidedy = collided.getBody().getPosition().getY();
-        double otherx = other.getBody().getPosition().getX();
-        double othery = other.getBody().getPosition().getY();
-        double collidedHeight = collided.getBody().getHeight();
-        double collidedWidth = collided.getBody().getWidth();
-        double otherHeight = other.getBody().getHeight();
-        double otherWidth = other.getBody().getWidth();
+        double collidedx = collided.body.getPosition().getX();
+        double collidedy = collided.body.getPosition().getY();
+        double otherx = other.body.getPosition().getX();
+        double othery = other.body.getPosition().getY();
+        double collidedHeight = collided.body.getHeight();
+        double collidedWidth = collided.body.getWidth();
+        double otherHeight = other.body.getHeight();
+        double otherWidth = other.body.getWidth();
         double collidedCenterX = collided.body.getCenter().getX();
         double collidedCenterY = collided.body.getCenter().getY();
         double otherCenterX = other.body.getCenter().getX();
@@ -129,57 +132,57 @@ public class CollisionHandler
 
     public static boolean collisionCircleCircle(GameObject c1, GameObject c2)
     {
-        double c1x = c1.getBody().getPosition().getX();
-        double c2x = c2.getBody().getPosition().getX();
-        double c1y = c1.getBody().getPosition().getY();
-        double c2y = c2.getBody().getPosition().getY();
+        double c1x = c1.body.getPosition().getX();
+        double c2x = c2.body.getPosition().getX();
+        double c1y = c1.body.getPosition().getY();
+        double c2y = c2.body.getPosition().getY();
 
         double dx = c1x - c2x;
         double dy = c1y - c2y;
-        double c1r = c1.getBody().getHeight() / 2;
-        double c2r = c2.getBody().getHeight() / 2;
+        double c1r = c1.body.getHeight() / 2;
+        double c2r = c2.body.getHeight() / 2;
 
         return Math.sqrt((dx * dx) + (dy * dy)) <= (c1r + c2r);
     }
 
     public static boolean collisionCircleRectangle(GameObject circle, GameObject r)
     {
-        double circleDistanceX = Math.abs(r.getBody().getCenter().getX() - circle.getBody().getCenter().getX());
-        double circleDistanceY = Math.abs(r.getBody().getCenter().getY() - circle.getBody().getCenter().getY());
+        double circleDistanceX = Math.abs(r.body.getCenter().getX() - circle.body.getCenter().getX());
+        double circleDistanceY = Math.abs(r.body.getCenter().getY() - circle.body.getCenter().getY());
 
-        if (circleDistanceY >= (r.getBody().getHeight() / 2 + circle.getBody().getHeight() / 2))
+        if (circleDistanceY >= (r.body.getHeight() / 2 + circle.body.getHeight() / 2))
         {
             return false;
         }
-        if (circleDistanceX >= (r.getBody().getWidth() / 2 + circle.getBody().getWidth() / 2))
+        if (circleDistanceX >= (r.body.getWidth() / 2 + circle.body.getWidth() / 2))
         {
             return false;
         }
-        if (circleDistanceY < (r.getBody().getHeight() / 2))
+        if (circleDistanceY < (r.body.getHeight() / 2))
         {
             return true;
         }
-        if (circleDistanceX < (r.getBody().getWidth() / 2))
+        if (circleDistanceX < (r.body.getWidth() / 2))
         {
             return true;
         }
-        double cornerDistanceSq = Math.sqrt(Math.pow((circleDistanceX - (r.getBody().getWidth() / 2)), 2)
-                + Math.pow((circleDistanceY - (r.getBody().getHeight()/ 2)), 2));
+        double cornerDistanceSq = Math
+                .sqrt(Math.pow((circleDistanceX - (r.body.getWidth() / 2)), 2) + Math.pow((circleDistanceY - (r.body.getHeight() / 2)), 2));
 
-        return (cornerDistanceSq < circle.getBody().getHeight() / 2);
+        return (cornerDistanceSq < circle.body.getHeight() / 2);
     }
 
     public static boolean collisionRectangleRectangle(GameObject r1, GameObject r2)
     {
 
-        double r1X = r1.getBody().getPosition().getX();
-        double r1Y = r1.getBody().getPosition().getY();
-        double r1H = r1.getBody().getWidth();
-        double r1L = r1.getBody().getHeight();
-        double r2X = r2.getBody().getPosition().getX();
-        double r2Y = r2.getBody().getPosition().getY();
-        double r2H = r2.getBody().getWidth();
-        double r2L = r2.getBody().getHeight();
+        double r1X = r1.body.getPosition().getX();
+        double r1Y = r1.body.getPosition().getY();
+        double r1H = r1.body.getWidth();
+        double r1L = r1.body.getHeight();
+        double r2X = r2.body.getPosition().getX();
+        double r2Y = r2.body.getPosition().getY();
+        double r2H = r2.body.getWidth();
+        double r2L = r2.body.getHeight();
 
         boolean xOverlap = valueInRange(r1X, r2X, r2X + r2L) || valueInRange(r2X, r1X, r1X + r1L);
         boolean yOverlap = valueInRange(r1Y, r2Y, r2Y + r2H) || valueInRange(r2Y, r1Y, r1Y + r1H);

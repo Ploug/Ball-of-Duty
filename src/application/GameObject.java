@@ -1,7 +1,8 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentMap;
 
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
@@ -10,7 +11,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-public class GameObject
+public class GameObject implements Observable
 {
 
     protected Body body;
@@ -20,6 +21,7 @@ public class GameObject
     protected Weapon weapon;
     private int id;
     private boolean destroyed;
+    private Set<Observer> observers;
 
     public GameObject(GameObjectDTO goDTO)
     {
@@ -38,6 +40,7 @@ public class GameObject
         }
         this.body = new Body(this, newPoint, 50, 50, bodyType);
         this.id = goDTO.getId();
+        observers = new HashSet<Observer>();
 
     }
 
@@ -46,14 +49,15 @@ public class GameObject
         this.id = go.getId();
         if (go.physics != null)
         {
-            this.physics = new Physics(this, go.getPhysics().getTopspeed());
-            this.physics.setVelocity(new Vector2(go.getPhysics().getVelocity().getX(), go.getPhysics().getVelocity().getY()));
+            this.physics = new Physics(this, go.physics.getTopspeed());
+            this.physics.setVelocity(new Vector2(go.physics.getVelocity().getX(), go.physics.getVelocity().getY()));
         }
         if (go.body != null)
         {
-            this.body = new Body(this, go.getBody().getPosition(), go.getBody().getHeight(), go.getBody().getWidth(),
-                    go.getBody().getType());
+            this.body = new Body(this, go.body.getPosition(), go.body.getHeight(), go.body.getWidth(),
+                    go.body.getType());
         }
+        observers = new HashSet<Observer>();
     }
 
     public GameObject(int id, Body.Type type)
@@ -61,11 +65,13 @@ public class GameObject
         this.id = id;
         Point2D newPoint = new Point2D(100, 100);
         this.body = new Body(this, newPoint, 50, 50, type);
+        observers = new HashSet<Observer>();
     }
 
     public GameObject(int id)
     {
         this.id = id;
+        observers = new HashSet<Observer>();
     }
 
     public int getId()
@@ -85,11 +91,11 @@ public class GameObject
         }
     }
 
-    public void update(GraphicsContext gc, HashMap<Integer, GameObject> objects, Image image)
+    public void updateWithCollision(GraphicsContext gc, ConcurrentMap<Integer, GameObject> objects, Image image)
     {
         if (physics != null)
         {
-            physics.update(objects);
+            physics.updateWithCollision(objects);
         }
         if (view != null)
         {
@@ -107,34 +113,14 @@ public class GameObject
         destroyed = true; // possibly send out callback to listeners (which would be map)
     }
 
-    public Body getBody()
+    public Weapon getWeapon()
     {
-        return body;
+        return weapon;
     }
 
-    public void setBody(Body body)
+    public void setWeapon(Weapon weapon)
     {
-        this.body = body;
-    }
-
-    public Physics getPhysics()
-    {
-        return physics;
-    }
-
-    public void setPhysics(Physics physics)
-    {
-        this.physics = physics;
-    }
-
-    public View getView()
-    {
-        return view;
-    }
-
-    public void setView(View view)
-    {
-        this.view = view;
+        this.weapon = weapon;
     }
 
     @Override
@@ -155,6 +141,40 @@ public class GameObject
         GameObject other = (GameObject) obj;
         if (id != other.id) return false;
         return true;
+    }
+
+    @Override
+    public void notifyObservers(Object arg)
+    {
+        for(Observer obs : observers)
+        {
+            obs.update(this, null);
+        }
+        
+    }
+
+    @Override
+    public void notifyObservers()
+    {
+        // TODO Auto-generated method stub
+        for(Observer obs : observers)
+        {
+            obs.update(this, null);
+        }
+    }
+
+    @Override
+    public void registerObserver(Observer obs)
+    {
+        observers.add(obs);
+        
+    }
+
+    @Override
+    public void unregisterObserver(Observer obs)
+    {
+        observers.remove(obs);
+        
     }
 
 }

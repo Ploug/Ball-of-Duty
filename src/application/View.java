@@ -21,8 +21,8 @@ public class View
     {
 //        System.out.println((int) gameObject.getBody().getPosition().getX()+" "+(int) gameObject.getBody().getPosition().getY()+"  "+
 //                gameObject.getBody().getLength()+"  "+ gameObject.getBody().getWidth());
-        gc.drawImage(image, (int) gameObject.getBody().getPosition().getX(), (int) gameObject.getBody().getPosition().getY(),
-                gameObject.getBody().getHeight(), gameObject.getBody().getWidth());
+        gc.drawImage(image, (int) gameObject.body.getPosition().getX(), (int) gameObject.body.getPosition().getY(),
+                gameObject.body.getHeight(), gameObject.body.getWidth());
         // debug info
 //        gc.setLineWidth(2);
 //        gc.setStroke(Color.BLACK);
@@ -32,18 +32,18 @@ public class View
         {
             /* DEBUG MODE */
             // Velocity vector drawn.
-            centerX = gameObject.getBody().getCenter().getX();
-            centerY = gameObject.getBody().getCenter().getY();
+            centerX = gameObject.body.getCenter().getX();
+            centerY = gameObject.body.getCenter().getY();
             gc.setLineWidth(3);
             gc.setStroke(Color.BLACK);
             gc.strokeLine(centerX, centerY,
-                    centerX + gameObject.getPhysics().getVelocity().getX(),
-                    centerY + gameObject.getPhysics().getVelocity().getY());
+                    centerX + gameObject.physics.getVelocity().getX(),
+                    centerY + gameObject.physics.getVelocity().getY());
 //            Draw orientation vector.
             gc.setStroke(Color.GREEN);
             gc.strokeLine(centerX, centerY,
-                    centerX + gameObject.getBody().getOrientation().getX(),
-                    centerY + gameObject.getBody().getOrientation().getY());
+                    centerX + gameObject.body.getOrientation().getX(),
+                    centerY + gameObject.body.getOrientation().getY());
         }
         
                 

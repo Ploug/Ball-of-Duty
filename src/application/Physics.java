@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class Physics
 {
@@ -42,7 +44,7 @@ public class Physics
 
     }
 
-    public void update(HashMap<Integer, GameObject> gameobjects)
+    public void updateWithCollision(ConcurrentMap<Integer, GameObject> gameobjects)
     {
         double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
         timer.reset();
@@ -52,7 +54,7 @@ public class Physics
         boolean collision = false;
         for (GameObject obj : gameobjects.values()) // Checks if it collides with anything. only O(n^3) on very very rare occasions.
         {
-            if (obj.getId() == temp.getId())
+            if (obj.getId() == temp.getId() || obj instanceof Bullet )
             {
                 continue;
             }
