@@ -1,4 +1,4 @@
-package application;
+package application.communication;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,8 +13,15 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Set;
 
+import application.engine.entities.Bullet;
+import application.engine.rendering.ClientMap;
 import javafx.geometry.Point2D;
 
+/**
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
+ * needs to communicate with the server.
+ * 
+ */
 public class Broker extends Observable
 {
 
@@ -22,16 +29,19 @@ public class Broker extends Observable
     private InetAddress ina;
     private DatagramSocket _socket;
     private Thread receiveThread;
+    private boolean isActive = false;
 
+    /**
+     * Creates a broker communication with a default server ip.
+     */
     public Broker()
     {
         try
         {
-            ina = InetAddress.getByName("127.0.0.1"); // halløj
+            ina = InetAddress.getByName("127.0.0.1"); // TODO dynamically change ip.
         }
         catch (UnknownHostException e1)
         {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
         try
@@ -48,6 +58,11 @@ public class Broker extends Observable
         }
     }
 
+    /**
+     * Activates the brokers listening loop.
+     * 
+     * @param map
+     */
     public void activate(ClientMap map)
     {
         this.map = map;
@@ -60,17 +75,38 @@ public class Broker extends Observable
         receiveThread.start();
     }
 
+    /**
+     * Returns the port the broker is listening on.
+     * 
+     * @return The port the broker is listening on.
+     */
     public int getPort()
     {
         return _socket.getLocalPort();
     }
 
+    /**
+     * Returns the map the broker is communicating with.
+     * 
+     * @return The map the broker is communicating with.
+     */
     public ClientMap getMap()
     {
         return map;
     }
 
-    public void sendPositionUpdate(Point2D position, int id, Set<Bullet> bullets) throws IOException
+    /**
+     * Sends a packet to the server with updated information from the clients game.
+     * 
+     * @param position
+     *            The position of the clients character.
+     * @param id
+     *            The id of the clients character.
+     * @param bullets
+     *            The currently active bullets shot by the clients characters weapon.
+     * @throws IOException
+     */
+    public void sendUpdate(Point2D position, int id, Set<Bullet> bullets)
     {
         try
         {
@@ -95,15 +131,19 @@ public class Broker extends Observable
         send(buffer.array());
     }
 
-    private boolean isActive = false;
-
+    /**
+     * Stops the brokers listening loop.
+     */
     public void stop()
     {
         receiveThread.interrupt();
         isActive = false;
     }
 
-    public void receive()
+    /**
+     * Starts listening for updates.
+     */
+    private void receive()
     {
         while (isActive)
         {
@@ -155,17 +195,15 @@ public class Broker extends Observable
         }
     }
 
+    /**
+     * Sends a data, as a byte array, to the server.
+     * 
+     * @param buf
+     *            The byte array to be sent.
+     */
     public void send(byte[] buf)
     {
-        DatagramPacket packet;
-        packet = new DatagramPacket(buf, buf.length, ina, 15001); // put this
-                                                                  // port
-                                                                  // somewhere
-                                                                  // else,
-                                                                  // possibly
-                                                                  // receive it
-                                                                  // from server
-                                                                  // on joingame
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, ina, 15001); // TODO dynamically port.
         try
         {
             _socket.send(packet);

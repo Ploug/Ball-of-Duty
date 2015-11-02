@@ -1,4 +1,4 @@
-package application;
+package application.communication;
 
 import java.rmi.RemoteException;
 import java.util.List;
@@ -9,9 +9,17 @@ import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
+import application.account.Player;
+import application.engine.rendering.ClientMap;
+import application.input.CharacterController;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * Communicates with the server via webservices and is the main facade for a game.
+ * @author Gruppe6
+ *
+ */
 public class GameClient
 {
 
@@ -19,13 +27,17 @@ public class GameClient
     public List<Player> enemyPlayers;
     public Player clientPlayer;
     public CharacterController characterController;
-    public Point2D sceneAbsoluteLocation;
+    public Point2D sceneRelativeLocation;
     IBoDService ibs;
 
-    public GameClient(Point2D windowAbsoluteLocation)
+    /**
+     * Creates a game client with the current relative location of the window. The relative location is based on how the scene's is located relative to the operating system.
+     * @param windowRelativeLocation The current relative location of the window. The relative location is based on how the scene's is located relative to the operating system,
+     */
+    public GameClient(Point2D windowRelativeLocation)
     {
 
-        this.sceneAbsoluteLocation = windowAbsoluteLocation;
+        this.sceneRelativeLocation = windowRelativeLocation;
         BoDServiceLocator server1 = new BoDServiceLocator();
 
         try
@@ -47,16 +59,24 @@ public class GameClient
 
     }
 
-    public void setSceneAbsoluteLocation(Point2D sceneAbsoluteLocation)
+    /**
+     * Sets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
+     * @param sceneRelativeLocation The scenes relative location. he relative location is based on how the scene's is located relative to the operating system.
+     */
+    public void setSceneRelativeLocation(Point2D sceneRelativeLocation)
     {
-        this.sceneAbsoluteLocation = sceneAbsoluteLocation;
+        this.sceneRelativeLocation = sceneRelativeLocation;
         if (characterController != null)
         {
-            characterController.setCanvasAbsoluteLocation(sceneAbsoluteLocation);
+            characterController.setCanvasRelativeLocation(sceneRelativeLocation);
         }
 
     }
 
+    /**
+     * Tries to join a game. The game graphics and UI is handled in a BorderPane called game box.
+     * @param gameBox The BorderPane where the game graphics and UI is handled.
+     */
     public void joinGame(BorderPane gameBox)
     {
         System.out.println("trying to join game");
@@ -74,11 +94,14 @@ public class GameClient
             e.printStackTrace();
         }
 
-        characterController = new CharacterController(clientPlayer.getCharacter(), gameBox, sceneAbsoluteLocation);
+        characterController = new CharacterController(clientPlayer.getCharacter(), gameBox, sceneRelativeLocation);
         cMap.activate();
 
     }
 
+    /**
+     * Tries to quit the current game.
+     */
     public void quitGame()
     {
         try
@@ -98,12 +121,20 @@ public class GameClient
         // cMap = null;
     }
 
+    /**
+     * Gets the current CharacterController controlling the client character.
+     * @return Returns the current CharacterController controlling the client character.
+     */
     public CharacterController getCharacterController()
     {
         return characterController;
 
     }
 
+    /**
+     * Sets the enemy players in the game.
+     * @param enemyPlayers The enemy players in the game.
+     */
     public void setEnemyPlayers(List<Player> enemyPlayers)
     {
         this.enemyPlayers = enemyPlayers;

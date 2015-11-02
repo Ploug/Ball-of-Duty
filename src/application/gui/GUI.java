@@ -1,5 +1,6 @@
-package application;
+package application.gui;
 
+import application.communication.GameClient;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -31,11 +32,18 @@ public class GUI extends Application
         launch(args);
     }
 
-    private Point2D getAbsoluteSceneLocation(Stage stage)
+    /**
+     * Gets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
+     * @param The stage of which scene to get the relative location.
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating system.
+     */
+    private Point2D getRelativeSceneLocation(Stage stage)
     {
         return new Point2D(stage.getX() + stage.getScene().getX(), stage.getY() + stage.getScene().getY());
     }
 
+   
+    @Override
     public void start(Stage theStage)
     {
         theStage.setTitle("Ball of Duty");
@@ -57,22 +65,22 @@ public class GUI extends Application
 
         theStage.setScene(startMenu);
 
-        gameManager = new GameClient(getAbsoluteSceneLocation(theStage));
+        gameManager = new GameClient(getRelativeSceneLocation(theStage));
         theStage.xProperty().addListener(e ->
         {
-            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
         });
         theStage.yProperty().addListener(e ->
         {
-            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
         });
         gameScene.xProperty().addListener(e ->
         {
-            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
         });
         gameScene.yProperty().addListener(e ->
         {
-            gameManager.setSceneAbsoluteLocation(getAbsoluteSceneLocation(theStage));
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
         });
         Image image = new Image("images/frontpage.png");
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);

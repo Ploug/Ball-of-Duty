@@ -1,5 +1,10 @@
-package application;
+package application.util;
 
+/**
+ * The timer handles timekeeping. 
+ * @author Frederik
+ *
+ */
 public class Timer
 {
     private double lastTime = 0;
@@ -8,7 +13,10 @@ public class Timer
     private boolean paused = false;
     private boolean activated = false;
 
-    void start()
+    /**
+     * Starts the timer.
+     */
+    public void start()
     {
         if (!paused && !activated)
         {
@@ -22,14 +30,15 @@ public class Timer
         }
     }
 
-    /**
-     * Sleep as long as inputted minus the time since this method was last called..
-     * 
-     * @param ms
-     */
+   
     private long lastCalled = 0;
-
-    void catchupSleep(long ms)
+    
+    /**
+     * Sleeps as long as inputted minus the time since this method was last called.
+     * 
+     * @param ms The minimum time that needs to have passed since this method was last called.
+     */
+    public void catchupSleep(long ms)
     {
         long sleepDuration = 0;
         if (lastCalled == 0)
@@ -64,12 +73,18 @@ public class Timer
 
     }
 
-    void stop()
+    /**
+     * Stops the timer.
+     */
+    public void stop()
     {
         activated = false;
     }
 
-    void pause()
+    /**
+     * Pauses the timer.
+     */
+    public void pause()
     {
         if (!paused)
         {
@@ -78,12 +93,19 @@ public class Timer
         }
     }
 
-    void reset()
+    /**
+     * Resets the timer.
+     */
+    public void reset()
     {
         lastTime = (System.nanoTime() / 10000);
     }
 
-    double getDuration()
+    /**
+     * Gets the duration since the timer was started or resetted. Calculated for any pauses there might have been.
+     * @return The duration since the timer was started or resetted. Calculated for any pauses there might have been.
+     */
+    public double getDuration()
     {
         if (!activated)
         {
