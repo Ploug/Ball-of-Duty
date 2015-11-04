@@ -1,4 +1,4 @@
-package application;
+package application.input;
 
 import java.util.HashMap;
 
@@ -36,6 +36,11 @@ public class KeyHandler
         keyMap.put(KeyCode.RIGHT, Action.MOVE_RIGHT);
     }
 
+    /**
+     * Gets the action based on a key code. For example KeyCode.W would result in action MOVE_UP.
+     * @param code The keycode of which an action should be connected with.
+     * @return The action the key was related to.
+     */
     public Action getAction(KeyCode code)
     {
         return keyMap.get(code);

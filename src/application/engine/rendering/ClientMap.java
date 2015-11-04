@@ -1,14 +1,22 @@
-package application;
+package application.engine.rendering;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO;
 
+import application.communication.Broker;
+import application.communication.ObjectPosition;
+import application.engine.entities.Bullet;
+import application.engine.factories.EntityFactory;
+import application.engine.game_object.Body;
+import application.engine.game_object.GameObject;
+import application.engine.game_object.Weapon;
+import application.util.Timer;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -16,6 +24,12 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 
+/**
+ * The map is where all the game objects are being handled.
+ * 
+ * @author Gruppe6
+ *
+ */
 public class ClientMap implements Observer
 {
 
@@ -25,20 +39,29 @@ public class ClientMap implements Observer
     private int mapWidth = 1200;
     private int mapHeight = 700;
     public ConcurrentMap<Integer, GameObject> gameObjects;
-    public HashMap<String, Image> images;
     public Timer timer;
     Label fpsLabel;
-    private BoDCharacter clientChar;
+    private GameObject clientChar;
     private Thread updateThread;
     private AnimationTimer animationTimer;
     private boolean mapActive = false;
 
-    public ClientMap(MapDTO serverMap, BorderPane gameBox, Broker broker, BoDCharacter clientChar)
+    /**
+     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate
+     * with the server with and the character that belongs to the client.
+     * 
+     * @param serverMap The server map which the ClientMap is based upon.
+     * @param gameBox The game box in whic the ClientMap is drawn.
+     * @param broker The broker the ClientMap uses to communicate with the server.
+     * @param clientChar The character of the client.
+     */
+    public ClientMap(MapDTO serverMap, BorderPane gameBox, Broker broker, GameObject clientChar)
     {
         this.clientChar = clientChar;
-        if (clientChar.weapon != null)
+        if (clientChar.getWeapon() != null)
         {
-            clientChar.weapon.registerObserver(this);
+            clientChar.getWeapon().addObserver(this);
+            System.out.println(clientChar.getWeapon().countObservers());
         }
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
@@ -50,44 +73,39 @@ public class ClientMap implements Observer
         timer = new Timer();
         timer.start();
 
-        for (GameObjectDTO sgo : serverMap.getGameObjects())
+        for (GameObjectDTO dto : serverMap.getGameObjects())
         {
 
-            if (sgo.getBody().get_type() == sgo.getBody().getCIRCLE())
+            if (dto.getBody().get_type() == dto.getBody().getCIRCLE())
             {
-                if (sgo.getId() != clientChar.getId())
+                if (dto.getId() != clientChar.getId())
                 {
-                    BoDCharacter character = new BoDCharacter(sgo);
-                    gameObjects.put(sgo.getId(), character);
+                    GameObject enemy = EntityFactory.getEntity(dto, EntityFactory.EntityType.ENEMY_CHARACTER);
+                    gameObjects.put(dto.getId(), enemy);
 
                 }
             }
-            else if (sgo.getBody().get_type() == sgo.getBody().getRECTANGLE())
+            else if (dto.getBody().get_type() == dto.getBody().getRECTANGLE())
             {
-                Wall wall = new Wall(sgo);
-                gameObjects.put(sgo.getId(), wall);
+                GameObject wall = EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL);
+                gameObjects.put(dto.getId(), wall);
             }
 
-            System.out.println("id of object received: " + sgo.getId() + " my id = " + clientChar.getId());
+            System.out.println("id of object received: " + dto.getId() + " my id = " + clientChar.getId());
 
         }
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         gameBox.setLeft(fpsLabel);
-        this.canvas = (Canvas) gameBox.getCenter();
+        this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
-        images = new HashMap<>();
-        images.put("map_field", new Image("images/map_field.png"));
-        images.put("ball_red", new Image("images/ball_red.png"));
-        images.put("ball_blue", new Image("images/ball_blue.png"));
-        images.put("wall_box", new Image("images/wall_box.png"));
     }
 
-    public int getPort()
-    {
-        return broker.getPort();
-    }
+    
 
+    /**
+     * Activates the game loop.
+     */
     public void activate()
     {
         Image mapImage = new Image("images/map_field.png");
@@ -102,23 +120,12 @@ public class ClientMap implements Observer
                 {
                     if (go != clientChar)
                     {
-                        if (go instanceof Wall)
-                        {
-                            go.update(gc, images.get("wall_box")); // Skal gøres når view bliver created, ikke her.
-                        }
-                        else if (go instanceof BoDCharacter)
-                        {
-                            go.update(gc, images.get("ball_red"));
-                        }
-                        else if (go instanceof Bullet)
-                        {
-                            go.update(gc, images.get("ball_red"));
-                        }
+                        go.update(gc);
 
                     }
                 }
 
-                clientChar.updateWithCollision(gc, gameObjects, images.get("ball_blue"));
+                clientChar.updateWithCollision(gc, gameObjects);
 
                 if (timer.getDuration() > 1000)
                 {
@@ -139,13 +146,16 @@ public class ClientMap implements Observer
         {
             while (mapActive)
             {
-                sendPositionUpdate();
+                sendUpdate();
 
             }
         });
         updateThread.start();
     }
 
+    /**
+     * Deactivates the game loop.
+     */
     public void deactivate()
     {
         mapActive = false;
@@ -154,6 +164,10 @@ public class ClientMap implements Observer
         broker.stop();
     }
 
+    /**
+     * Updates the position of game objects received from the server.
+     * @param positions The position of the game objects.
+     */
     public void updatePositions(List<ObjectPosition> positions)
     {
 
@@ -162,14 +176,14 @@ public class ClientMap implements Observer
             boolean isInGame = false;
             for (GameObject go : gameObjects.values())
             {
-                if (go.body.getType() == Body.Type.RECTANGLE)
+                if (go.getBody().getType() == Body.Geometry.RECTANGLE)
                 {
                     continue;
                 }
                 isInGame = false;
                 for (ObjectPosition pos : positions)
                 {
-                    if (go.getId() == pos.getId()||go instanceof Bullet)
+                    if (go.getId() == pos.Id || go instanceof Bullet)
                     {
                         isInGame = true;
                         break;
@@ -189,7 +203,7 @@ public class ClientMap implements Observer
         }
         for (ObjectPosition pos : positions)
         {
-            GameObject go = gameObjects.get(pos.getId());
+            GameObject go = gameObjects.get(pos.Id);
 
             if (go != null)
             {
@@ -201,58 +215,29 @@ public class ClientMap implements Observer
                 // System.out.println("its null");
             }
 
-            if (pos.getId() != clientChar.getId())
+            if (pos.Id != clientChar.getId())
             {
                 if (go == null)
                 {
-                    go = new BoDCharacter(pos.getId()); // We need to talk how
-                                                        // to handle different
-                                                        // objects over network.
+                    go = EntityFactory.getDefaultEntity(pos.Id, EntityFactory.EntityType.ENEMY_CHARACTER); // TODO nees to be done TCP,
+                                                                                                                // this is bad.
                     gameObjects.put(go.getId(), go);
                 }
 
-                go.body.setPosition(pos.getPosition());
+                go.getBody().setPosition(pos.Position);
             }
         }
 
     }
 
-    public void sendPositionUpdate()
+    /**
+     * Sends an update to the server which data such as the clients character position and active bullets.
+     */
+    
+    public void sendUpdate()
     {
-        try
-        {
-            broker.sendPositionUpdate(clientChar.body.getPosition(), clientChar.getId(), clientChar.weapon.getActiveBullets());
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
 
-    @Override
-    public void update(Observable observable, Object args)
-    {
-        if (observable instanceof Weapon) // Spawned a bullet.
-        {
-            if (args instanceof Bullet)
-            {
-
-                Bullet bullet = (Bullet) args;
-                bullet.registerObserver(this);
-                gameObjects.put(bullet.getId(), bullet);
-
-            }
-
-            // Shooting occured
-        }
-        else if (observable instanceof Bullet)
-        {
-
-            Bullet bullet = (Bullet) observable;
-            gameObjects.remove(bullet.getId());
-
-        }
+        broker.sendUpdate(clientChar.getBody().getPosition(), clientChar.getId(), clientChar.getWeapon().getActiveBullets());
 
     }
 
@@ -264,6 +249,32 @@ public class ClientMap implements Observer
         result = prime * result + mapHeight;
         result = prime * result + mapWidth;
         return result;
+    }
+
+    @Override
+    public void update(Observable o, Object arg)
+    {
+        if (o instanceof Weapon) // Spawned a bullet.
+        {
+            if (arg instanceof Bullet)
+            {
+
+                Bullet bullet = (Bullet)arg;
+                bullet.addObserver(this);
+                gameObjects.put(bullet.getId(), bullet);
+
+            }
+
+            // Shooting occured
+        }
+        else if (o instanceof Bullet)
+        {
+
+            Bullet bullet = (Bullet)o;
+            gameObjects.remove(bullet.getId());
+
+        }
+
     }
 
 }
