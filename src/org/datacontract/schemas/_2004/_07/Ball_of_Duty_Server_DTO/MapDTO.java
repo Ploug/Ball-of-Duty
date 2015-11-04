@@ -8,6 +8,8 @@
 package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
 public class MapDTO  implements java.io.Serializable {
+    private java.lang.Integer characterId;
+
     private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO[] gameObjects;
 
     private java.lang.String IPAddress;
@@ -16,10 +18,32 @@ public class MapDTO  implements java.io.Serializable {
     }
 
     public MapDTO(
+           java.lang.Integer characterId,
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO[] gameObjects,
            java.lang.String IPAddress) {
+           this.characterId = characterId;
            this.gameObjects = gameObjects;
            this.IPAddress = IPAddress;
+    }
+
+
+    /**
+     * Gets the characterId value for this MapDTO.
+     * 
+     * @return characterId
+     */
+    public java.lang.Integer getCharacterId() {
+        return characterId;
+    }
+
+
+    /**
+     * Sets the characterId value for this MapDTO.
+     * 
+     * @param characterId
+     */
+    public void setCharacterId(java.lang.Integer characterId) {
+        this.characterId = characterId;
     }
 
 
@@ -74,6 +98,9 @@ public class MapDTO  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
+            ((this.characterId==null && other.getCharacterId()==null) || 
+             (this.characterId!=null &&
+              this.characterId.equals(other.getCharacterId()))) &&
             ((this.gameObjects==null && other.getGameObjects()==null) || 
              (this.gameObjects!=null &&
               java.util.Arrays.equals(this.gameObjects, other.getGameObjects()))) &&
@@ -91,6 +118,9 @@ public class MapDTO  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
+        if (getCharacterId() != null) {
+            _hashCode += getCharacterId().hashCode();
+        }
         if (getGameObjects() != null) {
             for (int i=0;
                  i<java.lang.reflect.Array.getLength(getGameObjects());
@@ -116,6 +146,13 @@ public class MapDTO  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "MapDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("characterId");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "CharacterId"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("gameObjects");
         elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjects"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjectDTO"));

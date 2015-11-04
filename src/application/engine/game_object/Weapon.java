@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 
 /**
  * The weapon takes care of spawning bullets.
+ * 
  * @author Gruppe6
  *
  */
@@ -30,6 +31,8 @@ public class Weapon extends Observable implements Observer
     private Set<Bullet> activeBullets;
     Timer timer;
     private static Map<Type, Image> bulletImages;
+    private boolean waitingToShoot = false;
+
     static
     {
         bulletImages = new HashMap<>();
@@ -38,10 +41,13 @@ public class Weapon extends Observable implements Observer
 
     /**
      * Creates a weapon for the game object.
-     * @param gameObject The game object this weapon belongs to.
+     * 
+     * @param gameObject
+     *            The game object this weapon belongs to.
      * @param firerate
      *            How many bullets the weapon shoots per second.
-     * @param magazineSize The size of the magazine. Example: Value of 30 would result in a need to reload every time 30 bullets was spawned.
+     * @param magazineSize
+     *            The size of the magazine. Example: Value of 30 would result in a need to reload every time 30 bullets was spawned.
      * @param damage
      *            Damage per bullet.
      */
@@ -63,16 +69,17 @@ public class Weapon extends Observable implements Observer
      */
     public void startShooting()
     {
-
-        if(timer.getDuration()<(1000 / firerate))
+        if (timer.getDuration() < (1000 / firerate))
         {
             return;
         }
+
         timer.reset();
-        
+
         shooting = true;
         new Thread(() ->
         {
+
             while (shooting)
             {
 
@@ -81,18 +88,17 @@ public class Weapon extends Observable implements Observer
                         gameObject.getBody().getCenter().getY() + orientation.getY());
                 Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                 velocity.setMagnitude(300); // bullet speed magic number atm
-               
-                Bullet bullet = new Bullet(bulletsCreated++, position, 10, 10, velocity, damage, Bullet.Type.RIFLE,bulletImages.get(Bullet.Type.RIFLE));
+
+                Bullet bullet = new Bullet(bulletsCreated++, position, 10, 10, velocity, damage, Bullet.Type.RIFLE,
+                        bulletImages.get(Bullet.Type.RIFLE));
                 setChanged();
                 notifyObservers(bullet); // Det her skal ske med noget server shit.
-                System.out.println(this.countObservers());
                 activeBullets.add(bullet);
                 bullet.addObserver(this);
-               
-                
+
                 try
                 {
-                    Thread.sleep((long) (1000 / firerate));
+                    Thread.sleep((long)(1000 / firerate));
                 }
                 catch (Exception e)
                 {
@@ -112,8 +118,10 @@ public class Weapon extends Observable implements Observer
     {
         shooting = false;
     }
+
     /**
      * The current active bullets of the weapon. I.e the bullets that are still in the air that this weapon has created.
+     * 
      * @return Returns the active bullets this weapon has created.
      */
     public Set<Bullet> getActiveBullets()
@@ -121,9 +129,6 @@ public class Weapon extends Observable implements Observer
         return activeBullets;
     }
 
-
-    
-   
     @Override
     public String toString()
     {
@@ -134,10 +139,10 @@ public class Weapon extends Observable implements Observer
     @Override
     public void update(Observable observable, Object args)
     {
-        if(observable instanceof Bullet)
+        if (observable instanceof Bullet)
         {
             activeBullets.remove(observable);
         }
-        
+
     }
 }

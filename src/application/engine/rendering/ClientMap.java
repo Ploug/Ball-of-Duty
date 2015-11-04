@@ -76,7 +76,7 @@ public class ClientMap implements Observer
         for (GameObjectDTO dto : serverMap.getGameObjects())
         {
 
-            if (dto.getBody().get_type() == dto.getBody().getCIRCLE())
+            if (dto.getBody().getType() == Body.Geometry.CIRCLE.ordinal())
             {
                 if (dto.getId() != clientChar.getId())
                 {
@@ -85,7 +85,7 @@ public class ClientMap implements Observer
 
                 }
             }
-            else if (dto.getBody().get_type() == dto.getBody().getRECTANGLE())
+            else if (dto.getBody().getType() == Body.Geometry.RECTANGLE.ordinal())
             {
                 GameObject wall = EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL);
                 gameObjects.put(dto.getId(), wall);

@@ -73,7 +73,9 @@ public class Physics
 
     /**
      * Updates the position of the object based on physics calculation and the collision with other objects.
-     * @param gameobjects The objects which need to be checked for collision.
+     * 
+     * @param gameobjects
+     *            The objects which need to be checked for collision.
      */
     public void updateWithCollision(ConcurrentMap<Integer, GameObject> gameobjects)
     {
@@ -90,18 +92,21 @@ public class Physics
 
         temp.getBody().increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
         boolean collision = false;
+
         for (GameObject obj : gameobjects.values()) // Checks if it collides with anything. only O(n^3) on very very rare occasions.
         {
             if (obj.getId() == temp.getId() || obj instanceof Bullet)
             {
                 continue;
             }
+
             if (CollisionHandler.isColliding(temp, obj))
             {
+
                 temp.getBody().setPosition(CollisionHandler.collisionResponse(temp, obj)); // Gives new position so it doesnt collide
                 for (GameObject obj2 : gameobjects.values()) // Checks if it collides with anything.
                 {
-                    if (obj2.getId() == temp.getId() || obj2.getId() == obj.getId())
+                    if (obj2.getId() == temp.getId() || obj2.getId() == obj.getId() || obj2 instanceof Bullet)
                     {
                         continue;
                     }
@@ -109,7 +114,7 @@ public class Physics
                     {
                         for (GameObject obj3 : gameobjects.values())
                         {
-                            if (obj3.getId() == temp.getId() || obj3.getId() == obj.getId() || obj3.getId() == obj2.getId())
+                            if (obj3.getId() == temp.getId() || obj3.getId() == obj.getId() || obj3.getId() == obj2.getId()|| obj3 instanceof Bullet)
                             {
                                 continue;
                             }
@@ -156,7 +161,9 @@ public class Physics
 
     /**
      * Adds a method that needs to be called back every update.
-     * @param cb The method to be called back.
+     * 
+     * @param cb
+     *            The method to be called back.
      */
     public void addMethod(CallBack cb)
     {
@@ -165,6 +172,7 @@ public class Physics
 
     /**
      * Returns the velocity of the game object as a vector.
+     * 
      * @return The velocity of the object as a vector.
      */
     public Vector2 getVelocity()
@@ -174,7 +182,9 @@ public class Physics
 
     /**
      * Sets the velocity of the game object as a vector.
-     * @param velocity The velocity of the game object as a vector.
+     * 
+     * @param velocity
+     *            The velocity of the game object as a vector.
      */
     public void setVelocity(Vector2 velocity)
     {
@@ -192,8 +202,10 @@ public class Physics
     }
 
     /**
-     * Sets the top speed of the game object.  i.e 400 would be 400 units per second, where units is pixels on the default display.
-     * @param amount The top speed of the game object, i.e 400 would be 400 units per second, where units is pixels on the default display.
+     * Sets the top speed of the game object. i.e 400 would be 400 units per second, where units is pixels on the default display.
+     * 
+     * @param amount
+     *            The top speed of the game object, i.e 400 would be 400 units per second, where units is pixels on the default display.
      */
     public void setTopSpeed(int amount)
     {
@@ -201,8 +213,11 @@ public class Physics
     }
 
     /**
-     * Adds a direction to the game objects velocity, this direction will be averaged in with all the other directions requested on the velocity.
-     * @param direction The direction to be added.
+     * Adds a direction to the game objects velocity, this direction will be averaged in with all the other directions requested on the
+     * velocity.
+     * 
+     * @param direction
+     *            The direction to be added.
      */
     public void addDirection(Vector2 direction)
     {
@@ -216,7 +231,9 @@ public class Physics
 
     /**
      * Removes a direction from the game objects velocity, a direction can only be removed if it was added beforehand.
-     * @param direction The direction to be removed.
+     * 
+     * @param direction
+     *            The direction to be removed.
      */
     public void removeDirection(Vector2 direction)
     {
@@ -225,8 +242,6 @@ public class Physics
 
         updateVelocity();
     }
-
-   
 
     @Override
     public String toString()
@@ -257,6 +272,7 @@ public class Physics
 
     /**
      * Gets the top speed of the game object.
+     * 
      * @return The top speed of the game object.
      */
     public double getTopspeed()
