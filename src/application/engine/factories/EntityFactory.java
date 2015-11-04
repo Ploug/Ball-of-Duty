@@ -53,14 +53,14 @@ public class EntityFactory
     {
 
         BodyDTO body = dto.getBody();
-        Point2D position = new Point2D(body.get_point().getX(), body.get_point().getY());
+        Point2D position = new Point2D(body.getPosition().getX(), body.getPosition().getY());
         switch (type)
         {
             case WALL:
-                GameObject wall = new Wall(dto.getId(), position, body.get_width(), body.get_height(), defaultImages.get(EntityType.WALL));
+                GameObject wall = new Wall(dto.getId(), position, body.getWidth(), body.getHeight(), defaultImages.get(EntityType.WALL));
                 return wall;
             case ENEMY_CHARACTER:
-                GameObject enemy = new BoDCharacter(dto.getId(), position, body.get_width(), body.get_height(), 0,
+                GameObject enemy = new BoDCharacter(dto.getId(), position, body.getWidth(), body.getHeight(), 0,
                         defaultImages.get(EntityType.ENEMY_CHARACTER));
                 // TODO get velocity from server so we can update the enemies position while inbetween
                 // position updates and if enemy has special cosmetics it's passed through here.

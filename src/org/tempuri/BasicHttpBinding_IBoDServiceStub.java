@@ -25,6 +25,10 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("NewGuest");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "nickname"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO"));
         oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "NewGuestResult"));
@@ -198,7 +202,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         }
     }
 
-    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO newGuest() throws java.rmi.RemoteException {
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO newGuest(java.lang.String nickname) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -214,7 +218,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {nickname});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

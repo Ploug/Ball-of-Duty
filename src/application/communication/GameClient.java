@@ -43,7 +43,7 @@ public class GameClient
         try
         {
             ibs = server1.getBasicHttpBinding_IBoDService();
-            clientPlayer = new Player(ibs.newGuest());
+            clientPlayer = new Player(ibs.newGuest("Guest"));//TODO Ask for nickname
 
         }
         catch (ServiceException e)
@@ -80,12 +80,13 @@ public class GameClient
     public void joinGame(BorderPane gameBox)
     {
         System.out.println("trying to join game");
-        clientPlayer.createNewCharacter();
         try
         {
             Broker broker = new Broker();
             MapDTO map = ibs.joinGame(clientPlayer.getId(), broker.getPort());
+            clientPlayer.createNewCharacter(map.getCharacterId());
             cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());
+            
 
         }
         catch (RemoteException e)

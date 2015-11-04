@@ -8,154 +8,106 @@
 package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
 public class BodyDTO  implements java.io.Serializable {
-    private int CIRCLE;
+    private int height;
 
-    private int RECTANGLE;
+    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO position;
 
-    private int _height;
+    private int type;
 
-    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO _point;
-
-    private int _type;
-
-    private int _width;
+    private int width;
 
     public BodyDTO() {
     }
 
     public BodyDTO(
-           int CIRCLE,
-           int RECTANGLE,
-           int _height,
-           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO _point,
-           int _type,
-           int _width) {
-           this.CIRCLE = CIRCLE;
-           this.RECTANGLE = RECTANGLE;
-           this._height = _height;
-           this._point = _point;
-           this._type = _type;
-           this._width = _width;
+           int height,
+           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO position,
+           int type,
+           int width) {
+           this.height = height;
+           this.position = position;
+           this.type = type;
+           this.width = width;
     }
 
 
     /**
-     * Gets the CIRCLE value for this BodyDTO.
+     * Gets the height value for this BodyDTO.
      * 
-     * @return CIRCLE
+     * @return height
      */
-    public int getCIRCLE() {
-        return CIRCLE;
+    public int getHeight() {
+        return height;
     }
 
 
     /**
-     * Sets the CIRCLE value for this BodyDTO.
+     * Sets the height value for this BodyDTO.
      * 
-     * @param CIRCLE
+     * @param height
      */
-    public void setCIRCLE(int CIRCLE) {
-        this.CIRCLE = CIRCLE;
+    public void setHeight(int height) {
+        this.height = height;
     }
 
 
     /**
-     * Gets the RECTANGLE value for this BodyDTO.
+     * Gets the position value for this BodyDTO.
      * 
-     * @return RECTANGLE
+     * @return position
      */
-    public int getRECTANGLE() {
-        return RECTANGLE;
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO getPosition() {
+        return position;
     }
 
 
     /**
-     * Sets the RECTANGLE value for this BodyDTO.
+     * Sets the position value for this BodyDTO.
      * 
-     * @param RECTANGLE
+     * @param position
      */
-    public void setRECTANGLE(int RECTANGLE) {
-        this.RECTANGLE = RECTANGLE;
+    public void setPosition(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO position) {
+        this.position = position;
     }
 
 
     /**
-     * Gets the _height value for this BodyDTO.
+     * Gets the type value for this BodyDTO.
      * 
-     * @return _height
+     * @return type
      */
-    public int get_height() {
-        return _height;
+    public int getType() {
+        return type;
     }
 
 
     /**
-     * Sets the _height value for this BodyDTO.
+     * Sets the type value for this BodyDTO.
      * 
-     * @param _height
+     * @param type
      */
-    public void set_height(int _height) {
-        this._height = _height;
+    public void setType(int type) {
+        this.type = type;
     }
 
 
     /**
-     * Gets the _point value for this BodyDTO.
+     * Gets the width value for this BodyDTO.
      * 
-     * @return _point
+     * @return width
      */
-    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO get_point() {
-        return _point;
+    public int getWidth() {
+        return width;
     }
 
 
     /**
-     * Sets the _point value for this BodyDTO.
+     * Sets the width value for this BodyDTO.
      * 
-     * @param _point
+     * @param width
      */
-    public void set_point(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO _point) {
-        this._point = _point;
-    }
-
-
-    /**
-     * Gets the _type value for this BodyDTO.
-     * 
-     * @return _type
-     */
-    public int get_type() {
-        return _type;
-    }
-
-
-    /**
-     * Sets the _type value for this BodyDTO.
-     * 
-     * @param _type
-     */
-    public void set_type(int _type) {
-        this._type = _type;
-    }
-
-
-    /**
-     * Gets the _width value for this BodyDTO.
-     * 
-     * @return _width
-     */
-    public int get_width() {
-        return _width;
-    }
-
-
-    /**
-     * Sets the _width value for this BodyDTO.
-     * 
-     * @param _width
-     */
-    public void set_width(int _width) {
-        this._width = _width;
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -170,14 +122,12 @@ public class BodyDTO  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            this.CIRCLE == other.getCIRCLE() &&
-            this.RECTANGLE == other.getRECTANGLE() &&
-            this._height == other.get_height() &&
-            ((this._point==null && other.get_point()==null) || 
-             (this._point!=null &&
-              this._point.equals(other.get_point()))) &&
-            this._type == other.get_type() &&
-            this._width == other.get_width();
+            this.height == other.getHeight() &&
+            ((this.position==null && other.getPosition()==null) || 
+             (this.position!=null &&
+              this.position.equals(other.getPosition()))) &&
+            this.type == other.getType() &&
+            this.width == other.getWidth();
         __equalsCalc = null;
         return _equals;
     }
@@ -189,14 +139,12 @@ public class BodyDTO  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        _hashCode += getCIRCLE();
-        _hashCode += getRECTANGLE();
-        _hashCode += get_height();
-        if (get_point() != null) {
-            _hashCode += get_point().hashCode();
+        _hashCode += getHeight();
+        if (getPosition() != null) {
+            _hashCode += getPosition().hashCode();
         }
-        _hashCode += get_type();
-        _hashCode += get_width();
+        _hashCode += getType();
+        _hashCode += getWidth();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -208,38 +156,26 @@ public class BodyDTO  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "BodyDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("CIRCLE");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "CIRCLE"));
+        elemField.setFieldName("height");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Height"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("RECTANGLE");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "RECTANGLE"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_height");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "_height"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_point");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "_point"));
+        elemField.setFieldName("position");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Position"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PointDTO"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_type");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "_type"));
+        elemField.setFieldName("type");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Type"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("_width");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "_width"));
+        elemField.setFieldName("width");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Width"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

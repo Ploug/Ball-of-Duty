@@ -1,5 +1,6 @@
 package application.engine.game_object.physics;
 
+import application.engine.entities.Bullet;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.util.Vector2;
@@ -24,7 +25,10 @@ public class CollisionHandler
      */
     public static Point2D collisionResponse(GameObject collided, GameObject other)
     {
-
+        if(collided instanceof Bullet || other instanceof Bullet)
+        {
+            System.out.println("ITS A BULLET");
+        }
         if (collided.getBody().getType() == Body.Geometry.CIRCLE && other.getBody().getType() == Body.Geometry.CIRCLE)
         {
             return collisionResponseCircleCircle(collided, other);

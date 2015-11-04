@@ -44,10 +44,10 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     return iBoDService;
   }
   
-  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO newGuest() throws java.rmi.RemoteException{
+  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO newGuest(java.lang.String nickname) throws java.rmi.RemoteException{
     if (iBoDService == null)
       _initIBoDServiceProxy();
-    return iBoDService.newGuest();
+    return iBoDService.newGuest(nickname);
   }
   
   public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientPort) throws java.rmi.RemoteException{

@@ -41,9 +41,9 @@ public class Player
     /**
      * Creates a new character for the player to control.
      */
-    public void createNewCharacter()
+    public void createNewCharacter(int id)
     {
-        this.character = new BoDCharacter(this.id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), 50, 50,
+        this.character = new BoDCharacter(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), 50, 50,
                 400, new Image("images/ball_blue.png")); // TODO image would be dynamic if player has different cosmetics
     }
 
