@@ -50,7 +50,7 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     return iBoDService.newGuest(nickname);
   }
   
-  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.MapDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientPort) throws java.rmi.RemoteException{
+  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientPort) throws java.rmi.RemoteException{
     if (iBoDService == null)
       _initIBoDServiceProxy();
     return iBoDService.joinGame(clientPlayerId, clientPort);
@@ -60,6 +60,12 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     if (iBoDService == null)
       _initIBoDServiceProxy();
     iBoDService.quitGame(clientPlayerId);
+  }
+  
+  public java.lang.Integer requestBulletCreation(java.lang.Double x, java.lang.Double y, java.lang.Double radius, java.lang.Double damage, java.lang.Integer ownerId, java.lang.Integer gameId) throws java.rmi.RemoteException{
+    if (iBoDService == null)
+      _initIBoDServiceProxy();
+    return iBoDService.requestBulletCreation(x, y, radius, damage, ownerId, gameId);
   }
   
   

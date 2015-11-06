@@ -4,8 +4,8 @@ import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Health;
 import application.engine.game_object.View;
-import application.engine.game_object.Weapon;
 import application.engine.game_object.physics.Physics;
+import application.engine.game_object.weapon.Weapon;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
@@ -42,7 +42,7 @@ public class BoDCharacter extends GameObject
         this.body = new Body(this, position, width, height, TYPE);
         this.physics = new Physics(this, speed);
         this.view = new View(this, image);
-        this.weapon = new Weapon(this, 5, 20, 10); // Default weapon would be created per spec
+        this.weapon = new Weapon(this, 5, 20, 9); // Default weapon would be created per spec
         this.health = new Health(100); // Default health should be created perspec.
 
     }

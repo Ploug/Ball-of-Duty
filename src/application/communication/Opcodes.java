@@ -6,10 +6,10 @@ package application.communication;
  * @author Gruppe 6
  *
  */
-public enum Opcodes
+public enum Opcodes 
 {
 
-    BROADCAST_POSITION_UPDATE(1), POSITION_UPDATE(2);
+    BROADCAST_POSITION_UPDATE(1), POSITION_UPDATE(2), REQUEST_BULLET(3); 
 
     private int _code;
 

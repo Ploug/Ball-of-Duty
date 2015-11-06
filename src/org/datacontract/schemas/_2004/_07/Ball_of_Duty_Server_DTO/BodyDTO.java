@@ -8,22 +8,22 @@
 package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
 public class BodyDTO  implements java.io.Serializable {
-    private int height;
+    private double height;
 
     private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO position;
 
     private int type;
 
-    private int width;
+    private double width;
 
     public BodyDTO() {
     }
 
     public BodyDTO(
-           int height,
+           double height,
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PointDTO position,
            int type,
-           int width) {
+           double width) {
            this.height = height;
            this.position = position;
            this.type = type;
@@ -36,7 +36,7 @@ public class BodyDTO  implements java.io.Serializable {
      * 
      * @return height
      */
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
@@ -46,7 +46,7 @@ public class BodyDTO  implements java.io.Serializable {
      * 
      * @param height
      */
-    public void setHeight(int height) {
+    public void setHeight(double height) {
         this.height = height;
     }
 
@@ -96,7 +96,7 @@ public class BodyDTO  implements java.io.Serializable {
      * 
      * @return width
      */
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
@@ -106,7 +106,7 @@ public class BodyDTO  implements java.io.Serializable {
      * 
      * @param width
      */
-    public void setWidth(int width) {
+    public void setWidth(double width) {
         this.width = width;
     }
 
@@ -139,12 +139,12 @@ public class BodyDTO  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        _hashCode += getHeight();
+        _hashCode += new Double(getHeight()).hashCode();
         if (getPosition() != null) {
             _hashCode += getPosition().hashCode();
         }
         _hashCode += getType();
-        _hashCode += getWidth();
+        _hashCode += new Double(getWidth()).hashCode();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -158,7 +158,7 @@ public class BodyDTO  implements java.io.Serializable {
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("height");
         elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Height"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
@@ -176,7 +176,7 @@ public class BodyDTO  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("width");
         elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Width"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

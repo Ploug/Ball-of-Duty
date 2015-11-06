@@ -28,6 +28,7 @@ public class Bullet extends GameObject
     private Timer timer;
     private int lifeTime;
     public static final Body.Geometry BODYTYPE = Body.Geometry.CIRCLE;
+    private int ownerId;
     
    
 
@@ -47,16 +48,17 @@ public class Bullet extends GameObject
      * @param damage
      *            The amount of health reduced on another object if this bullet collides with the object.
      */
-    public Bullet(int id, Point2D position, double height, double width, Vector2 velocity, double damage, Type type, Image image)
+    public Bullet(int id, Point2D position, double radius, Vector2 velocity, double damage, Type type, Image image, int ownerId)
     {
         super(id);
+        this.ownerId = ownerId;
         this.type = type;
         this.damage = damage;
-        this.setBody(new Body(this, position, height, width, BODYTYPE));
+        this.setBody(new Body(this, position, radius, radius, BODYTYPE));
         this.setPhysics(new Physics(this, velocity.getMagnitude()));
         getPhysics().setVelocity(velocity);
         this.view = new View(this, image);
-        lifeTime = 5;
+        lifeTime = 1;
         new Thread(() ->
         {
             timer = new Timer();
@@ -88,6 +90,11 @@ public class Bullet extends GameObject
     public double getDamage()
     {
         return damage;
+    }
+    
+    public int getOwnerId()
+    {
+        return ownerId;
     }
 
     /**
