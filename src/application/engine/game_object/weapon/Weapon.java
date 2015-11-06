@@ -1,14 +1,14 @@
-package application.engine.game_object;
+package application.engine.game_object.weapon;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 import application.engine.entities.Bullet;
 import application.engine.entities.Bullet.Type;
+import application.engine.game_object.GameObject;
 import application.util.Timer;
 import application.util.Vector2;
 import javafx.geometry.Point2D;
@@ -20,7 +20,7 @@ import javafx.scene.image.Image;
  * @author Gruppe6
  *
  */
-public class Weapon extends Observable implements Observer
+public class Weapon extends Observable 
 {
 
     private double firerate;
@@ -28,10 +28,9 @@ public class Weapon extends Observable implements Observer
     private GameObject gameObject;
     private double damage;
     private boolean shooting = false;
-    private Set<Bullet> activeBullets;
+    private Set<GameObject> activeBullets;
     Timer timer;
     private static Map<Type, Image> bulletImages;
-    private boolean waitingToShoot = false;
 
     static
     {
@@ -53,7 +52,7 @@ public class Weapon extends Observable implements Observer
      */
     public Weapon(GameObject gameObject, double firerate, int magazineSize, double damage)
     {
-        activeBullets = new HashSet<Bullet>();
+        activeBullets = new HashSet<>();
         timer = new Timer();
         timer.start();
         this.gameObject = gameObject;
@@ -69,14 +68,14 @@ public class Weapon extends Observable implements Observer
      */
     public void startShooting()
     {
-        if (timer.getDuration() < (1000 / firerate))
+        if (timer.getDuration() < (1000 / firerate)||shooting)
         {
             return;
         }
 
-        timer.reset();
 
         shooting = true;
+        timer.reset();
         new Thread(() ->
         {
 
@@ -89,12 +88,12 @@ public class Weapon extends Observable implements Observer
                 Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                 velocity.setMagnitude(300); // bullet speed magic number atm
 
-                Bullet bullet = new Bullet(bulletsCreated++, position, 10, 10, velocity, damage, Bullet.Type.RIFLE,
-                        bulletImages.get(Bullet.Type.RIFLE));
-                setChanged();
-                notifyObservers(bullet); // Det her skal ske med noget server shit.
+                Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE,
+                        bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
+
                 activeBullets.add(bullet);
-                bullet.addObserver(this);
+                setChanged();
+                notifyObservers(bullet);
 
                 try
                 {
@@ -102,7 +101,6 @@ public class Weapon extends Observable implements Observer
                 }
                 catch (Exception e)
                 {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
@@ -111,6 +109,10 @@ public class Weapon extends Observable implements Observer
 
     }
 
+    public Set<GameObject> getActiveBullets()
+    {
+        return activeBullets;
+    }
     /**
      * The weapon stops shooting bullets.
      */
@@ -124,25 +126,14 @@ public class Weapon extends Observable implements Observer
      * 
      * @return Returns the active bullets this weapon has created.
      */
-    public Set<Bullet> getActiveBullets()
-    {
-        return activeBullets;
-    }
+   
 
     @Override
     public String toString()
     {
-        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s, activeBullets=%s]", firerate, magazineSize,
-                gameObject, damage, shooting, activeBullets);
+        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", firerate, magazineSize,
+                gameObject, damage, shooting);
     }
 
-    @Override
-    public void update(Observable observable, Object args)
-    {
-        if (observable instanceof Bullet)
-        {
-            activeBullets.remove(observable);
-        }
-
-    }
+    
 }

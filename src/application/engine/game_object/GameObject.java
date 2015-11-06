@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.concurrent.ConcurrentMap;
 
 import application.engine.game_object.physics.Physics;
+import application.engine.game_object.weapon.Weapon;
 import application.util.Vector2;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -227,6 +228,14 @@ public class GameObject extends Observable
     }
 
 
+    /**
+     * Sets the id for the game object.
+     * @param id The id for the game object.
+     */
+    public void setId(int id)
+    {
+        this.id = id;
+    }
 
     @Override
     public String toString()
