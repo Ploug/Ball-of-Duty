@@ -4,8 +4,8 @@ import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Health;
 import application.engine.game_object.View;
+import application.engine.game_object.Weapon;
 import application.engine.game_object.physics.Physics;
-import application.engine.game_object.weapon.Weapon;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 

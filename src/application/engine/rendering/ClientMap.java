@@ -5,18 +5,19 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 
 import application.communication.Broker;
-import application.communication.ObjectPosition;
+import application.communication.GameObjectDAO;
 import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
-import application.engine.game_object.weapon.Weapon;
+import application.engine.game_object.Weapon;
 import application.util.Timer;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Point2D;
@@ -48,6 +49,7 @@ public class ClientMap implements Observer
     private AnimationTimer animationTimer;
     private boolean mapActive = false;
     private int serverGameId;
+    private ConcurrentLinkedQueue<GameObject> unassignedBullets;
 
     /**
      * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
@@ -64,6 +66,7 @@ public class ClientMap implements Observer
      */
     public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, GameObject clientChar)
     {
+        this.unassignedBullets = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
         this.clientChar = clientChar;
         if (clientChar.getWeapon() != null)
@@ -99,13 +102,12 @@ public class ClientMap implements Observer
                 gameObjects.put(dto.getId(), wall);
             }
 
-            System.out.println("id of object received: " + dto.getId() + " my id = " + clientChar.getId());
 
         }
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         gameBox.setLeft(fpsLabel);
-        this.canvas = (Canvas) gameBox.getCenter();
+        this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
     }
 
@@ -176,7 +178,7 @@ public class ClientMap implements Observer
      * @param positions
      *            The position of the game objects.
      */
-    public void updatePositions(List<ObjectPosition> positions)
+    public void updatePositions(List<GameObjectDAO> positions)
     {
 
         if (positions.size() < gameObjects.values().size())
@@ -189,9 +191,9 @@ public class ClientMap implements Observer
                     continue;
                 }
                 isInGame = false;
-                for (ObjectPosition pos : positions)
+                for (GameObjectDAO pos : positions)
                 {
-                    if (go.getId() == pos.Id || go instanceof Bullet)
+                    if (go.getId() == pos.objectId || go instanceof Bullet)
                     {
                         isInGame = true;
                         break;
@@ -209,9 +211,9 @@ public class ClientMap implements Observer
 
             }
         }
-        for (ObjectPosition pos : positions)
+        for (GameObjectDAO pos : positions)
         {
-            GameObject go = gameObjects.get(pos.Id);
+            GameObject go = gameObjects.get(pos.objectId);
 
             if (go != null)
             {
@@ -223,16 +225,18 @@ public class ClientMap implements Observer
                 // System.out.println("its null");
             }
 
-            if (pos.Id != clientChar.getId())
+            if (pos.objectId != clientChar.getId())
             {
                 if (go == null)
                 {
-                    go = EntityFactory.getDefaultEntity(pos.Id, EntityFactory.EntityType.ENEMY_CHARACTER); // TODO nees to be done TCP,
-                                                                                                           // this is bad.
-                    gameObjects.put(go.getId(), go);
+                    continue;
+                    // go = EntityFactory.getDefaultEntity(pos.objectId, EntityFactory.EntityType.ENEMY_CHARACTER); // TODO nees to be done
+                    // // TCP,
+                    // // this is bad.
+                    // gameObjects.put(go.getId(), go);
                 }
 
-                go.getBody().setPosition(pos.Position);
+                go.getBody().setPosition(new Point2D(pos.x, pos.y));
             }
         }
 
@@ -244,9 +248,19 @@ public class ClientMap implements Observer
      * @param data
      *            Data about the new object.
      */
-    public void addGameObject(ObjectPosition data)
+    public void addGameObject(GameObjectDAO data) 
     {
 
+        if(data.entityType != null)
+        {
+            if (data.ownerId == clientChar.getId()) 
+            {
+                gameObjects.put(data.objectId, unassignedBullets.poll());
+                return;
+            }
+            
+            gameObjects.put(data.objectId, EntityFactory.getEntity(data, data.entityType));
+        }
     }
 
     /**
@@ -266,18 +280,15 @@ public class ClientMap implements Observer
 
     public void sendUpdate()
     {
-        List<ObjectPosition> posList = new ArrayList<>();
+        List<GameObjectDAO> posList = new ArrayList<>();
         double x = clientChar.getBody().getPosition().getX();
         double y = clientChar.getBody().getPosition().getY();
-        ObjectPosition pos = new ObjectPosition(clientChar.getId(), new Point2D(x, y));
-        posList.add(pos);
-        for (GameObject gameObject : clientChar.getWeapon().getActiveBullets())
-        {
-            x = gameObject.getBody().getPosition().getX();
-            y = gameObject.getBody().getPosition().getY();
-            pos = new ObjectPosition(gameObject.getId(), new Point2D(x, y));
-            posList.add(pos);
-        }
+        GameObjectDAO cData = new GameObjectDAO();
+        cData.objectId = clientChar.getId();
+        cData.x = x;
+        cData.y = y;
+
+        posList.add(cData);
         broker.sendUpdate(posList);
 
     }
@@ -297,17 +308,24 @@ public class ClientMap implements Observer
     {
         if (o instanceof Weapon) // Spawned a bullet.
         {
-            Bullet bullet = (Bullet) arg;
-            gameObjects.put(bullet.getId(), bullet);
-            double x = bullet.getBody().getPosition().getX();
-            double y = bullet.getBody().getPosition().getY();
-            double radius = bullet.getBody().getHeight();
-            bullet.setId(broker.requestBulletCreation(x, y, radius, bullet.getDamage(), bullet.getOwnerId(), serverGameId));
+            Bullet bullet = (Bullet)arg;
+            unassignedBullets.add(bullet);
+            GameObjectDAO data = new GameObjectDAO();
+            data.x = bullet.getBody().getPosition().getX();
+            data.y = bullet.getBody().getPosition().getY();
+            data.height = bullet.getBody().getHeight();
+            data.velocityX = bullet.getPhysics().getVelocity().getX();
+            data.velocityY = bullet.getPhysics().getVelocity().getY();
+            data.bulletType = bullet.getType();
+            data.damage = bullet.getDamage();
+            data.ownerId = bullet.getOwnerId();
+            data.entityType = EntityFactory.EntityType.BULLET;
+            broker.requestBulletCreation(data);
         }
         else if (o instanceof Bullet)
         {
 
-            Bullet bullet = (Bullet) o;
+            Bullet bullet = (Bullet)o;
             gameObjects.remove(bullet.getId());
             clientChar.getWeapon().getActiveBullets().remove(bullet.getId());
             // TODO Server should handle if a bullet have been active for too long, not client.

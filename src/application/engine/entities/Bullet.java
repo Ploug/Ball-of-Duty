@@ -1,5 +1,9 @@
 package application.engine.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import application.communication.Opcodes;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.View;
@@ -20,7 +24,29 @@ public class Bullet extends GameObject
 
     public enum Type
     {
-        RIFLE, PISTOL
+        RIFLE, PISTOL;
+
+        private static Map<Integer, Type> values = new HashMap<>();
+
+        static
+        {
+
+            values.put(PISTOL.ordinal(), PISTOL);
+            values.put(RIFLE.ordinal(), RIFLE);
+        }
+
+       
+        /**
+         * Returns a bullet type based on an int.
+         * @param x The integer the bullet type is based on.
+         * @return A bullet type based on an int.
+         */
+        public static Type fromInteger(int x) 
+        {
+
+            return values.get(x);
+        }
+
     }
 
     private final Type type;
@@ -29,8 +55,6 @@ public class Bullet extends GameObject
     private int lifeTime;
     public static final Body.Geometry BODYTYPE = Body.Geometry.CIRCLE;
     private int ownerId;
-    
-   
 
     /**
      * Creates a bullet with a body, physics, view and damage.
@@ -91,7 +115,7 @@ public class Bullet extends GameObject
     {
         return damage;
     }
-    
+
     public int getOwnerId()
     {
         return ownerId;
@@ -99,6 +123,7 @@ public class Bullet extends GameObject
 
     /**
      * Gets the type of bullet.
+     * 
      * @return The type of bullet.
      */
     public Type getType()

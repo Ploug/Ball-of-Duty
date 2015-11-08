@@ -4,7 +4,6 @@ import java.util.Observable;
 import java.util.concurrent.ConcurrentMap;
 
 import application.engine.game_object.physics.Physics;
-import application.engine.game_object.weapon.Weapon;
 import application.util.Vector2;
 import javafx.scene.canvas.GraphicsContext;
 
