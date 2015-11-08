@@ -92,7 +92,7 @@ public class GameClient
         System.out.println("trying to join game");
         try
         {
-            Broker broker = new Broker(ibs);
+            Broker broker = new Broker();
             GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getPort());
             clientPlayer.createNewCharacter(map.getCharacterId());
             cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());

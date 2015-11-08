@@ -1,11 +1,14 @@
-package application.engine.game_object.weapon;
+package application.engine.game_object;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import application.communication.GameObjectDAO;
 import application.engine.entities.Bullet;
 import application.engine.entities.Bullet.Type;
 import application.engine.game_object.GameObject;
@@ -20,7 +23,7 @@ import javafx.scene.image.Image;
  * @author Gruppe6
  *
  */
-public class Weapon extends Observable 
+public class Weapon extends Observable
 {
 
     private double firerate;
@@ -52,7 +55,7 @@ public class Weapon extends Observable
      */
     public Weapon(GameObject gameObject, double firerate, int magazineSize, double damage)
     {
-        activeBullets = new HashSet<>();
+        activeBullets = Collections.newSetFromMap(new ConcurrentHashMap<GameObject, Boolean>());
         timer = new Timer();
         timer.start();
         this.gameObject = gameObject;
@@ -68,11 +71,10 @@ public class Weapon extends Observable
      */
     public void startShooting()
     {
-        if (timer.getDuration() < (1000 / firerate)||shooting)
+        if (timer.getDuration() < (1000 / firerate) || shooting)
         {
             return;
         }
-
 
         shooting = true;
         timer.reset();
@@ -88,8 +90,8 @@ public class Weapon extends Observable
                 Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                 velocity.setMagnitude(300); // bullet speed magic number atm
 
-                Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE,
-                        bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
+                Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE, bulletImages.get(Bullet.Type.RIFLE),
+                        gameObject.getId());
 
                 activeBullets.add(bullet);
                 setChanged();
@@ -113,6 +115,7 @@ public class Weapon extends Observable
     {
         return activeBullets;
     }
+
     /**
      * The weapon stops shooting bullets.
      */
@@ -121,19 +124,22 @@ public class Weapon extends Observable
         shooting = false;
     }
 
+
+    public static Map getBulletImages()
+    {
+        return bulletImages;
+    }
     /**
      * The current active bullets of the weapon. I.e the bullets that are still in the air that this weapon has created.
      * 
      * @return Returns the active bullets this weapon has created.
      */
-   
 
     @Override
     public String toString()
     {
-        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", firerate, magazineSize,
-                gameObject, damage, shooting);
+        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", firerate, magazineSize, gameObject,
+                damage, shooting);
     }
 
-    
 }

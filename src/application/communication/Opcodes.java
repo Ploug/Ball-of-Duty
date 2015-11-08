@@ -1,26 +1,49 @@
 package application.communication;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Handles operation codes for communication between client and server.
  * 
  * @author Gruppe 6
  *
  */
-public enum Opcodes 
+public enum Opcodes
 {
 
-    BROADCAST_POSITION_UPDATE(1), POSITION_UPDATE(2), REQUEST_BULLET(3); 
+    BROADCAST_POSITION_UPDATE(1), POSITION_UPDATE(2), REQUEST_BULLET(3), NEW_PLAYER(4), DISCONNECTED_PLAYER(5);
 
-    private int _code;
+    private int value;
+
+    private static Map<Integer, Opcodes> values = new HashMap<>();
+
+    static
+    {
+
+        values.put(1, BROADCAST_POSITION_UPDATE);
+        values.put(2, POSITION_UPDATE);
+        values.put(3, REQUEST_BULLET);
+        values.put(4, NEW_PLAYER);
+        values.put(5, DISCONNECTED_PLAYER);
+    }
 
     /**
      * For constructing a enum with specific value.
      * 
-     * @param code
+     * @param value
      */
-    private Opcodes(int code)
+    private Opcodes(int value)
     {
-        this._code = code;
+        this.value = value;
+    }
+
+    public static Opcodes fromInteger(int x) // Better for performance
+    {
+
+        return values.get(x);
     }
 
     /**
@@ -28,9 +51,9 @@ public enum Opcodes
      * 
      * @return The int value of an enum.
      */
-    public int getCode()
+    public int getValue()
     {
-        return _code;
+        return value;
     }
 
 }
