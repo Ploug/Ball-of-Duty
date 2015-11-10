@@ -139,13 +139,17 @@ public class Broker
         buffer.put((byte)1); // ASCII Standard for Start of heading
         buffer.put((byte)Opcodes.POSITION_UPDATE.getValue());
         buffer.put((byte)2); // ASCII Standard for Start of text
-        for (GameObjectDAO pos : posList)
+        for (int i = 0; i < posList.size(); ++i)
         {
-            buffer.putInt(pos.objectId);
-            buffer.putDouble(pos.x);
-            buffer.putDouble(pos.y);
-            buffer.put((byte)31); // Unit
+            GameObjectDAO data = posList.get(i);
+            buffer.putInt(data.objectId);
+            buffer.putDouble(data.x);
+            buffer.putDouble(data.y);
 
+            if (i < posList.size() - 1)
+            {
+                buffer.put((byte)31);
+            }
         }
         buffer.put((byte)4); // ASCII Standard for End of transmission
 
@@ -193,10 +197,8 @@ public class Broker
                     buffer.get(); // start of text
 
                     List<GameObjectDAO> positions = new ArrayList<>();
-                    int count = 0;
                     do
                     {
-                        count++;
                         int id = buffer.getInt();
                         double x = buffer.getDouble();
                         double y = buffer.getDouble();
@@ -204,7 +206,6 @@ public class Broker
                         objectPos.objectId = id;
                         objectPos.x = x;
                         objectPos.y = y;
-
                         positions.add(objectPos);
                     }
                     while (buffer.get() == 31); // unit separator
@@ -278,7 +279,7 @@ public class Broker
         buffer.putDouble(data.velocityX);
         buffer.putDouble(data.velocityY);
         buffer.putInt(data.bulletType.ordinal());
-        buffer.putDouble(data.damage);
+        buffer.putInt(data.damage);
         buffer.putInt(data.ownerId);
         buffer.putInt(data.entityType.ordinal());
 
@@ -406,7 +407,7 @@ public class Broker
         data.velocityX = input.getDouble();
         data.velocityY = input.getDouble();
         data.bulletType = Bullet.Type.fromInteger(input.getInt());
-        data.damage = input.getDouble();
+        data.damage = input.getInt();
         data.ownerId = input.getInt();
         data.objectId = input.getInt();
         data.entityType = EntityFactory.EntityType.fromInteger(input.getInt());
