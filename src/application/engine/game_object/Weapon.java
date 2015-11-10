@@ -29,7 +29,7 @@ public class Weapon extends Observable
     private double firerate;
     private int magazineSize;
     private GameObject gameObject;
-    private double damage;
+    private int damage;
     private boolean shooting = false;
     private Set<GameObject> activeBullets;
     Timer timer;
@@ -53,7 +53,7 @@ public class Weapon extends Observable
      * @param damage
      *            Damage per bullet.
      */
-    public Weapon(GameObject gameObject, double firerate, int magazineSize, double damage)
+    public Weapon(GameObject gameObject, double firerate, int magazineSize, int damage)
     {
         activeBullets = Collections.newSetFromMap(new ConcurrentHashMap<GameObject, Boolean>());
         timer = new Timer();

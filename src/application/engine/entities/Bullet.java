@@ -35,13 +35,14 @@ public class Bullet extends GameObject
             values.put(RIFLE.ordinal(), RIFLE);
         }
 
-       
         /**
          * Returns a bullet type based on an int.
-         * @param x The integer the bullet type is based on.
+         * 
+         * @param x
+         *            The integer the bullet type is based on.
          * @return A bullet type based on an int.
          */
-        public static Type fromInteger(int x) 
+        public static Type fromInteger(int x)
         {
 
             return values.get(x);
@@ -50,7 +51,7 @@ public class Bullet extends GameObject
     }
 
     private final Type type;
-    double damage;
+    private int damage;
     private Timer timer;
     private int lifeTime;
     public static final Body.Geometry BODYTYPE = Body.Geometry.CIRCLE;
@@ -72,7 +73,7 @@ public class Bullet extends GameObject
      * @param damage
      *            The amount of health reduced on another object if this bullet collides with the object.
      */
-    public Bullet(int id, Point2D position, double radius, Vector2 velocity, double damage, Type type, Image image, int ownerId)
+    public Bullet(int id, Point2D position, double radius, Vector2 velocity, int damage, Type type, Image image, int ownerId)
     {
         super(id);
         this.ownerId = ownerId;
@@ -111,7 +112,7 @@ public class Bullet extends GameObject
      * 
      * @return
      */
-    public double getDamage()
+    public int getDamage()
     {
         return damage;
     }

@@ -13,7 +13,7 @@ public class GameObjectDAO
     public double velocityY;
     public Bullet.Type bulletType;
     public EntityFactory.EntityType entityType;
-    public double damage;
+    public int damage;
     public int ownerId;
     public int objectId;
     

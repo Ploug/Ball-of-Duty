@@ -287,7 +287,6 @@ public class ClientMap implements Observer
         cData.objectId = clientChar.getId();
         cData.x = x;
         cData.y = y;
-
         posList.add(cData);
         broker.sendUpdate(posList);
 
