@@ -1,6 +1,7 @@
 package application.engine.rendering;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -13,6 +14,7 @@ import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 
 import application.communication.Broker;
 import application.communication.GameObjectDAO;
+import application.engine.entities.BoDCharacter;
 import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
 import application.engine.game_object.Body;
@@ -240,6 +242,29 @@ public class ClientMap implements Observer
             }
         }
 
+    }
+    
+    /**
+     * For every GameObject go in gameObjects, checks if
+     * go.iD() matches a key in the scoreMap. If it does,
+     * and the go is an instance of BoDCharacter, then it 
+     * calls the addScore method of the BoDCharacter and
+     * gives the value associated with the matching key
+     * as the score.
+     * @param scoreMap
+     */
+    public void updateScores(HashMap<Integer, Double> scoreMap)
+    {
+            for (Integer id : scoreMap.keySet())
+            {
+                GameObject go = gameObjects.get(id);
+                if (go != null)
+                {
+                    BoDCharacter bodCharacter = (BoDCharacter)go;
+                    double score = scoreMap.get(id);
+                    bodCharacter.addScore(score);
+                }
+            }
     }
 
     /**

@@ -20,6 +20,7 @@ public class BoDCharacter extends GameObject
 
     public static final Body.Geometry TYPE = Body.Geometry.CIRCLE;
 
+    private double _score = 0;
   
 
     /**
@@ -44,7 +45,26 @@ public class BoDCharacter extends GameObject
         this.view = new View(this, image);
         this.weapon = new Weapon(this, 5, 20, 9); // Default weapon would be created per spec
         this.health = new Health(100); // Default health should be created perspec.
+    }
+    
+    public double getScore()
+    {
+        return _score;
+    }
 
+
+    public void setScore(double score)
+    {
+        this._score = score;
+    }
+    
+    /**
+     * Adds the given double (score) to the current score (this.score).
+     * @param score
+     **/
+    public void addScore(double score)
+    {
+        this._score += score;
     }
 
 }

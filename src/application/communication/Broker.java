@@ -13,7 +13,9 @@ import java.nio.ByteOrder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.tempuri.IBoDService;
 
@@ -192,26 +194,28 @@ public class Broker
                     {
                         return;
                     }
-                    byte opcode = buffer.get();
+                    byte value = buffer.get();
+                    Opcodes opcode = Opcodes.fromInteger(value);
 
                     buffer.get(); // start of text
 
-                    List<GameObjectDAO> positions = new ArrayList<>();
-                    do
+                    switch (opcode)
                     {
-                        int id = buffer.getInt();
-                        double x = buffer.getDouble();
-                        double y = buffer.getDouble();
-                        GameObjectDAO objectPos = new GameObjectDAO();
-                        objectPos.objectId = id;
-                        objectPos.x = x;
-                        objectPos.y = y;
-                        positions.add(objectPos);
+                        case BROADCAST_POSITION_UPDATE:
+                        {
+                            readPositionUpdate(buffer);
+                        }
+                        case BROADCAST_SCORE_UPDATE:
+                        {
+                            readScoreUpdate(buffer);
+                        }
+                        case BROADCAST_HEALTH_UPDATE:
+                        {
+                            readHealthUpdate(buffer);
+                        }
+                        default:
+                            break;
                     }
-                    while (buffer.get() == 31); // unit separator
-
-                    map.updatePositions(positions);
-
                 }
                 catch (IOException e)
                 {
@@ -221,9 +225,50 @@ public class Broker
             }
         }).start();
     }
+    
+    public void readScoreUpdate(ByteBuffer buffer)
+    {
+        HashMap<Integer, Double> scoreMap = new HashMap();
+        
+        do
+        {
+            int ID = buffer.getInt();
+            double score = buffer.getDouble();
+
+            scoreMap.put(ID, score);
+        }
+        while (buffer.get() == 31); // unit separator
+        
+        map.updateScores(scoreMap);
+    }
+    
+    public void readHealthUpdate(ByteBuffer buffer)
+    {
+        
+    }
+    
+    public void readPositionUpdate(ByteBuffer buffer)
+    {
+        List<GameObjectDAO> positions = new ArrayList<>();
+
+        do
+        {
+            int id = buffer.getInt();
+            double x = buffer.getDouble();
+            double y = buffer.getDouble();
+            GameObjectDAO objectPos = new GameObjectDAO();
+            objectPos.objectId = id;
+            objectPos.x = x;
+            objectPos.y = y;
+            positions.add(objectPos);
+        }
+        while (buffer.get() == 31); // unit separator
+
+        map.updatePositions(positions);
+    }
 
     /**
-     * Sends a data with Udp, as a byte array, to the server.
+     * Sends a data with UDP, as a byte array, to the server.
      * 
      * @param buf
      *            The byte array to be sent.
