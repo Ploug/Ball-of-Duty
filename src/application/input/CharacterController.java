@@ -1,6 +1,8 @@
 package application.input;
 
 import java.awt.MouseInfo;
+import java.util.Observable;
+import java.util.Observer;
 
 import application.engine.entities.BoDCharacter;
 import application.util.Vector2;
@@ -12,7 +14,7 @@ import javafx.scene.layout.BorderPane;
  * @author gruppe6
  *
  */
-public class CharacterController
+public class CharacterController implements Observer
 {
     private BoDCharacter character;
     private static final Vector2 UP_VECTOR = new Vector2(0, -1);
@@ -36,10 +38,15 @@ public class CharacterController
         this.canvasRelativeLocation = windowRelativeLocation.add(gameBox.getCenter().getLayoutX(), gameBox.getCenter().getLayoutY());
 
         character = inputChar;
+        character.addObserver(this);
         keyHandler = new KeyHandler();
 
         gameBox.setOnKeyPressed(actionEvent ->
         {
+            if (character == null)
+            {
+                return;
+            }
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
 
             if (action == KeyHandler.Action.MOVE_UP)
@@ -60,13 +67,16 @@ public class CharacterController
             }
             else if (action == KeyHandler.Action.BLINK)
             {
-                System.out.println(getMousePoint());
                 character.getBody().setCenter(getMousePoint());
             }
 
         });
         gameBox.setOnKeyReleased(actionEvent ->
         {
+            if (character == null)
+            {
+                return;
+            }
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
 
             if (action == KeyHandler.Action.MOVE_UP)
@@ -89,6 +99,10 @@ public class CharacterController
         
         gameBox.setOnMousePressed(actionEvent ->
         {
+            if (character == null)
+            {
+                return;
+            }
             if(actionEvent.getButton() == MouseButton.PRIMARY)
             {
                character.getWeapon().startShooting();
@@ -97,16 +111,24 @@ public class CharacterController
         });
         gameBox.setOnMouseReleased(actionEvent ->
         {
+            if (character == null)
+            {
+                return;
+            }
             if(actionEvent.getButton() == MouseButton.PRIMARY)
             {
                character.getWeapon().stopShooting();
             }
             
         });
-
+        
         character.getPhysics().addMethod(() ->
         {
 
+            if (character == null)
+            {
+                return;
+            }
             Point2D position = character.getBody().getCenter();
             double deltaX = getMousePoint().getX() - position.getX();
             double deltaY = getMousePoint().getY() - position.getY();
@@ -133,5 +155,11 @@ public class CharacterController
     {
 
         this.canvasRelativeLocation = canvasRelativeLocation;
+    }
+
+    @Override
+    public void update(Observable arg0, Object arg1)
+    {
+        character = null;
     }
 }

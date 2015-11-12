@@ -115,7 +115,13 @@ public class GameObject extends Observable
      */
     public void destroy()
     {
-        destroyed = true; //TODO should notify observers that its destroyed
+        if(destroyed)
+        {
+            return;
+        }
+        destroyed = true; 
+        setChanged();
+        notifyObservers();
     }
 
     /**
