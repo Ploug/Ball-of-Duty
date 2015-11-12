@@ -9,6 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 
@@ -28,6 +31,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 /**
  * The map is where all the game objects are being handled.
@@ -45,8 +49,9 @@ public class ClientMap implements Observer
     private int mapHeight = 700;
     public ConcurrentMap<Integer, GameObject> gameObjects;
     public Timer timer;
-    Label fpsLabel;
-    private GameObject clientChar;
+    private Label fpsLabel, scoreLabel;
+    private VBox labelBox;
+    private BoDCharacter clientChar;
     private Thread updateThread;
     private AnimationTimer animationTimer;
     private boolean mapActive = false;
@@ -66,19 +71,19 @@ public class ClientMap implements Observer
      * @param clientChar
      *            The character of the client.
      */
-    public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, GameObject clientChar)
+    public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, BoDCharacter clientChar)
     {
         this.unassignedBullets = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
         this.clientChar = clientChar;
+        this.clientChar.addObserver(this);
         if (clientChar.getWeapon() != null)
         {
             clientChar.getWeapon().addObserver(this);
-            System.out.println(clientChar.getWeapon().countObservers());
         }
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
-        gameObjects.put(clientChar.getId(), clientChar);
+        addGameObject(clientChar);
 
         this.broker = broker;
         broker.activate(this);
@@ -93,22 +98,30 @@ public class ClientMap implements Observer
             {
                 if (dto.getId() != clientChar.getId())
                 {
-                    GameObject enemy = EntityFactory.getEntity(dto, EntityFactory.EntityType.ENEMY_CHARACTER);
-                    gameObjects.put(dto.getId(), enemy);
+                    addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.ENEMY_CHARACTER));
 
                 }
             }
             else if (dto.getBody().getType() == Body.Geometry.RECTANGLE.ordinal())
             {
-                GameObject wall = EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL);
-                gameObjects.put(dto.getId(), wall);
+                addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL));
             }
-
 
         }
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
-        gameBox.setLeft(fpsLabel);
+        fpsLabel.setText("fps: ");
+        scoreLabel = new Label();
+        scoreLabel.setPrefSize(70, 20);
+        scoreLabel.setText("Score: ");
+
+        labelBox = new VBox();
+        labelBox.setSpacing(1);
+        gameBox.setLeft(labelBox);
+
+        labelBox.getChildren().add(fpsLabel);
+        labelBox.getChildren().add(scoreLabel);
+
         this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
     }
@@ -134,12 +147,15 @@ public class ClientMap implements Observer
 
                     }
                 }
-
-                clientChar.updateWithCollision(gc, gameObjects);
-
-                if (timer.getDuration() > 1000)
+                if (!clientChar.isDestroyed())
                 {
-                    fpsLabel.setText("fps: " + frames);
+                    clientChar.updateWithCollision(gc, gameObjects);
+                }
+
+                if (timer.getDuration() > 250)
+                {
+                    fpsLabel.setText("fps: " + frames*4);// every 0.25 second, time by 4 to get frame per second.
+                    scoreLabel.setText("Score: "+(int)clientChar.getScore());
                     timer.reset();
                     frames = 0;
                 }
@@ -206,7 +222,7 @@ public class ClientMap implements Observer
                 {
                     if (go.getId() != clientChar.getId())
                     {
-                        gameObjects.remove(go.getId());
+                        destroyGameObject(go.getId());
                     }
                     break;
                 }
@@ -243,28 +259,26 @@ public class ClientMap implements Observer
         }
 
     }
-    
+
     /**
-     * For every GameObject go in gameObjects, checks if
-     * go.iD() matches a key in the scoreMap. If it does,
-     * and the go is an instance of BoDCharacter, then it 
-     * calls the addScore method of the BoDCharacter and
-     * gives the value associated with the matching key
-     * as the score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
+     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
+     * score.
+     * 
      * @param scoreMap
      */
     public void updateScores(HashMap<Integer, Double> scoreMap)
     {
-            for (Integer id : scoreMap.keySet())
+        for (Integer id : scoreMap.keySet())
+        {
+            GameObject go = gameObjects.get(id);
+            if (go != null)
             {
-                GameObject go = gameObjects.get(id);
-                if (go != null)
-                {
-                    BoDCharacter bodCharacter = (BoDCharacter)go;
-                    double score = scoreMap.get(id);
-                    bodCharacter.addScore(score);
-                }
+                BoDCharacter bodCharacter = (BoDCharacter)go;
+                double score = scoreMap.get(id);
+                bodCharacter.setScore(score);
             }
+        }
     }
 
     /**
@@ -273,30 +287,38 @@ public class ClientMap implements Observer
      * @param data
      *            Data about the new object.
      */
-    public void addGameObject(GameObjectDAO data) 
+    public void addGameObject(GameObjectDAO data)
     {
 
-        if(data.entityType != null)
+        if (data.entityType != null)
         {
-            if (data.ownerId == clientChar.getId()) 
+            if (data.ownerId == clientChar.getId())
             {
-                gameObjects.put(data.objectId, unassignedBullets.poll());
+                addGameObject(unassignedBullets.poll());
                 return;
             }
-            
-            gameObjects.put(data.objectId, EntityFactory.getEntity(data, data.entityType));
+
+            addGameObject(EntityFactory.getEntity(data, data.entityType));
+
         }
     }
 
+    private void addGameObject(GameObject go)
+    {
+        gameObjects.put(go.getId(), go);
+        go.addObserver(this);
+    }
+
     /**
-     * Removes a GameObject from the clientmap based on its ID.
+     * Destroys a GameObject from the clientmap based on its ID.
      * 
      * @param id
      *            The id of the object to be removed.
      */
-    public void removeGameObject(int id)
+    public void destroyGameObject(int id)
     {
         gameObjects.remove(id);
+        gameObjects.get(id).destroy();
     }
 
     /**
@@ -315,6 +337,23 @@ public class ClientMap implements Observer
         posList.add(cData);
         broker.sendUpdate(posList);
 
+    }
+
+    public void killNotification(int victimId, int killerId)
+    {
+        gameObjects.get(victimId).destroy();
+        if (victimId == clientChar.getId())
+        {
+            System.out.println("YOU DIED MOTAFUCASPKDSAD FUCKA");
+        }
+        else if (killerId == clientChar.getId())
+        {
+            System.out.println("You killed: " + victimId);
+        }
+        else
+        {
+            System.out.println(killerId + " pwned " + victimId + "'s head");
+        }
     }
 
     @Override
@@ -348,12 +387,18 @@ public class ClientMap implements Observer
         }
         else if (o instanceof Bullet)
         {
-
             Bullet bullet = (Bullet)o;
             gameObjects.remove(bullet.getId());
             clientChar.getWeapon().getActiveBullets().remove(bullet.getId());
             // TODO Server should handle if a bullet have been active for too long, not client.
 
+        }
+        else if (o instanceof GameObject)
+        {
+            GameObject go = (GameObject)o;
+
+            System.out.println("Game object destroyed: " + go.getId());
+            gameObjects.remove(go.getId());
         }
 
     }

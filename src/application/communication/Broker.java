@@ -204,14 +204,17 @@ public class Broker
                         case BROADCAST_POSITION_UPDATE:
                         {
                             readPositionUpdate(buffer);
+                            break;
                         }
                         case BROADCAST_SCORE_UPDATE:
                         {
                             readScoreUpdate(buffer);
+                            break;
                         }
                         case BROADCAST_HEALTH_UPDATE:
                         {
                             readHealthUpdate(buffer);
+                            break;
                         }
                         default:
                             break;
@@ -225,11 +228,11 @@ public class Broker
             }
         }).start();
     }
-    
+
     public void readScoreUpdate(ByteBuffer buffer)
     {
-        HashMap<Integer, Double> scoreMap = new HashMap();
-        
+        HashMap<Integer, Double> scoreMap = new HashMap<>();
+
         do
         {
             int ID = buffer.getInt();
@@ -238,15 +241,16 @@ public class Broker
             scoreMap.put(ID, score);
         }
         while (buffer.get() == 31); // unit separator
-        
+
         map.updateScores(scoreMap);
+
     }
-    
+
     public void readHealthUpdate(ByteBuffer buffer)
     {
-        
+
     }
-    
+
     public void readPositionUpdate(ByteBuffer buffer)
     {
         List<GameObjectDAO> positions = new ArrayList<>();
@@ -386,15 +390,23 @@ public class Broker
         {
             case REQUEST_BULLET:
             {
-                handleBulletCreation(buffer);
+                readBulletCreation(buffer);
+                break;
             }
             case NEW_PLAYER:
             {
-                handleNewPlayer(buffer);
+                readNewPlayer(buffer);
+                break;
             }
             case DISCONNECTED_PLAYER:
             {
-                handleDisconnectedPlayer(buffer);
+                readDisconnectedPlayer(buffer);
+                break;
+            }
+            case KILL_NOTIFICATION:
+            {
+                readKillNotification(buffer);
+                break;
             }
             default:
                 break;
@@ -409,11 +421,11 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void handleDisconnectedPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readDisconnectedPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
     {
         int playerId = input.getInt();
         int objectId = input.getInt();
-        map.removeGameObject(objectId);
+        map.destroyGameObject(objectId);
 
     }
 
@@ -423,7 +435,7 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void handleNewPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readNewPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
     {
         GameObjectDAO data = new GameObjectDAO();
         int playerId = input.getInt();
@@ -443,7 +455,7 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void handleBulletCreation(ByteBuffer input)
+    private void readBulletCreation(ByteBuffer input)
     {
         GameObjectDAO data = new GameObjectDAO();
         data.x = input.getDouble();
@@ -457,5 +469,18 @@ public class Broker
         data.objectId = input.getInt();
         data.entityType = EntityFactory.EntityType.fromInteger(input.getInt());
         map.addGameObject(data);
+    }
+
+    /**
+     * Handles reading of kill notifications
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readKillNotification(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    {
+        int victimId = input.getInt();
+        int killerId = input.getInt();
+        map.killNotification(victimId, killerId);
     }
 }
