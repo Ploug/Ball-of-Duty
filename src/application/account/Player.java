@@ -55,6 +55,11 @@ public class Player
     {
         return id;
     }
+    
+    public String getNickname()
+    {
+        return nickname;
+    }
 
     @Override
     public String toString()

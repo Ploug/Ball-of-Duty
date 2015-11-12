@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
+import application.account.Account;
 import application.account.Player;
 import application.engine.rendering.ClientMap;
 import application.input.CharacterController;
@@ -27,6 +29,7 @@ public class GameClient
     public ClientMap cMap;
     public List<Player> enemyPlayers;
     public Player clientPlayer;
+    public Account account;
     public CharacterController characterController;
     public Point2D sceneRelativeLocation;
     IBoDService ibs;
@@ -48,7 +51,6 @@ public class GameClient
         try
         {
             ibs = server1.getBasicHttpBinding_IBoDService();
-            clientPlayer = new Player(ibs.newGuest("Guest"));// TODO Ask for nickname
 
         }
         catch (ServiceException e)
@@ -56,12 +58,54 @@ public class GameClient
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+
+    }
+
+    public void joinAsGuest()
+    {
+        try
+        {
+            clientPlayer = new Player(ibs.newGuest("Guest"));// TODO Ask for nickname
+        }
         catch (RemoteException e)
         {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
+    public void createAccount(String username,String nickname, char[] password, char[] passwordConfirmation)
+    {
+        for (int i = 0; i < password.length; i++)
+        {
+            if(password[i] != passwordConfirmation[i]){
+                throw new IllegalArgumentException("Password not correct");
+            }
+        }
+        
+        account = new Account(username, password);
+        int id = 0;
+
+        if (clientPlayer != null)
+        {
+            id = clientPlayer.getId();
+        }
+        try
+        {
+            AccountDTO verifiedAccount = ibs.newAccount(username, nickname, id, account.getSalt(), account.getHash());
+            if (verifiedAccount.getId() != 0)
+            {
+                System.out.println("Account created, with id: " + verifiedAccount.getId());
+            }
+            else{
+                System.out.println("Error!");
+            }
+        }
+        catch (RemoteException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**

@@ -7,9 +7,12 @@
 
 package org.tempuri;
 
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO;
+
 public interface IBoDService extends java.rmi.Remote {
     public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO newGuest(java.lang.String nickname) throws java.rmi.RemoteException;
     public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientPort) throws java.rmi.RemoteException;
+    public AccountDTO newAccount(java.lang.String username, java.lang.String nickname, java.lang.Integer playerId, byte[] salt, byte[] hash) throws java.rmi.RemoteException;
     public void quitGame(java.lang.Integer clientPlayerId) throws java.rmi.RemoteException;
     public java.lang.Integer requestBulletCreation(java.lang.Double x, java.lang.Double y, java.lang.Double radius, java.lang.Double damage, java.lang.Integer ownerId, java.lang.Integer gameId) throws java.rmi.RemoteException;
 }
