@@ -144,7 +144,6 @@ public class ClientMap implements Observer
                     if (go != clientChar)
                     {
                         go.update(gc);
-
                     }
                 }
                 if (!clientChar.isDestroyed())
@@ -154,8 +153,8 @@ public class ClientMap implements Observer
 
                 if (timer.getDuration() > 250)
                 {
-                    fpsLabel.setText("fps: " + frames*4);// every 0.25 second, time by 4 to get frame per second.
-                    scoreLabel.setText("Score: "+(int)clientChar.getScore());
+                    fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
+                    scoreLabel.setText("Score: " + (int)clientChar.getScore());
                     timer.reset();
                     frames = 0;
                 }
@@ -173,7 +172,6 @@ public class ClientMap implements Observer
             while (mapActive)
             {
                 sendUpdate();
-
             }
         });
         updateThread.start();
@@ -232,28 +230,12 @@ public class ClientMap implements Observer
         for (GameObjectDAO pos : positions)
         {
             GameObject go = gameObjects.get(pos.objectId);
-
-            if (go != null)
+            if (go == null)
             {
-
-                // System.out.println(pos.getId() +" "+go.getId());
+                continue;
             }
-            else
-            {
-                // System.out.println("its null");
-            }
-
             if (pos.objectId != clientChar.getId())
             {
-                if (go == null)
-                {
-                    continue;
-                    // go = EntityFactory.getDefaultEntity(pos.objectId, EntityFactory.EntityType.ENEMY_CHARACTER); // TODO nees to be done
-                    // // TCP,
-                    // // this is bad.
-                    // gameObjects.put(go.getId(), go);
-                }
-
                 go.getBody().setPosition(new Point2D(pos.x, pos.y));
             }
         }
@@ -294,12 +276,13 @@ public class ClientMap implements Observer
         {
             if (data.ownerId == clientChar.getId())
             {
-                addGameObject(unassignedBullets.poll());
+                Bullet bullet = (Bullet)unassignedBullets.poll();
+                bullet.setId(data.objectId);
+                addGameObject(bullet);
                 return;
             }
 
             addGameObject(EntityFactory.getEntity(data, data.entityType));
-
         }
     }
 
@@ -390,6 +373,7 @@ public class ClientMap implements Observer
             Bullet bullet = (Bullet)o;
             gameObjects.remove(bullet.getId());
             clientChar.getWeapon().getActiveBullets().remove(bullet.getId());
+            o.deleteObserver(this);
             // TODO Server should handle if a bullet have been active for too long, not client.
 
         }
@@ -399,6 +383,7 @@ public class ClientMap implements Observer
 
             System.out.println("Game object destroyed: " + go.getId());
             gameObjects.remove(go.getId());
+            o.deleteObserver(this);
         }
 
     }
