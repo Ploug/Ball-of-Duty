@@ -16,7 +16,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[4];
+        _operations = new org.apache.axis.description.OperationDesc[5];
         _initOperationDesc1();
     }
 
@@ -52,6 +52,34 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         _operations[1] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("NewAccount");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "username"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "nickname"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "playerId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), java.lang.Integer.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "salt"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "base64Binary"), byte[].class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "hash"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "base64Binary"), byte[].class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "AccountDTO"));
+        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "NewAccountResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[2] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("QuitGame");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "clientPlayerId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), java.lang.Integer.class, false, false);
         param.setOmittable(true);
@@ -59,7 +87,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[2] = oper;
+        _operations[3] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("RequestBulletCreation");
@@ -86,7 +114,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "RequestBulletCreationResult"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[3] = oper;
+        _operations[4] = oper;
 
     }
 
@@ -119,6 +147,13 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
             java.lang.Class simpledf = org.apache.axis.encoding.ser.SimpleDeserializerFactory.class;
             java.lang.Class simplelistsf = org.apache.axis.encoding.ser.SimpleListSerializerFactory.class;
             java.lang.Class simplelistdf = org.apache.axis.encoding.ser.SimpleListDeserializerFactory.class;
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "AccountDTO");
+            cachedSerQNames.add(qName);
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "ArrayOfGameObjectDTO");
             cachedSerQNames.add(qName);
             cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO[].class;
@@ -297,12 +332,46 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
 }
     }
 
-    public void quitGame(java.lang.Integer clientPlayerId) throws java.rmi.RemoteException {
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO newAccount(java.lang.String username, java.lang.String nickname, java.lang.Integer playerId, byte[] salt, byte[] hash) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[2]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://tempuri.org/IBoDService/NewAccount");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "NewAccount"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {username, nickname, playerId, salt, hash});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public void quitGame(java.lang.Integer clientPlayerId) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[3]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://tempuri.org/IBoDService/QuitGame");
         _call.setEncodingStyle(null);
@@ -329,7 +398,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[3]);
+        _call.setOperation(_operations[4]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("http://tempuri.org/IBoDService/RequestBulletCreation");
         _call.setEncodingStyle(null);
