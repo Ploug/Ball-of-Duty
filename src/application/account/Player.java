@@ -45,6 +45,7 @@ public class Player
     {
         this.character = new BoDCharacter(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), 50, 50,
                 400, new Image("images/ball_blue.png")); // TODO image would be dynamic if player has different cosmetics
+        this.character.setNickname(nickname);
     }
 
     /**

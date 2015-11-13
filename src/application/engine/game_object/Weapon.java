@@ -92,6 +92,7 @@ public class Weapon extends Observable
 
                 Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE, bulletImages.get(Bullet.Type.RIFLE),
                         gameObject.getId());
+                bullet.getBody().setCenter(position);
 
                 activeBullets.add(bullet);
                 setChanged();

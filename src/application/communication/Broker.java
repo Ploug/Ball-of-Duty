@@ -229,7 +229,13 @@ public class Broker
         }).start();
     }
 
-    public void readScoreUpdate(ByteBuffer buffer)
+    /**
+     * Handles reading of score updates;
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readScoreUpdate(ByteBuffer buffer)
     {
         HashMap<Integer, Double> scoreMap = new HashMap<>();
 
@@ -246,9 +252,30 @@ public class Broker
 
     }
 
-    public void readHealthUpdate(ByteBuffer buffer)
+    /**
+     * Handles reading of health updates
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readHealthUpdate(ByteBuffer buffer)
     {
+        List<GameObjectDAO> healths = new ArrayList<>();
 
+        do
+        {
+            int ID = buffer.getInt();
+            int maxHealth = buffer.getInt();
+            int healthValue = buffer.getInt();
+            GameObjectDAO objectHealth = new GameObjectDAO();
+            objectHealth.objectId = ID;
+            objectHealth.maxHealth = maxHealth;
+            objectHealth.healthValue = healthValue;
+            healths.add(objectHealth);
+        }
+        while (buffer.get() == 31); // unit separator
+
+        map.updateHealths(healths);
     }
 
     public void readPositionUpdate(ByteBuffer buffer)
@@ -408,6 +435,11 @@ public class Broker
                 readKillNotification(buffer);
                 break;
             }
+            case OBJECT_DESTRUCTION:
+            {
+                readDestroyedObject(buffer);
+                break;
+            }
             default:
                 break;
 
@@ -416,7 +448,7 @@ public class Broker
     }
 
     /**
-     * Handles new players created by the server.
+     * Handles players disconnected from the server
      * 
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
@@ -424,6 +456,20 @@ public class Broker
     private void readDisconnectedPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
     {
         int playerId = input.getInt();
+        int objectId = input.getInt();
+        map.destroyGameObject(objectId);
+
+    }
+    
+
+    /**
+     * Handles destroyed bullets
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readDestroyedObject(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    {
         int objectId = input.getInt();
         map.destroyGameObject(objectId);
 
@@ -477,10 +523,11 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readKillNotification(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readKillNotification(ByteBuffer input)
     {
         int victimId = input.getInt();
         int killerId = input.getInt();
         map.killNotification(victimId, killerId);
     }
+
 }

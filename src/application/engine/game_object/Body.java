@@ -123,7 +123,7 @@ public class Body
      */
     public Vector2 getOrientation()
     {
-        return orientation;
+        return orientation.setMagnitude(30);
     }
 
     /**

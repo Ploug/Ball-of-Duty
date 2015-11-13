@@ -83,7 +83,7 @@ public class Bullet extends GameObject
         this.setPhysics(new Physics(this, velocity.getMagnitude()));
         getPhysics().setVelocity(velocity);
         this.view = new View(this, image);
-        lifeTime = 1;
+        lifeTime = 5;
         new Thread(() ->
         {
             timer = new Timer();

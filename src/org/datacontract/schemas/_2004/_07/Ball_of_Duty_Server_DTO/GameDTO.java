@@ -16,6 +16,8 @@ public class GameDTO  implements java.io.Serializable {
 
     private java.lang.String IPAddress;
 
+    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players;
+
     public GameDTO() {
     }
 
@@ -23,11 +25,13 @@ public class GameDTO  implements java.io.Serializable {
            java.lang.Integer characterId,
            java.lang.Integer gameId,
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO[] gameObjects,
-           java.lang.String IPAddress) {
+           java.lang.String IPAddress,
+           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players) {
            this.characterId = characterId;
            this.gameId = gameId;
            this.gameObjects = gameObjects;
            this.IPAddress = IPAddress;
+           this.players = players;
     }
 
 
@@ -110,6 +114,26 @@ public class GameDTO  implements java.io.Serializable {
         this.IPAddress = IPAddress;
     }
 
+
+    /**
+     * Gets the players value for this GameDTO.
+     * 
+     * @return players
+     */
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] getPlayers() {
+        return players;
+    }
+
+
+    /**
+     * Sets the players value for this GameDTO.
+     * 
+     * @param players
+     */
+    public void setPlayers(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players) {
+        this.players = players;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GameDTO)) return false;
@@ -133,7 +157,10 @@ public class GameDTO  implements java.io.Serializable {
               java.util.Arrays.equals(this.gameObjects, other.getGameObjects()))) &&
             ((this.IPAddress==null && other.getIPAddress()==null) || 
              (this.IPAddress!=null &&
-              this.IPAddress.equals(other.getIPAddress())));
+              this.IPAddress.equals(other.getIPAddress()))) &&
+            ((this.players==null && other.getPlayers()==null) || 
+             (this.players!=null &&
+              java.util.Arrays.equals(this.players, other.getPlayers())));
         __equalsCalc = null;
         return _equals;
     }
@@ -164,6 +191,17 @@ public class GameDTO  implements java.io.Serializable {
         }
         if (getIPAddress() != null) {
             _hashCode += getIPAddress().hashCode();
+        }
+        if (getPlayers() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getPlayers());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getPlayers(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -203,6 +241,14 @@ public class GameDTO  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("players");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Players"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(true);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO"));
         typeDesc.addFieldDesc(elemField);
     }
 

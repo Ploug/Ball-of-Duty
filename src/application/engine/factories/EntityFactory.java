@@ -89,6 +89,7 @@ public class EntityFactory
             case ENEMY_CHARACTER:
                 GameObject enemy = new BoDCharacter(dto.getId(), position, body.getWidth(), body.getHeight(), 0,
                         defaultImages.get(EntityType.ENEMY_CHARACTER));
+                
                 // TODO get velocity from server so we can update the enemies position while inbetween
                 // position updates and if enemy has special cosmetics it's passed through here.
                 return enemy;
