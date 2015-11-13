@@ -111,17 +111,17 @@ public class ClientMap implements Observer
         }
         for (PlayerDTO pdto : serverGame.getPlayers()) // TODO figure out how we related player to a character.
         {
-            BoDCharacter playerChar = (BoDCharacter)gameObjects.get(pdto.getId());
-            if(playerChar!= null)
-            {
-                playerChar.setNickname(pdto.getNickname());
-            }
-            if(pdto.getId()==clientChar.getId())
-            {
-                clientChar.setNickname(pdto.getNickname());
-            }
+            // BoDCharacter playerChar = (BoDCharacter)gameObjects.get(pdto.getId());
+            // if(playerChar!= null)
+            // {
+            // playerChar.setNickname(pdto.getNickname());
+            // }
+            // if(pdto.getId()==clientChar.getId())
+            // {
+            // clientChar.setNickname(pdto.getNickname());
+            // }
         }
-        
+
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         fpsLabel.setText("fps: ");
@@ -173,15 +173,15 @@ public class ClientMap implements Observer
                 {
                     fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
                     scoreLabel.setText("Score: " + (int)clientChar.getScore());
-                    if(!clientChar.isDestroyed())
+                    if (!clientChar.isDestroyed())
                     {
-                        healthLabel.setText("Health: " + (int)clientChar.getHealth().getValue());
+                        healthLabel.setText("Health: " +clientChar.getHealth().getValue());
                     }
                     else
                     {
                         healthLabel.setText("Health: DEAD");
                     }
-                  
+
                     timer.reset();
                     frames = 0;
                 }
@@ -283,7 +283,7 @@ public class ClientMap implements Observer
 
             GameObject go = gameObjects.get(id);
 
-            if (go != null && go instanceof BoDCharacter)
+            if (go != null )
             {
 
                 BoDCharacter bodCharacter = (BoDCharacter)go;
@@ -351,12 +351,12 @@ public class ClientMap implements Observer
     public void destroyGameObject(int id)
     {
         GameObject go = gameObjects.get(id);
-        if(go != null)
+        if (go != null)
         {
             go.destroy();
             gameObjects.remove(id);
         }
-       
+
     }
 
     /**

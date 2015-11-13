@@ -15,9 +15,9 @@ import javafx.scene.image.Image;
 public class Player
 {
 
-    public BoDCharacter character;
-    private String nickname;
-    private int id;
+    private BoDCharacter _character;
+    private String _nickname;
+    private int _id;
 
     /**
      * Creates a player based on a DTO from the serve (Players are always created server side)
@@ -25,8 +25,8 @@ public class Player
      */
     public Player(PlayerDTO pdto)
     {
-        this.id = pdto.getId();
-        this.nickname = pdto.getNickname();
+        this._id = pdto.getId();
+        this._nickname = pdto.getNickname();
     }
 
     /**
@@ -35,7 +35,7 @@ public class Player
      */
     public BoDCharacter getCharacter()
     {
-        return character;
+        return _character;
     }
 
     /**
@@ -43,9 +43,9 @@ public class Player
      */
     public void createNewCharacter(int id)
     {
-        this.character = new BoDCharacter(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), 50, 50,
-                400, new Image("images/ball_blue.png")); // TODO image would be dynamic if player has different cosmetics
-        this.character.setNickname(nickname);
+        this._character = new BoDCharacter(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), 50, 50,
+                200, new Image("images/ball_blue.png")); // TODO image would be dynamic if player has different cosmetics
+        this._character.setNickname(_nickname);
     }
 
     /**
@@ -54,17 +54,17 @@ public class Player
      */
     public int getId()
     {
-        return id;
+        return _id;
     }
     
     public String getNickname()
     {
-        return nickname;
+        return _nickname;
     }
 
     @Override
     public String toString()
     {
-        return "Player [name=" + this.nickname + ", id=" + this.id + ", character=" + this.character + "]";
+        return "Player [name=" + this._nickname + ", id=" + this._id + ", character=" + this._character + "]";
     }
 }

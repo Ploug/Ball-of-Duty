@@ -63,13 +63,9 @@ public class GameClient
 
     public void joinAsGuest(BorderPane gameBox, String nickname)
     {
-        if (nickname.length() == 0)
-        {
-            nickname = "Anon";
-        }
         try
         {
-            clientPlayer = new Player(ibs.newGuest(nickname));//
+            clientPlayer = new Player(ibs.newGuest(nickname));
             joinGame(gameBox);
         }
         catch (RemoteException e)

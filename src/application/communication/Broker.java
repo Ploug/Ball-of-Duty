@@ -10,19 +10,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.tempuri.IBoDService;
 
 import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
 import application.engine.rendering.ClientMap;
-import javafx.geometry.Point2D;
 
 /**
  * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
@@ -37,7 +32,7 @@ public class Broker
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "127.0.0.1";
+    private static final String SERVER_IP = "10.126.0.225";
     private static final int SERVER_TCP_PORT = 15010;
     private DataOutputStream output = null;
 
@@ -264,13 +259,10 @@ public class Broker
 
         do
         {
-            int ID = buffer.getInt();
-            int maxHealth = buffer.getInt();
-            int healthValue = buffer.getInt();
             GameObjectDAO objectHealth = new GameObjectDAO();
-            objectHealth.objectId = ID;
-            objectHealth.maxHealth = maxHealth;
-            objectHealth.healthValue = healthValue;
+            objectHealth.objectId = buffer.getInt();
+            objectHealth.maxHealth = buffer.getInt();
+            objectHealth.healthValue = buffer.getInt();
             healths.add(objectHealth);
         }
         while (buffer.get() == 31); // unit separator
@@ -284,13 +276,10 @@ public class Broker
 
         do
         {
-            int id = buffer.getInt();
-            double x = buffer.getDouble();
-            double y = buffer.getDouble();
             GameObjectDAO objectPos = new GameObjectDAO();
-            objectPos.objectId = id;
-            objectPos.x = x;
-            objectPos.y = y;
+            objectPos.objectId = buffer.getInt();
+            objectPos.x = buffer.getDouble();
+            objectPos.y = buffer.getDouble();
             positions.add(objectPos);
         }
         while (buffer.get() == 31); // unit separator
@@ -453,26 +442,24 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readDisconnectedPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readDisconnectedPlayer(ByteBuffer input) 
     {
         int playerId = input.getInt();
         int objectId = input.getInt();
         map.destroyGameObject(objectId);
 
     }
-    
 
     /**
-     * Handles destroyed bullets
+     * Handles destroyed objects
      * 
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readDestroyedObject(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readDestroyedObject(ByteBuffer input)
     {
         int objectId = input.getInt();
         map.destroyGameObject(objectId);
-
     }
 
     /**

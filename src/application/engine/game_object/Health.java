@@ -8,9 +8,9 @@ package application.engine.game_object;
  */
 public class Health
 {
-    private int maxHealth;
-    private int healthValue;
-    private GameObject gameObject;
+    private int _maxHealth;
+    private int _healthValue;
+    private GameObject _gameObject;
 
     /**
      * Creates health for a game object defining the max health.
@@ -20,30 +20,33 @@ public class Health
      */
     public Health(int maxHealth)
     {
-        this.maxHealth = maxHealth;
+        this._maxHealth = maxHealth;
     }
 
     public void setMax(int max)
     {
-        maxHealth = max;
+        _maxHealth = max;
     }
+        
     public int getMax()
     {
-        return maxHealth;
+        return _maxHealth;
     }
+    
     public int getValue()
     {
-        return healthValue;
+        return _healthValue;
     }
+    
     public void setValue(int value)
     {
-        healthValue = value;
+        _healthValue = value;
     }
 
     @Override
     public String toString()
     {
-        return String.format("Health [maxHealth=%s]", maxHealth);
+        return String.format("Health [maxHealth=%s]", _maxHealth);
     }
 
    

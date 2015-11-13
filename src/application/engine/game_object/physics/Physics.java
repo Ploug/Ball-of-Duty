@@ -19,7 +19,7 @@ import application.util.Vector2;
  */
 public class Physics
 {
-    public GameObject gameObject;
+    private GameObject gameObject;
     private Vector2 velocity;
     private double topspeed;
     private HashSet<Vector2> directionVectors;

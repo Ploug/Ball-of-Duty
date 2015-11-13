@@ -10,12 +10,12 @@ import javafx.geometry.Point2D;
  */
 public class Body 
 {
-    public GameObject gameObject;
-    private Point2D position;
-    private double height;
-    private double width;
-    private Vector2 orientation;
-    private Geometry type;
+    private GameObject _gameObject;
+    private Point2D _position;
+    private double _height;
+    private double _width;
+    private Vector2 _orientation;
+    private Geometry _type;
 
     public enum Geometry
     {
@@ -37,12 +37,12 @@ public class Body
      */
     public Body(GameObject gameObject, Point2D position, double width, double height, Geometry type)
     {
-        this.type = type;
-        this.gameObject = gameObject;
-        this.position = position;
-        this.width = width;
-        this.height = height;
-        this.orientation = new Vector2(0, 0);
+        this._type = type;
+        this._gameObject = gameObject;
+        this._position = position;
+        this._width = width;
+        this._height = height;
+        this._orientation = new Vector2(0, 0);
     }
 
     /**
@@ -51,7 +51,7 @@ public class Body
      */
     public Point2D getPosition()
     {
-        return position;
+        return _position;
     }
 
     /**
@@ -60,7 +60,7 @@ public class Body
      */
     public void setCenter(Point2D position)
     {
-        this.position = new Point2D(position.getX() - width / 2, position.getY() - height / 2);
+        this._position = new Point2D(position.getX() - _width / 2, position.getY() - _height / 2);
     }
 
     /**
@@ -69,7 +69,7 @@ public class Body
      */
     public void setPosition(Point2D position)
     {
-        this.position = position;
+        this._position = position;
     }
 
     /**
@@ -78,7 +78,7 @@ public class Body
      */
     public Point2D getCenter()
     {
-        return new Point2D((position.getX() + (width / 2)), position.getY() + (height / 2));
+        return new Point2D((_position.getX() + (_width / 2)), _position.getY() + (_height / 2));
     }
 
     /**
@@ -87,7 +87,7 @@ public class Body
      */
     public double getHeight()
     {
-        return height;
+        return _height;
     }
 
     /**
@@ -96,7 +96,7 @@ public class Body
      */
     public void setHeight(double height)
     {
-        this.height = height;
+        this._height = height;
     }
 
     /**
@@ -105,7 +105,7 @@ public class Body
      */
     public double getWidth()
     {
-        return width;
+        return _width;
     }
     
     /**
@@ -114,7 +114,7 @@ public class Body
      */
     public void setWidth(double width)
     {
-        this.width = width;
+        this._width = width;
     }
 
     /**
@@ -123,7 +123,7 @@ public class Body
      */
     public Vector2 getOrientation()
     {
-        return orientation.setMagnitude(30);
+        return _orientation.setMagnitude(30);
     }
 
     /**
@@ -132,7 +132,7 @@ public class Body
      */
     public void setOrientation(Vector2 orientation)
     {
-        this.orientation = orientation;
+        this._orientation = orientation;
     }
 
     /**
@@ -142,7 +142,7 @@ public class Body
      */
     public void increasePosition(double xIncrease, double yIncrease)
     {
-        position = new Point2D(position.getX() + xIncrease, position.getY() + yIncrease);
+        _position = new Point2D(_position.getX() + xIncrease, _position.getY() + yIncrease);
     }
 
     /**
@@ -151,7 +151,7 @@ public class Body
      */
     public Geometry getType()
     {
-        return this.type;
+        return this._type;
     }
 
     /**
@@ -160,14 +160,14 @@ public class Body
      */
     public void setType(Geometry type)
     {
-        this.type = type;
+        this._type = type;
 
     }
 
     @Override
     public String toString()
     {
-        return String.format("Body [position=%s, height=%s, width=%s, orientation=%s, type=%s]", position, height, width, orientation, type);
+        return String.format("Body [position=%s, height=%s, width=%s, orientation=%s, type=%s]", _position, _height, _width, _orientation, _type);
     }
 
    

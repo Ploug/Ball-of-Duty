@@ -9,13 +9,13 @@ import javafx.scene.text.Font;
 /**
  * Handles how the game object should be rendered
  * 
- * @author Frederik
+ * @author Gruppe 6
  *
  */
 public class View
 {
 
-    public GameObject gameObject;
+    private GameObject gameObject;
     private Image image;
 
     /**
