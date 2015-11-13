@@ -61,11 +61,12 @@ public class GameClient
 
     }
 
-    public void joinAsGuest()
+    public void joinAsGuest(BorderPane gameBox, String nickname)
     {
         try
         {
-            clientPlayer = new Player(ibs.newGuest("Guest"));// TODO Ask for nickname
+            clientPlayer = new Player(ibs.newGuest(nickname));
+            joinGame(gameBox);
         }
         catch (RemoteException e)
         {
@@ -74,15 +75,16 @@ public class GameClient
         }
     }
 
-    public void createAccount(String username,String nickname, char[] password, char[] passwordConfirmation)
+    public void createAccount(String username, String nickname, char[] password, char[] passwordConfirmation)
     {
         for (int i = 0; i < password.length; i++)
         {
-            if(password[i] != passwordConfirmation[i]){
+            if (password[i] != passwordConfirmation[i])
+            {
                 throw new IllegalArgumentException("Password not correct");
             }
         }
-        
+
         account = new Account(username, password);
         int id = 0;
 
@@ -97,7 +99,8 @@ public class GameClient
             {
                 System.out.println("Account created, with id: " + verifiedAccount.getId());
             }
-            else{
+            else
+            {
                 System.out.println("Error!");
             }
         }
@@ -131,7 +134,7 @@ public class GameClient
      * @param gameBox
      *            The BorderPane where the game graphics and UI is handled.
      */
-    public void joinGame(BorderPane gameBox)
+    private void joinGame(BorderPane gameBox)
     {
         System.out.println("trying to join game");
         try

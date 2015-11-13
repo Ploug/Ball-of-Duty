@@ -123,7 +123,16 @@ public class GUI extends Application
         joinBtn.setOnAction(ActionEvent ->
         {
             theStage.setScene(gameScene);
-            gameManager.joinGame(gameBox);
+            gameManager.joinAsGuest(gameBox, tfNickname.getText());
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
+            gameBox.requestFocus();
+
+        });
+        tfNickname.setOnAction(ActionEvent ->
+        {
+            theStage.setScene(gameScene);
+            gameManager.joinAsGuest(gameBox, tfNickname.getText());
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
             gameBox.requestFocus();
 
         });

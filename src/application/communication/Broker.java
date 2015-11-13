@@ -10,19 +10,14 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.tempuri.IBoDService;
 
 import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
 import application.engine.rendering.ClientMap;
-import javafx.geometry.Point2D;
 
 /**
  * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
@@ -37,7 +32,7 @@ public class Broker
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "127.0.0.1";
+    private static final String SERVER_IP = "10.126.0.225";
     private static final int SERVER_TCP_PORT = 15010;
     private DataOutputStream output = null;
 
@@ -229,7 +224,13 @@ public class Broker
         }).start();
     }
 
-    public void readScoreUpdate(ByteBuffer buffer)
+    /**
+     * Handles reading of score updates;
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readScoreUpdate(ByteBuffer buffer)
     {
         HashMap<Integer, Double> scoreMap = new HashMap<>();
 
@@ -246,9 +247,27 @@ public class Broker
 
     }
 
-    public void readHealthUpdate(ByteBuffer buffer)
+    /**
+     * Handles reading of health updates
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readHealthUpdate(ByteBuffer buffer)
     {
+        List<GameObjectDAO> healths = new ArrayList<>();
 
+        do
+        {
+            GameObjectDAO objectHealth = new GameObjectDAO();
+            objectHealth.objectId = buffer.getInt();
+            objectHealth.maxHealth = buffer.getInt();
+            objectHealth.healthValue = buffer.getInt();
+            healths.add(objectHealth);
+        }
+        while (buffer.get() == 31); // unit separator
+
+        map.updateHealths(healths);
     }
 
     public void readPositionUpdate(ByteBuffer buffer)
@@ -257,13 +276,10 @@ public class Broker
 
         do
         {
-            int id = buffer.getInt();
-            double x = buffer.getDouble();
-            double y = buffer.getDouble();
             GameObjectDAO objectPos = new GameObjectDAO();
-            objectPos.objectId = id;
-            objectPos.x = x;
-            objectPos.y = y;
+            objectPos.objectId = buffer.getInt();
+            objectPos.x = buffer.getDouble();
+            objectPos.y = buffer.getDouble();
             positions.add(objectPos);
         }
         while (buffer.get() == 31); // unit separator
@@ -408,6 +424,11 @@ public class Broker
                 readKillNotification(buffer);
                 break;
             }
+            case OBJECT_DESTRUCTION:
+            {
+                readDestroyedObject(buffer);
+                break;
+            }
             default:
                 break;
 
@@ -416,17 +437,29 @@ public class Broker
     }
 
     /**
-     * Handles new players created by the server.
+     * Handles players disconnected from the server
      * 
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readDisconnectedPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readDisconnectedPlayer(ByteBuffer input) 
     {
         int playerId = input.getInt();
         int objectId = input.getInt();
         map.destroyGameObject(objectId);
 
+    }
+
+    /**
+     * Handles destroyed objects
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readDestroyedObject(ByteBuffer input)
+    {
+        int objectId = input.getInt();
+        map.destroyGameObject(objectId);
     }
 
     /**
@@ -477,10 +510,11 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readKillNotification(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readKillNotification(ByteBuffer input)
     {
         int victimId = input.getInt();
         int killerId = input.getInt();
         map.killNotification(victimId, killerId);
     }
+
 }

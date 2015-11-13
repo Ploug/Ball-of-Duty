@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 
 import application.communication.Broker;
 import application.communication.GameObjectDAO;
@@ -49,7 +50,7 @@ public class ClientMap implements Observer
     private int mapHeight = 700;
     public ConcurrentMap<Integer, GameObject> gameObjects;
     public Timer timer;
-    private Label fpsLabel, scoreLabel;
+    private Label fpsLabel, scoreLabel, healthLabel;
     private VBox labelBox;
     private BoDCharacter clientChar;
     private Thread updateThread;
@@ -108,12 +109,28 @@ public class ClientMap implements Observer
             }
 
         }
+        for (PlayerDTO pdto : serverGame.getPlayers()) // TODO figure out how we related player to a character.
+        {
+            // BoDCharacter playerChar = (BoDCharacter)gameObjects.get(pdto.getId());
+            // if(playerChar!= null)
+            // {
+            // playerChar.setNickname(pdto.getNickname());
+            // }
+            // if(pdto.getId()==clientChar.getId())
+            // {
+            // clientChar.setNickname(pdto.getNickname());
+            // }
+        }
+
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         fpsLabel.setText("fps: ");
         scoreLabel = new Label();
         scoreLabel.setPrefSize(70, 20);
         scoreLabel.setText("Score: ");
+        healthLabel = new Label();
+        healthLabel.setPrefSize(80, 20);
+        healthLabel.setText("Health: ");
 
         labelBox = new VBox();
         labelBox.setSpacing(1);
@@ -121,6 +138,7 @@ public class ClientMap implements Observer
 
         labelBox.getChildren().add(fpsLabel);
         labelBox.getChildren().add(scoreLabel);
+        labelBox.getChildren().add(healthLabel);
 
         this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
@@ -155,6 +173,15 @@ public class ClientMap implements Observer
                 {
                     fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
                     scoreLabel.setText("Score: " + (int)clientChar.getScore());
+                    if (!clientChar.isDestroyed())
+                    {
+                        healthLabel.setText("Health: " +clientChar.getHealth().getValue());
+                    }
+                    else
+                    {
+                        healthLabel.setText("Health: DEAD");
+                    }
+
                     timer.reset();
                     frames = 0;
                 }
@@ -253,14 +280,37 @@ public class ClientMap implements Observer
     {
         for (Integer id : scoreMap.keySet())
         {
+
             GameObject go = gameObjects.get(id);
-            if (go != null)
+
+            if (go != null )
             {
+
                 BoDCharacter bodCharacter = (BoDCharacter)go;
                 double score = scoreMap.get(id);
                 bodCharacter.setScore(score);
             }
         }
+    }
+
+    /**
+     * Updates healths for all the game objects in the game that has health.
+     * 
+     * @param healths
+     */
+    public void updateHealths(List<GameObjectDAO> healths)
+    {
+        for (GameObjectDAO data : healths)
+        {
+            GameObject go = gameObjects.get(data.objectId);
+            if (go != null && go.getHealth() != null)
+            {
+                go.getHealth().setValue(data.healthValue);
+                go.getHealth().setMax(data.maxHealth);
+            }
+
+        }
+
     }
 
     /**
@@ -300,8 +350,13 @@ public class ClientMap implements Observer
      */
     public void destroyGameObject(int id)
     {
-        gameObjects.remove(id);
-        gameObjects.get(id).destroy();
+        GameObject go = gameObjects.get(id);
+        if (go != null)
+        {
+            go.destroy();
+            gameObjects.remove(id);
+        }
+
     }
 
     /**
@@ -324,7 +379,7 @@ public class ClientMap implements Observer
 
     public void killNotification(int victimId, int killerId)
     {
-        gameObjects.get(victimId).destroy();
+        destroyGameObject(victimId);
         if (victimId == clientChar.getId())
         {
             System.out.println("YOU DIED MOTAFUCASPKDSAD FUCKA");

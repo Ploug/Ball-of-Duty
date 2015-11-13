@@ -16,6 +16,8 @@ public class GameObjectDAO
     public int damage;
     public int ownerId;
     public int objectId;
+    public int maxHealth;
+    public int healthValue;
     
     
     

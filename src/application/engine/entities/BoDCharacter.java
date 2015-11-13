@@ -21,7 +21,7 @@ public class BoDCharacter extends GameObject
     public static final Body.Geometry TYPE = Body.Geometry.CIRCLE;
 
     private double _score = 0;
-  
+    private String _nickname = "Anon";
 
     /**
      * Creates a character with certain speed, width, length, position and image.
@@ -51,8 +51,17 @@ public class BoDCharacter extends GameObject
     {
         return _score;
     }
-
-
+    
+    public String getNickname()
+    {
+        return _nickname;
+    }
+    
+    public void setNickname(String nickname)
+    {
+        this._nickname = nickname;
+    }
+    
     public void setScore(double score)
     {
         this._score = score;

@@ -4,17 +4,18 @@ import application.engine.entities.BoDCharacter;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 /**
  * Handles how the game object should be rendered
  * 
- * @author Frederik
+ * @author Gruppe 6
  *
  */
 public class View
 {
 
-    public GameObject gameObject;
+    private GameObject gameObject;
     private Image image;
 
     /**
@@ -49,20 +50,42 @@ public class View
         // gc.setStroke(Color.BLACK);
         // gc.strokeText(gameObject.getId()+"", gameObject.body.getCenter().getX(),gameObject.body.getCenter().getY());
 
-        if (gameObject.getPhysics() != null && gameObject instanceof BoDCharacter)
+        if (gameObject instanceof BoDCharacter)
         {
-            /* DEBUG MODE */
-            // Velocity vector drawn.
+            BoDCharacter character = (BoDCharacter)gameObject;
             double centerX = gameObject.getBody().getCenter().getX();
             double centerY = gameObject.getBody().getCenter().getY();
-            gc.setLineWidth(3);
-            gc.setStroke(Color.BLACK);
-            gc.strokeLine(centerX, centerY, centerX + gameObject.getPhysics().getVelocity().getX(),
-                    centerY + gameObject.getPhysics().getVelocity().getY());
-            // Draw orientation vector.
-            gc.setStroke(Color.GREEN);
-            gc.strokeLine(centerX, centerY, centerX + gameObject.getBody().getOrientation().getX(),
-                    centerY + gameObject.getBody().getOrientation().getY());
+            if (gameObject.getPhysics() != null)
+            {
+                gc.setLineWidth(3);
+                /* DEBUG MODE 
+                // Velocity vector drawn.
+                gc.setStroke(Color.BLACK);
+                gc.strokeLine(centerX, centerY, centerX + gameObject.getPhysics().getVelocity().getX(),
+                        centerY + gameObject.getPhysics().getVelocity().getY());*/
+                // Draw orientation vector.
+                gc.setStroke(Color.BLACK);
+                gc.strokeLine(centerX, centerY, centerX + gameObject.getBody().getOrientation().getX(),
+                        centerY + gameObject.getBody().getOrientation().getY());
+            }
+            if (gameObject.getHealth() != null)
+            {
+                int healthBoxHeight = 8;
+                int healthValueBoxWidth= (int)(0.4*gameObject.getHealth().getValue());
+                int maxHealthBoxWidth= (int)(0.4*gameObject.getHealth().getMax());
+                int healthBoxX = (int)(centerX-maxHealthBoxWidth/2);
+                int healthBoxY = (int)(gameObject.getBody().getPosition().getY()-healthBoxHeight-2);
+                
+                gc.setFill(Color.RED);
+                gc.fillRect(healthBoxX,healthBoxY, maxHealthBoxWidth, healthBoxHeight);
+                gc.setFill(Color.GREENYELLOW);
+                gc.fillRect(healthBoxX,healthBoxY, healthValueBoxWidth, healthBoxHeight);
+            }
+            double bottomX = gameObject.getBody().getPosition().getX();
+            double bottomY = gameObject.getBody().getPosition().getY()+gameObject.getBody().getHeight()+10;
+            gc.setLineWidth(1);
+            gc.setFont(Font.font ("Verdana", 12));
+            gc.strokeText(character.getNickname(), bottomX,bottomY, 200);
         }
 
     }

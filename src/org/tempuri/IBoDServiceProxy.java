@@ -68,11 +68,5 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     iBoDService.quitGame(clientPlayerId);
   }
   
-  public java.lang.Integer requestBulletCreation(java.lang.Double x, java.lang.Double y, java.lang.Double radius, java.lang.Double damage, java.lang.Integer ownerId, java.lang.Integer gameId) throws java.rmi.RemoteException{
-    if (iBoDService == null)
-      _initIBoDServiceProxy();
-    return iBoDService.requestBulletCreation(x, y, radius, damage, ownerId, gameId);
-  }
-  
   
 }

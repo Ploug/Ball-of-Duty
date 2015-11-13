@@ -107,7 +107,7 @@ public class GameObject extends Observable
      */
     public boolean isDestroyed()
     {
-        return destroyed; // TODO shouldnt be here after the notification to observers is implemented
+        return destroyed; 
     }
 
     /**

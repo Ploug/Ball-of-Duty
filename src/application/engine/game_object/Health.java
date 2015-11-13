@@ -8,8 +8,9 @@ package application.engine.game_object;
  */
 public class Health
 {
-    public double maxHealth;
-    public GameObject gameObject;
+    private int _maxHealth;
+    private int _healthValue;
+    private GameObject _gameObject;
 
     /**
      * Creates health for a game object defining the max health.
@@ -17,30 +18,35 @@ public class Health
      * @param maxHealth
      *            The max health of the game object.
      */
-    public Health(double maxHealth)
+    public Health(int maxHealth)
     {
-        this.maxHealth = maxHealth;
+        this._maxHealth = maxHealth;
     }
 
-    /**
-     * Does damage to the health.
-     * 
-     * @param amount
-     *            The amount of damage to take from the health.
-     */
-    public void takeDamage(double amount)
+    public void setMax(int max)
     {
-        maxHealth -= amount;
-        if (maxHealth < 1)
-        {
-            gameObject.destroy();
-        }
+        _maxHealth = max;
+    }
+        
+    public int getMax()
+    {
+        return _maxHealth;
+    }
+    
+    public int getValue()
+    {
+        return _healthValue;
+    }
+    
+    public void setValue(int value)
+    {
+        _healthValue = value;
     }
 
     @Override
     public String toString()
     {
-        return String.format("Health [maxHealth=%s]", maxHealth);
+        return String.format("Health [maxHealth=%s]", _maxHealth);
     }
 
    
