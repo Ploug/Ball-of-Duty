@@ -18,7 +18,8 @@ import javafx.geometry.Point2D;
 import javafx.scene.layout.BorderPane;
 
 /**
- * Communicates with the server via webservices and is the main facade for a game.
+ * Communicates with the server via webservices and is the main facade for a
+ * game.
  * 
  * @author Gruppe6
  *
@@ -35,12 +36,14 @@ public class GameClient
     IBoDService ibs;
 
     /**
-     * Creates a game client with the current relative location of the window. The relative location is based on how the scene's is located
-     * relative to the operating system.
+     * Creates a game client with the current relative location of the window.
+     * The relative location is based on how the scene's is located relative to
+     * the operating system.
      * 
      * @param windowRelativeLocation
-     *            The current relative location of the window. The relative location is based on how the scene's is located relative to the
-     *            operating system,
+     *            The current relative location of the window. The relative
+     *            location is based on how the scene's is located relative to
+     *            the operating system,
      */
     public GameClient(Point2D windowRelativeLocation)
     {
@@ -112,11 +115,12 @@ public class GameClient
     }
 
     /**
-     * Sets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
+     * Sets the scenes relative location. The relative location is based on how
+     * the scene's is located relative to the operating system.
      * 
      * @param sceneRelativeLocation
-     *            The scenes relative location. he relative location is based on how the scene's is located relative to the operating
-     *            system.
+     *            The scenes relative location. he relative location is based on
+     *            how the scene's is located relative to the operating system.
      */
     public void setSceneRelativeLocation(Point2D sceneRelativeLocation)
     {
@@ -129,7 +133,8 @@ public class GameClient
     }
 
     /**
-     * Tries to join a game. The game graphics and UI is handled in a BorderPane called game box.
+     * Tries to join a game. The game graphics and UI is handled in a BorderPane
+     * called game box.
      * 
      * @param gameBox
      *            The BorderPane where the game graphics and UI is handled.
@@ -140,7 +145,7 @@ public class GameClient
         try
         {
             Broker broker = new Broker();
-            GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getPort());
+            GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getUdpPort(), broker.getTcpPort());
             clientPlayer.createNewCharacter(map.getCharacterId());
             cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());
 
@@ -163,7 +168,11 @@ public class GameClient
     {
         try
         {
-            ibs.quitGame(clientPlayer.getId());
+            if (ibs != null && clientPlayer != null)
+            {
+                ibs.quitGame(clientPlayer.getId());
+            }
+
         }
         catch (RemoteException e)
         {
@@ -181,7 +190,8 @@ public class GameClient
     /**
      * Gets the current CharacterController controlling the client character.
      * 
-     * @return Returns the current CharacterController controlling the client character.
+     * @return Returns the current CharacterController controlling the client
+     *         character.
      */
     public CharacterController getCharacterController()
     {

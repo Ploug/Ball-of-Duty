@@ -20,8 +20,9 @@ import application.engine.factories.EntityFactory;
 import application.engine.rendering.ClientMap;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
- * needs to communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman
+ * between server and client objects, such as ClientMap, that needs to
+ * communicate with the server.
  * 
  */
 public class Broker
@@ -32,7 +33,8 @@ public class Broker
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "10.126.0.225";
+    private static final String SERVER_IP = "localhost";
+    private static final int SERVER_UDP_PORT = 15001;
     private static final int SERVER_TCP_PORT = 15010;
     private DataOutputStream output = null;
 
@@ -51,10 +53,20 @@ public class Broker
         }
         try
         {
-            _socket = new DatagramSocket(null); // force _socket not to bind to
-                                                // an address.
-            _socket.bind(null); // force _socket to pick up a free port and an
-                                // address determined by the operating system.
+
+            _socket = new DatagramSocket();
+
+        }
+        catch (IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        try
+        {
+            tcpSocket = new Socket(ina, SERVER_TCP_PORT);
+            tcpSocket.setTcpNoDelay(true);
+            output = new DataOutputStream(tcpSocket.getOutputStream());
         }
         catch (IOException e)
         {
@@ -72,31 +84,31 @@ public class Broker
     public void activate(ClientMap map)
     {
         this.map = map;
-        try
-        {
-            tcpSocket = new Socket(ina, SERVER_TCP_PORT);
-            tcpSocket.setTcpNoDelay(true);
-            output = new DataOutputStream(tcpSocket.getOutputStream());
-        }
-        catch (IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+
         isActive = true;
         startListeningTCP();
-        receive();
+        receiveUdp();
 
     }
 
     /**
-     * Returns the port the broker is listening on.
+     * Returns the udp port the broker is listening on.
      * 
-     * @return The port the broker is listening on.
+     * @return The udp port the broker is listening on.
      */
-    public int getPort()
+    public int getUdpPort()
     {
         return _socket.getLocalPort();
+    }
+
+    /**
+     * Returns the tcp port the broker is listening on.
+     * 
+     * @return The tcp port the broker is listening on.
+     */
+    public int getTcpPort()
+    {
+        return tcpSocket.getLocalPort();
     }
 
     /**
@@ -110,17 +122,22 @@ public class Broker
     }
 
     /**
-     * Sends a packet to the server with updated information from the clients game.
+     * Sends a packet to the server with updated information from the clients
+     * game.
      * 
      * @param position
      *            The position of the clients character.
      * @param id
      *            The id of the clients character.
      * @param bullets
-     *            the bullets that needs to have its position updated to the server.
+     *            the bullets that needs to have its position updated to the
+     *            server.
      * @throws IOException
      */
-    public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly know DAO of GameObject instead of ObjectPosition.
+    public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly
+                                                        // know DAO of
+                                                        // GameObject instead of
+                                                        // ObjectPosition.
     {
         try
         {
@@ -159,22 +176,91 @@ public class Broker
     public void stop()
     {
         isActive = false;
+        _socket.close();
+
     }
 
     /**
      * Starts listening for updates.
      */
-    private void receive()
+
+    /**
+     * Handles reading of score updates;
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
+     */
+    private void readScoreUpdate(ByteBuffer buffer)
+    {
+        HashMap<Integer, Double> scoreMap = new HashMap<>();
+
+        do
+        {
+            int ID = buffer.getInt();
+            double score = buffer.getDouble();
+
+            scoreMap.put(ID, score);
+        }
+        while (buffer.get() == 31); // unit separator
+
+        map.updateScores(scoreMap);
+
+    }
+
+    /**
+     * Handles reading of health updates
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
+     */
+    private void readHealthUpdate(ByteBuffer buffer)
+    {
+        List<GameObjectDAO> healths = new ArrayList<>();
+
+        do
+        {
+            GameObjectDAO objectHealth = new GameObjectDAO();
+            objectHealth.objectId = buffer.getInt();
+            objectHealth.maxHealth = buffer.getInt();
+            objectHealth.healthValue = buffer.getInt();
+            healths.add(objectHealth);
+        }
+        while (buffer.get() == 31); // unit separator
+
+        map.updateHealths(healths);
+    }
+
+    public void readPositionUpdate(ByteBuffer buffer)
+    {
+        List<GameObjectDAO> positions = new ArrayList<>();
+
+        do
+        {
+            GameObjectDAO objectPos = new GameObjectDAO();
+            objectPos.objectId = buffer.getInt();
+            objectPos.x = buffer.getDouble();
+            objectPos.y = buffer.getDouble();
+            positions.add(objectPos);
+        }
+        while (buffer.get() == 31); // unit separator
+
+        map.updatePositions(positions);
+    }
+
+    private void receiveUdp()
     {
         new Thread(() ->
         {
-
             while (isActive)
             {
-                DatagramPacket packet;
+                DatagramPacket packet = null;
 
                 byte[] buf = new byte[1024];
+
                 packet = new DatagramPacket(buf, buf.length);
+
                 try
                 {
                     _socket.receive(packet);
@@ -225,69 +311,6 @@ public class Broker
     }
 
     /**
-     * Handles reading of score updates;
-     * 
-     * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
-     */
-    private void readScoreUpdate(ByteBuffer buffer)
-    {
-        HashMap<Integer, Double> scoreMap = new HashMap<>();
-
-        do
-        {
-            int ID = buffer.getInt();
-            double score = buffer.getDouble();
-
-            scoreMap.put(ID, score);
-        }
-        while (buffer.get() == 31); // unit separator
-
-        map.updateScores(scoreMap);
-
-    }
-
-    /**
-     * Handles reading of health updates
-     * 
-     * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
-     */
-    private void readHealthUpdate(ByteBuffer buffer)
-    {
-        List<GameObjectDAO> healths = new ArrayList<>();
-
-        do
-        {
-            GameObjectDAO objectHealth = new GameObjectDAO();
-            objectHealth.objectId = buffer.getInt();
-            objectHealth.maxHealth = buffer.getInt();
-            objectHealth.healthValue = buffer.getInt();
-            healths.add(objectHealth);
-        }
-        while (buffer.get() == 31); // unit separator
-
-        map.updateHealths(healths);
-    }
-
-    public void readPositionUpdate(ByteBuffer buffer)
-    {
-        List<GameObjectDAO> positions = new ArrayList<>();
-
-        do
-        {
-            GameObjectDAO objectPos = new GameObjectDAO();
-            objectPos.objectId = buffer.getInt();
-            objectPos.x = buffer.getDouble();
-            objectPos.y = buffer.getDouble();
-            positions.add(objectPos);
-        }
-        while (buffer.get() == 31); // unit separator
-
-        map.updatePositions(positions);
-    }
-
-    /**
      * Sends a data with UDP, as a byte array, to the server.
      * 
      * @param buf
@@ -295,10 +318,16 @@ public class Broker
      */
     public void sendUdp(byte[] data)
     {
-        DatagramPacket packet = new DatagramPacket(data, data.length, ina, 15001); // TODO dynamically port.
+        DatagramPacket packet = new DatagramPacket(data, data.length, ina, SERVER_UDP_PORT); // TODO
+                                                                                             // dynamically
+                                                                                             // port.
         try
         {
-            _socket.send(packet);
+            if (!_socket.isClosed())
+            {
+                _socket.send(packet);
+            }
+
         }
         catch (IOException e)
         {
@@ -440,9 +469,10 @@ public class Broker
      * Handles players disconnected from the server
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
      */
-    private void readDisconnectedPlayer(ByteBuffer input) 
+    private void readDisconnectedPlayer(ByteBuffer input)
     {
         int playerId = input.getInt();
         int objectId = input.getInt();
@@ -454,7 +484,8 @@ public class Broker
      * Handles destroyed objects
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
      */
     private void readDestroyedObject(ByteBuffer input)
     {
@@ -466,9 +497,12 @@ public class Broker
      * Handles new players created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
      */
-    private void readNewPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
+    private void readNewPlayer(ByteBuffer input) // Should probably tell
+                                                 // GameClient about the new
+                                                 // player instead
     {
         GameObjectDAO data = new GameObjectDAO();
         int playerId = input.getInt();
@@ -486,7 +520,8 @@ public class Broker
      * Handles new bullets created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
      */
     private void readBulletCreation(ByteBuffer input)
     {
@@ -508,7 +543,8 @@ public class Broker
      * Handles reading of kill notifications
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
+     *            The ByteBuffer that handles reading of data send from the
+     *            server.
      */
     private void readKillNotification(ByteBuffer input)
     {

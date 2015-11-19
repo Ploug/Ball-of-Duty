@@ -44,6 +44,9 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "clientPort"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), java.lang.Integer.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "clientTcpPort"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), java.lang.Integer.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
         oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameDTO"));
         oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO.class);
         oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "JoinGameResult"));
@@ -280,7 +283,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
 }
     }
 
-    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientPort) throws java.rmi.RemoteException {
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientPort, java.lang.Integer clientTcpPort) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
@@ -296,7 +299,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {clientPlayerId, clientPort});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {clientPlayerId, clientPort, clientTcpPort});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
