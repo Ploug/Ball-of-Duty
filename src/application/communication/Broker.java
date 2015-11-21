@@ -20,9 +20,8 @@ import application.engine.factories.EntityFactory;
 import application.engine.rendering.ClientMap;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman
- * between server and client objects, such as ClientMap, that needs to
- * communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
+ * needs to communicate with the server.
  * 
  */
 public class Broker
@@ -134,10 +133,7 @@ public class Broker
      *            server.
      * @throws IOException
      */
-    public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly
-                                                        // know DAO of
-                                                        // GameObject instead of
-                                                        // ObjectPosition.
+    public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly know DAO of GameObject instead of ObjectPosition.
     {
         try
         {
@@ -188,8 +184,7 @@ public class Broker
      * Handles reading of score updates;
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readScoreUpdate(ByteBuffer buffer)
     {
@@ -212,8 +207,7 @@ public class Broker
      * Handles reading of health updates
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readHealthUpdate(ByteBuffer buffer)
     {
@@ -323,11 +317,7 @@ public class Broker
                                                                                              // port.
         try
         {
-            if (!_socket.isClosed())
-            {
-                _socket.send(packet);
-            }
-
+            _socket.send(packet);
         }
         catch (IOException e)
         {
@@ -469,8 +459,7 @@ public class Broker
      * Handles players disconnected from the server
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readDisconnectedPlayer(ByteBuffer input)
     {
@@ -484,8 +473,7 @@ public class Broker
      * Handles destroyed objects
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readDestroyedObject(ByteBuffer input)
     {
@@ -497,15 +485,17 @@ public class Broker
      * Handles new players created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readNewPlayer(ByteBuffer input) // Should probably tell
-                                                 // GameClient about the new
-                                                 // player instead
+    private void readNewPlayer(ByteBuffer input) // Should probably tell GameClient about the new player instead
     {
         GameObjectDAO data = new GameObjectDAO();
-        int playerId = input.getInt();
+        char[] nickname = new char[input.get()];
+        for (int i = 0; i < nickname.length; ++i)
+        {
+            nickname[i] = (char)(input.get());
+        }
+        data.nickname = new String(nickname);
         data.objectId = input.getInt();
         data.x = input.getDouble();
         data.y = input.getDouble();
@@ -520,8 +510,7 @@ public class Broker
      * Handles new bullets created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readBulletCreation(ByteBuffer input)
     {
@@ -543,8 +532,7 @@ public class Broker
      * Handles reading of kill notifications
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readKillNotification(ByteBuffer input)
     {

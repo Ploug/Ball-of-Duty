@@ -2,6 +2,7 @@ eclipse.preferences.version=1
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/AccountDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/BodyDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/BodyDTOType.java=UTF-8
+encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/CharacterDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/GameDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/GameObjectDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/MapDTO.java=UTF-8

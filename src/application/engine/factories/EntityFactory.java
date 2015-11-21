@@ -87,7 +87,7 @@ public class EntityFactory
                 GameObject wall = new Wall(dto.getId(), position, body.getWidth(), body.getHeight(), defaultImages.get(EntityType.WALL));
                 return wall;
             case ENEMY_CHARACTER:
-                GameObject enemy = new BoDCharacter(dto.getId(), position, body.getWidth(), body.getHeight(), 0,
+                BoDCharacter enemy = new BoDCharacter(dto.getId(), position, body.getWidth(), body.getHeight(), 0,
                         defaultImages.get(EntityType.ENEMY_CHARACTER));
                 
                 // TODO get velocity from server so we can update the enemies position while inbetween
@@ -112,8 +112,9 @@ public class EntityFactory
         {
             case ENEMY_CHARACTER:
             {
-                GameObject enemy = new BoDCharacter(data.objectId, new Point2D(data.x,data.y), data.width, data.height, 0,
+                BoDCharacter enemy = new BoDCharacter(data.objectId, new Point2D(data.x,data.y), data.width, data.height, 0,
                         defaultImages.get(EntityType.ENEMY_CHARACTER));
+                enemy.setNickname(data.nickname);
                 return enemy;
             }
             case BULLET:

@@ -1,5 +1,5 @@
 /**
- * PlayerDTO.java
+ * CharacterDTO.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
@@ -7,48 +7,48 @@
 
 package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
-public class PlayerDTO  implements java.io.Serializable {
-    private int characterId;
+public class CharacterDTO  implements java.io.Serializable {
+    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body;
 
     private int id;
 
     private java.lang.String nickname;
 
-    public PlayerDTO() {
+    public CharacterDTO() {
     }
 
-    public PlayerDTO(
-           int characterId,
+    public CharacterDTO(
+           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body,
            int id,
            java.lang.String nickname) {
-           this.characterId = characterId;
+           this.body = body;
            this.id = id;
            this.nickname = nickname;
     }
 
 
     /**
-     * Gets the characterId value for this PlayerDTO.
+     * Gets the body value for this CharacterDTO.
      * 
-     * @return characterId
+     * @return body
      */
-    public int getCharacterId() {
-        return characterId;
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO getBody() {
+        return body;
     }
 
 
     /**
-     * Sets the characterId value for this PlayerDTO.
+     * Sets the body value for this CharacterDTO.
      * 
-     * @param characterId
+     * @param body
      */
-    public void setCharacterId(int characterId) {
-        this.characterId = characterId;
+    public void setBody(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body) {
+        this.body = body;
     }
 
 
     /**
-     * Gets the id value for this PlayerDTO.
+     * Gets the id value for this CharacterDTO.
      * 
      * @return id
      */
@@ -58,7 +58,7 @@ public class PlayerDTO  implements java.io.Serializable {
 
 
     /**
-     * Sets the id value for this PlayerDTO.
+     * Sets the id value for this CharacterDTO.
      * 
      * @param id
      */
@@ -68,7 +68,7 @@ public class PlayerDTO  implements java.io.Serializable {
 
 
     /**
-     * Gets the nickname value for this PlayerDTO.
+     * Gets the nickname value for this CharacterDTO.
      * 
      * @return nickname
      */
@@ -78,7 +78,7 @@ public class PlayerDTO  implements java.io.Serializable {
 
 
     /**
-     * Sets the nickname value for this PlayerDTO.
+     * Sets the nickname value for this CharacterDTO.
      * 
      * @param nickname
      */
@@ -88,8 +88,8 @@ public class PlayerDTO  implements java.io.Serializable {
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof PlayerDTO)) return false;
-        PlayerDTO other = (PlayerDTO) obj;
+        if (!(obj instanceof CharacterDTO)) return false;
+        CharacterDTO other = (CharacterDTO) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -98,7 +98,9 @@ public class PlayerDTO  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            this.characterId == other.getCharacterId() &&
+            ((this.body==null && other.getBody()==null) || 
+             (this.body!=null &&
+              this.body.equals(other.getBody()))) &&
             this.id == other.getId() &&
             ((this.nickname==null && other.getNickname()==null) || 
              (this.nickname!=null &&
@@ -114,7 +116,9 @@ public class PlayerDTO  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        _hashCode += getCharacterId();
+        if (getBody() != null) {
+            _hashCode += getBody().hashCode();
+        }
         _hashCode += getId();
         if (getNickname() != null) {
             _hashCode += getNickname().hashCode();
@@ -125,15 +129,15 @@ public class PlayerDTO  implements java.io.Serializable {
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(PlayerDTO.class, true);
+        new org.apache.axis.description.TypeDesc(CharacterDTO.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "CharacterDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("characterId");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "CharacterId"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        elemField.setNillable(false);
+        elemField.setFieldName("body");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Body"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "BodyDTO"));
+        elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("id");

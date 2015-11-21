@@ -75,5 +75,10 @@ public class BoDCharacter extends GameObject
     {
         this._score += score;
     }
+    
+    public String toString()
+    {
+        return _nickname+" | "+_score;
+    }
 
 }
