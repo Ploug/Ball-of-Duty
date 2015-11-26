@@ -3,6 +3,7 @@ package application.account;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 
 import application.engine.entities.BoDCharacter;
+import application.engine.entities.specializations.*;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
@@ -41,10 +42,21 @@ public class Player
     /**
      * Creates a new character for the player to control.
      */
-    public void createNewCharacter(int id)
+    public void createNewCharacter(int id, Specializations spec)
     {
-        this._character = new BoDCharacter(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), 50, 50,
-                200, new Image("images/ball_blue.png")); // TODO image would be dynamic if player has different cosmetics
+        switch(spec) {
+        case BLASTER:
+            this._character = new Blaster(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), new Image("images/ball_blue.png"));
+            break;
+        case HEAVY:
+            this._character = new Heavy(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), new Image("images/ball_blue.png"));
+            break;
+        case ROLLER:
+            this._character = new Roller(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), new Image("images/ball_blue.png"));
+            break;
+        default:
+            break;
+        } ; // TODO image would be dynamic if player has different cosmetics
         this._character.setNickname(_nickname);
     }
 

@@ -11,6 +11,7 @@ import org.tempuri.IBoDService;
 
 import application.account.Account;
 import application.account.Player;
+import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.ClientMap;
 import application.input.CharacterController;
 import javafx.geometry.Point2D;
@@ -62,12 +63,12 @@ public class GameClient
 
     }
 
-    public void joinAsGuest(BorderPane gameBox, String nickname)
+    public void joinAsGuest(BorderPane gameBox, String nickname, Specializations spec)
     {
         try
         {
             clientPlayer = new Player(ibs.newGuest(nickname));
-            joinGame(gameBox);
+            joinGame(gameBox, spec);
         }
         catch (RemoteException e)
         {
@@ -137,17 +138,17 @@ public class GameClient
      * @param gameBox
      *            The BorderPane where the game graphics and UI is handled.
      */
-    private void joinGame(BorderPane gameBox)
+    private void joinGame(BorderPane gameBox, Specializations spec)
     {
         System.out.println("trying to join game");
         try
         {
             Broker broker = new Broker();
-            GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getUdpPort(), broker.getTcpPort(), 1); // TODO
+            GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getUdpPort(), broker.getTcpPort(), spec.getValue()); // TODO
                                                                                                            // dynamic
                                                                                                            // character
                                                                                                            // creation
-            clientPlayer.createNewCharacter(map.getCharacterId());
+            clientPlayer.createNewCharacter(map.getCharacterId(), spec);
             cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());
 
         }

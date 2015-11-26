@@ -37,6 +37,11 @@ public class BoDCharacter extends GameObject
      * @param speed
      *            Movement speed of the character.
      */
+    public BoDCharacter(int id)
+    {
+        super(id);
+    }
+    
     public BoDCharacter(int id, Point2D position, double width, double height, int speed, Image image)
     {
         super(id);
