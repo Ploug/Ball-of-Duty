@@ -27,9 +27,15 @@ public class Weapon extends Observable
 {
 
     private double firerate;
+    private int bulletSpeed;
+    private int bulletSize;
+    private int reloadSpeed;
+    private int magazineMaxSize;
     private int magazineSize;
-    private GameObject gameObject;
     private int damage;
+    private GameObject gameObject;
+
+    private boolean reloading = false;
     private boolean shooting = false;
     private Set<GameObject> activeBullets;
     Timer timer;
@@ -53,7 +59,7 @@ public class Weapon extends Observable
      * @param damage
      *            Damage per bullet.
      */
-    public Weapon(GameObject gameObject, double firerate, int magazineSize, int damage)
+    public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, int bulletSpeed, int reloadSpeed, int bulletSize)
     {
         activeBullets = Collections.newSetFromMap(new ConcurrentHashMap<GameObject, Boolean>());
         timer = new Timer();
@@ -61,7 +67,11 @@ public class Weapon extends Observable
         this.gameObject = gameObject;
         this.firerate = firerate;
         this.damage = damage;
-        this.magazineSize = magazineSize;
+        this.bulletSpeed = bulletSpeed;
+        this.reloadSpeed = reloadSpeed;
+        this.magazineMaxSize = magazineMaxSize;
+        this.magazineSize = magazineMaxSize;
+        this.bulletSize = bulletSize;
     }
 
     int bulletsCreated = 500; // FIXME need better way of handling ID.
@@ -83,33 +93,59 @@ public class Weapon extends Observable
 
             while (shooting)
             {
-
-                Vector2 orientation = gameObject.getBody().getOrientation().setMagnitude(gameObject.getBody().getHeight() / 2);
-                Point2D position = new Point2D(gameObject.getBody().getCenter().getX() + orientation.getX(),
-                        gameObject.getBody().getCenter().getY() + orientation.getY());
-                Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
-                velocity.setMagnitude(300); // bullet speed magic number atm
-
-                Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE, bulletImages.get(Bullet.Type.RIFLE),
-                        gameObject.getId());
-                bullet.getBody().setCenter(position);
-
-                activeBullets.add(bullet);
-                setChanged();
-                notifyObservers(bullet);
-
+                if (!reloading)
+                {
+                    Vector2 orientation = gameObject.getBody().getOrientation().setMagnitude(gameObject.getBody().getHeight() / 2);
+                    Point2D position = new Point2D(gameObject.getBody().getCenter().getX() + orientation.getX(),
+                            gameObject.getBody().getCenter().getY() + orientation.getY());
+                    Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
+                    velocity.setMagnitude(bulletSpeed);
+                    Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE,
+                            bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
+                    bullet.getBody().setCenter(position);
+                    activeBullets.add(bullet);
+                    setChanged();
+                    notifyObservers(bullet);
+                    magazineSize--;
+                }
                 try
                 {
-                    Thread.sleep((long)(1000 / firerate));
+                    Thread.sleep((long) (1000 / firerate));
                 }
                 catch (Exception e)
                 {
                     e.printStackTrace();
                 }
+                if (magazineSize < 1)
+                {
+                    reload();
+                }
 
             }
         }).start();
 
+    }
+
+    public void reload()
+    {
+        if (!reloading)
+        {
+            reloading = true;
+            new Thread(() ->
+            {
+                try
+                {
+                    Thread.sleep(reloadSpeed);
+                }
+                catch (InterruptedException e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                magazineSize = magazineMaxSize;
+                reloading = false;
+            }).start();
+        }
     }
 
     public Set<GameObject> getActiveBullets()
@@ -125,22 +161,47 @@ public class Weapon extends Observable
         shooting = false;
     }
 
-
     public static Map getBulletImages()
     {
         return bulletImages;
     }
+
     /**
      * The current active bullets of the weapon. I.e the bullets that are still in the air that this weapon has created.
      * 
      * @return Returns the active bullets this weapon has created.
      */
 
+    public void setDamage(int damage)
+    {
+        this.damage = damage;
+    }
+
+    public void setFireRate(int firerate)
+    {
+        this.firerate = firerate;
+    }
+    
+    public void setBulletSpeed(int bulletSpeed)
+    {
+        this.bulletSpeed = bulletSpeed;
+    }
+
+    public void setMagazineMaxSize(int magazineMaxSize)
+    {
+        this.magazineMaxSize = magazineMaxSize;
+    }
+
+    public void setReloadSpeed(int reloadSpeed)
+    {
+        this.reloadSpeed = reloadSpeed;
+    }
+
     @Override
     public String toString()
     {
-        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", firerate, magazineSize, gameObject,
-                damage, shooting);
+        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", firerate, magazineSize,
+                gameObject, damage, shooting);
     }
 
 }

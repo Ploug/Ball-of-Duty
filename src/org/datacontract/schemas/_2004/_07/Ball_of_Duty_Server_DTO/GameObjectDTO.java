@@ -12,14 +12,18 @@ public class GameObjectDTO  implements java.io.Serializable {
 
     private int id;
 
+    private int specialization;
+
     public GameObjectDTO() {
     }
 
     public GameObjectDTO(
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body,
-           int id) {
+           int id,
+           int specialization) {
            this.body = body;
            this.id = id;
+           this.specialization = specialization;
     }
 
 
@@ -62,6 +66,26 @@ public class GameObjectDTO  implements java.io.Serializable {
         this.id = id;
     }
 
+
+    /**
+     * Gets the specialization value for this GameObjectDTO.
+     * 
+     * @return specialization
+     */
+    public int getSpecialization() {
+        return specialization;
+    }
+
+
+    /**
+     * Sets the specialization value for this GameObjectDTO.
+     * 
+     * @param specialization
+     */
+    public void setSpecialization(int specialization) {
+        this.specialization = specialization;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GameObjectDTO)) return false;
@@ -77,7 +101,8 @@ public class GameObjectDTO  implements java.io.Serializable {
             ((this.body==null && other.getBody()==null) || 
              (this.body!=null &&
               this.body.equals(other.getBody()))) &&
-            this.id == other.getId();
+            this.id == other.getId() &&
+            this.specialization == other.getSpecialization();
         __equalsCalc = null;
         return _equals;
     }
@@ -93,6 +118,7 @@ public class GameObjectDTO  implements java.io.Serializable {
             _hashCode += getBody().hashCode();
         }
         _hashCode += getId();
+        _hashCode += getSpecialization();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -112,6 +138,12 @@ public class GameObjectDTO  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("id");
         elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Id"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("specialization");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Specialization"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

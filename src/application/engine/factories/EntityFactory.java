@@ -11,6 +11,10 @@ import application.engine.entities.BoDCharacter;
 import application.engine.entities.Bullet;
 import application.engine.entities.Wall;
 import application.engine.entities.Bullet.Type;
+import application.engine.entities.specializations.Blaster;
+import application.engine.entities.specializations.Heavy;
+import application.engine.entities.specializations.Roller;
+import application.engine.entities.specializations.Specializations;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Weapon;
 import application.util.Vector2;
@@ -87,9 +91,22 @@ public class EntityFactory
                 GameObject wall = new Wall(dto.getId(), position, body.getWidth(), body.getHeight(), defaultImages.get(EntityType.WALL));
                 return wall;
             case ENEMY_CHARACTER:
-                BoDCharacter enemy = new BoDCharacter(dto.getId(), position, body.getWidth(), body.getHeight(), 0,
-                        defaultImages.get(EntityType.ENEMY_CHARACTER));
-                
+                BoDCharacter enemy = null;
+
+                switch (Specializations.fromInteger(dto.getSpecialization()))
+                {
+                    case BLASTER:
+                        enemy = new Blaster(dto.getId(), position, defaultImages.get(EntityType.ENEMY_CHARACTER));
+                        break;
+                    case ROLLER:
+                        enemy = new Roller(dto.getId(), position, defaultImages.get(EntityType.ENEMY_CHARACTER));
+                        break;
+                    case HEAVY:
+                        enemy = new Heavy(dto.getId(), position, defaultImages.get(EntityType.ENEMY_CHARACTER));
+                        break;
+                    default:
+                        break;
+                }
                 // TODO get velocity from server so we can update the enemies position while inbetween
                 // position updates and if enemy has special cosmetics it's passed through here.
                 return enemy;
@@ -112,8 +129,23 @@ public class EntityFactory
         {
             case ENEMY_CHARACTER:
             {
-                BoDCharacter enemy = new BoDCharacter(data.objectId, new Point2D(data.x,data.y), data.width, data.height, 0,
-                        defaultImages.get(EntityType.ENEMY_CHARACTER));
+                BoDCharacter enemy = null;
+                Point2D position = new Point2D(data.x, data.y);
+
+                switch (data.specialization)
+                {
+                    case BLASTER:
+                        enemy = new Blaster(data.objectId, position, defaultImages.get(EntityType.ENEMY_CHARACTER));
+                        break;
+                    case ROLLER:
+                        enemy = new Roller(data.objectId, position, defaultImages.get(EntityType.ENEMY_CHARACTER));
+                        break;
+                    case HEAVY:
+                        enemy = new Heavy(data.objectId, position, defaultImages.get(EntityType.ENEMY_CHARACTER));
+                        break;
+                    default:
+                        return null;
+                }
                 enemy.setNickname(data.nickname);
                 return enemy;
             }
@@ -122,33 +154,9 @@ public class EntityFactory
                 return new Bullet(data.objectId, new Point2D(data.x, data.y), data.height, new Vector2(data.velocityX, data.velocityY), data.damage,
                         data.bulletType, (Image)Weapon.getBulletImages().get(data.bulletType), data.ownerId);
             }
-
             default:
                 return null;
         }
-    }
-
-    /**
-     * Creates a default dummy game object with an id and type.
-     * 
-     * @param id
-     *            The id of the dummy object.
-     * @param type
-     *            The type of the dummy object.
-     * @return A dummy object with default values a type and an id..
-     */
-    public static GameObject getDefaultEntity(int id, EntityType type)
-    {
-        switch (type)
-        {
-            case WALL:
-                return new Wall(id);
-            case ENEMY_CHARACTER:
-                GameObject enemy = new BoDCharacter(id, new Point2D(0, 0), 50, 50, 0, defaultImages.get(EntityType.ENEMY_CHARACTER));
-                return enemy;
-        }
-        return null;
-
     }
 
 }
