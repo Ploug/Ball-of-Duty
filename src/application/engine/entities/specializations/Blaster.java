@@ -23,6 +23,6 @@ public class Blaster extends BoDCharacter
         this.physics = new Physics(this, SPEED);
         this.view = new View(this, image);
         this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_SIZE, DAMAGE);
-        this.health = new Health(100);
+        this.health = new Health(HEALTH);
     }
 }

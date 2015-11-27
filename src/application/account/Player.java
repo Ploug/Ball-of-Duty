@@ -44,19 +44,23 @@ public class Player
      */
     public void createNewCharacter(int id, Specializations spec)
     {
-        switch(spec) {
+        int x = 100 + (int)(Math.random() * 900);
+        int y = 100 + (int)(Math.random() * 400);
+        Image myCharImage = new Image("images/ball_blue.png");
+        switch(spec) 
+        {
         case BLASTER:
-            this._character = new Blaster(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), new Image("images/ball_blue.png"));
+            this._character = new Blaster(id, new Point2D(x,y), myCharImage);
             break;
         case HEAVY:
-            this._character = new Heavy(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), new Image("images/ball_blue.png"));
+            this._character = new Heavy(id, new Point2D(x,y), myCharImage);
             break;
         case ROLLER:
-            this._character = new Roller(id, new Point2D(100 + (int) Math.random() * 900, 100 + (int) Math.random() * 400), new Image("images/ball_blue.png"));
+            this._character = new Roller(id, new Point2D(x,y), myCharImage);
             break;
         default:
             break;
-        } ; // TODO image would be dynamic if player has different cosmetics
+        } // TODO image would be dynamic if player has different cosmetics
         this._character.setNickname(_nickname);
     }
 

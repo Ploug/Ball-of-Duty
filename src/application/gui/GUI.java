@@ -118,11 +118,11 @@ public class GUI extends Application
         
         chooseBlaster.setSelected(true);
         
-        HBox SpecializationBox = new HBox();
-        SpecializationBox.setSpacing(9);
-        SpecializationBox.getChildren().add(chooseBlaster);
-        SpecializationBox.getChildren().add(chooseRoller);
-        SpecializationBox.getChildren().add(chooseHeavy);
+        HBox specializationBox = new HBox();
+        specializationBox.setSpacing(9);
+        specializationBox.getChildren().add(chooseBlaster);
+        specializationBox.getChildren().add(chooseRoller);
+        specializationBox.getChildren().add(chooseHeavy);
 
 
         Label lblNickname = new Label("Nickname:");
@@ -192,7 +192,7 @@ public class GUI extends Application
 
         mainButtonBox.getChildren().add(lblNickname);
         mainButtonBox.getChildren().add(tfNickname);
-        mainButtonBox.getChildren().add(SpecializationBox);
+        mainButtonBox.getChildren().add(specializationBox);
         mainButtonBox.getChildren().add(joinBtn);
         mainButtonBox.getChildren().add(loginStart);
         mainButtonBox.getChildren().add(createStart);

@@ -13,9 +13,9 @@ public enum Specializations
     static
     {
  
-        values.put(1, ROLLER);
-        values.put(2, BLASTER);
-        values.put(3, HEAVY);
+        values.put(ROLLER.value, ROLLER);
+        values.put(BLASTER.value, BLASTER);
+        values.put(HEAVY.value, HEAVY);
     }
  
     /**

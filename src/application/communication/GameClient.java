@@ -144,10 +144,7 @@ public class GameClient
         try
         {
             Broker broker = new Broker();
-            GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getUdpPort(), broker.getTcpPort(), spec.getValue()); // TODO
-                                                                                                           // dynamic
-                                                                                                           // character
-                                                                                                           // creation
+            GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getUdpPort(), broker.getTcpPort(), spec.getValue());
             clientPlayer.createNewCharacter(map.getCharacterId(), spec);
             cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());
 
