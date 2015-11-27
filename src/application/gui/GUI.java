@@ -1,6 +1,7 @@
 package application.gui;
 
 import application.communication.GameClient;
+import application.engine.entities.specializations.Specializations;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -11,7 +12,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -37,11 +40,13 @@ public class GUI extends Application
     }
 
     /**
-     * Gets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
+     * Gets the scenes relative location. The relative location is based on how
+     * the scene's is located relative to the operating system.
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
+     * @return The relative location of the scene. The relative location is
+     *         based on how the scene's is located relative to the operating
      *         system.
      */
     private Point2D getRelativeSceneLocation(Stage stage)
@@ -100,6 +105,25 @@ public class GUI extends Application
         // new Background(images...)
         Background background = new Background(backgroundImage);
         startMenuRoot.setBackground(background);
+        
+        RadioButton chooseBlaster = new RadioButton("Blaster");
+        RadioButton chooseRoller = new RadioButton("Roller");
+        RadioButton chooseHeavy = new RadioButton("Heavy");
+        
+        final ToggleGroup specializationGroup = new ToggleGroup();
+        
+        chooseBlaster.setToggleGroup(specializationGroup);
+        chooseRoller.setToggleGroup(specializationGroup);
+        chooseHeavy.setToggleGroup(specializationGroup);
+        
+        chooseBlaster.setSelected(true);
+        
+        HBox specializationBox = new HBox();
+        specializationBox.setSpacing(9);
+        specializationBox.getChildren().add(chooseBlaster);
+        specializationBox.getChildren().add(chooseRoller);
+        specializationBox.getChildren().add(chooseHeavy);
+
 
         Label lblNickname = new Label("Nickname:");
         TextField tfNickname = new TextField();
@@ -107,6 +131,7 @@ public class GUI extends Application
         Button createStart = new Button("Create Account");
         theStage.getIcons().add(new Image("images/ball_red.png"));
         VBox mainButtonBox = new VBox();
+        mainButtonBox.setSpacing(5);
         Button joinBtn = new Button("Join game");
 
         joinBtn.setPrefSize(150, 50);
@@ -122,16 +147,44 @@ public class GUI extends Application
 
         joinBtn.setOnAction(ActionEvent ->
         {
+            Specializations spec; 
+            if (chooseRoller.isSelected())
+            {
+                spec = Specializations.ROLLER;
+            } 
+            else if (chooseHeavy.isSelected())
+            {
+                spec = Specializations.HEAVY;
+            }
+            else // Blaster is default, if something goes wrong with radio buttons
+            {
+                spec = Specializations.BLASTER;
+            } 
+            
+            
             theStage.setScene(gameScene);
-            gameManager.joinAsGuest(gameBox, tfNickname.getText());
+            gameManager.joinAsGuest(gameBox, tfNickname.getText(), spec);
             gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
             gameBox.requestFocus();
 
         });
         tfNickname.setOnAction(ActionEvent ->
         {
+            Specializations spec; 
+            if (chooseRoller.isSelected())
+            {
+                spec = Specializations.ROLLER;
+            } 
+            else if (chooseHeavy.isSelected())
+            {
+                spec = Specializations.HEAVY;
+            }
+            else // Blaster is default, if something goes wrong with radio buttons
+            {
+                spec = Specializations.BLASTER;
+            }
             theStage.setScene(gameScene);
-            gameManager.joinAsGuest(gameBox, tfNickname.getText());
+            gameManager.joinAsGuest(gameBox, tfNickname.getText(), spec);
             gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
             gameBox.requestFocus();
 
@@ -139,6 +192,7 @@ public class GUI extends Application
 
         mainButtonBox.getChildren().add(lblNickname);
         mainButtonBox.getChildren().add(tfNickname);
+        mainButtonBox.getChildren().add(specializationBox);
         mainButtonBox.getChildren().add(joinBtn);
         mainButtonBox.getChildren().add(loginStart);
         mainButtonBox.getChildren().add(createStart);
