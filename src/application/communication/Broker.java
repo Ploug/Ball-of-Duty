@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import application.engine.entities.Bullet;
+import application.engine.entities.specializations.Specializations;
 import application.engine.factories.EntityFactory;
 import application.engine.rendering.ClientMap;
 
@@ -501,6 +502,7 @@ public class Broker
         data.y = input.getDouble();
         data.width = input.getDouble();
         data.height = input.getDouble();
+        data.specialization = Specializations.fromInteger(input.getInt());
         int value = input.getInt();
         data.entityType = EntityFactory.EntityType.fromInteger(value);
         map.addGameObject(data);

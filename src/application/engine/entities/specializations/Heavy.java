@@ -9,11 +9,14 @@ import javafx.scene.image.Image;
 public class Heavy extends BoDCharacter
 {
     private static final int HEALTH = 150;
-    private static final int SPEED = 30;
-    private static final int DAMAGE = 15;
-    private static final int FIRE_RATE = 3;
-    private static final int MAGAZINE_SIZE = 9;
-    private static final double SIZE = 70;
+    private static final int SPEED = 180;
+    private static final int DAMAGE = 25;
+    private static final int BULLET_SPEED = 360;
+    private static final int BULLET_SIZE = 0; // Not implemented
+    private static final int FIRE_RATE = 7;
+    private static final int MAGAZINE_MAX_SIZE = 5;
+    private static final int RELOAD_SPEED = 1500;
+    private static final double SIZE = 50;
    
  
     public Heavy(int id, Point2D position, Image image)
@@ -22,7 +25,17 @@ public class Heavy extends BoDCharacter
         this.body = new Body(this, position, SIZE, SIZE, TYPE);
         this.physics = new Physics(this, SPEED);
         this.view = new View(this, image);
-        this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_SIZE, DAMAGE);
+        this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_MAX_SIZE, DAMAGE, BULLET_SPEED, RELOAD_SPEED, BULLET_SIZE);
         this.health = new Health(HEALTH);
+    }
+    
+    public void updateStats()
+    {
+        physics.setTopSpeed( SPEED + (int) (_score * 1));
+        weapon.setBulletSpeed( BULLET_SPEED + (int) (_score * 1));
+        weapon.setFireRate( FIRE_RATE + (int) (_score * 1));
+        weapon.setDamage( DAMAGE + (int) (_score * 1));
+        weapon.setMagazineMaxSize( MAGAZINE_MAX_SIZE + (int) (_score * 1));
+        weapon.setReloadSpeed( RELOAD_SPEED + (int) (_score * 1));
     }
 }

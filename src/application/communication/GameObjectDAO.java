@@ -1,6 +1,7 @@
 package application.communication;
 
 import application.engine.entities.Bullet;
+import application.engine.entities.specializations.Specializations;
 import application.engine.factories.EntityFactory;
 
 public class GameObjectDAO
@@ -13,6 +14,7 @@ public class GameObjectDAO
     public double velocityY;
     public Bullet.Type bulletType;
     public EntityFactory.EntityType entityType;
+    public Specializations specialization;
     public int damage;
     public int ownerId;
     public int objectId;
