@@ -26,8 +26,8 @@ import javafx.scene.image.Image;
 public class Weapon extends Observable
 {
 
-    private double firerate;
-    private int bulletSpeed;
+    private double fireRate;
+    private double bulletSpeed;
     private int bulletSize;
     private int reloadSpeed;
     private int magazineMaxSize;
@@ -59,13 +59,13 @@ public class Weapon extends Observable
      * @param damage
      *            Damage per bullet.
      */
-    public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, int bulletSpeed, int reloadSpeed, int bulletSize)
+    public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, double bulletSpeed, int reloadSpeed, int bulletSize)
     {
         activeBullets = Collections.newSetFromMap(new ConcurrentHashMap<GameObject, Boolean>());
         timer = new Timer();
         timer.start();
         this.gameObject = gameObject;
-        this.firerate = firerate;
+        this.fireRate = firerate;
         this.damage = damage;
         this.bulletSpeed = bulletSpeed;
         this.reloadSpeed = reloadSpeed;
@@ -81,7 +81,7 @@ public class Weapon extends Observable
      */
     public void startShooting()
     {
-        if (timer.getDuration() < (1000 / firerate) || shooting)
+        if (timer.getDuration() < (1000 / fireRate) || shooting)
         {
             return;
         }
@@ -100,7 +100,7 @@ public class Weapon extends Observable
                             gameObject.getBody().getCenter().getY() + orientation.getY());
                     Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                     velocity.setMagnitude(bulletSpeed);
-                    Bullet bullet = new Bullet(bulletsCreated++, position, 10, velocity, damage, Bullet.Type.RIFLE,
+                    Bullet bullet = new Bullet(bulletsCreated++, position, bulletSize, velocity, damage, Bullet.Type.RIFLE,
                             bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
                     bullet.getBody().setCenter(position);
                     activeBullets.add(bullet);
@@ -110,7 +110,7 @@ public class Weapon extends Observable
                 }
                 try
                 {
-                    Thread.sleep((long) (1000 / firerate));
+                    Thread.sleep((long) (1000 / fireRate));
                 }
                 catch (Exception e)
                 {
@@ -177,12 +177,12 @@ public class Weapon extends Observable
         this.damage = damage;
     }
 
-    public void setFireRate(int firerate)
+    public void setFireRate(double fireRate)
     {
-        this.firerate = firerate;
+        this.fireRate = fireRate;
     }
     
-    public void setBulletSpeed(int bulletSpeed)
+    public void setBulletSpeed(double bulletSpeed)
     {
         this.bulletSpeed = bulletSpeed;
     }
@@ -200,7 +200,7 @@ public class Weapon extends Observable
     @Override
     public String toString()
     {
-        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", firerate, magazineSize,
+        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", fireRate, magazineSize,
                 gameObject, damage, shooting);
     }
 

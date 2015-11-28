@@ -204,12 +204,12 @@ public class Physics
     /**
      * Sets the top speed of the game object. i.e 400 would be 400 units per second, where units is pixels on the default display.
      * 
-     * @param amount
+     * @param topSpeed
      *            The top speed of the game object, i.e 400 would be 400 units per second, where units is pixels on the default display.
      */
-    public void setTopSpeed(int amount)
+    public void setTopSpeed(double topSpeed)
     {
-        topspeed = amount;
+        topspeed = topSpeed;
     }
 
     /**
