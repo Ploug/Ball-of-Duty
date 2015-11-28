@@ -1,15 +1,24 @@
 package application.gui;
 
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Optional;
+
 import application.communication.GameClient;
 import application.engine.entities.specializations.Specializations;
+import application.engine.rendering.ClientMap;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
@@ -27,12 +36,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class GUI extends Application
+public class GUI extends Application implements Observer
 {
 
     public static GameClient gameManager;
     private static int windowWidth = 1280;
     private static int windowHeight = 720;
+    private BorderPane gameBox;
+    private Stage tStage;
+    private Scene startMenu;
 
     public static void main(String[] args)
     {
@@ -57,6 +69,7 @@ public class GUI extends Application
     @Override
     public void start(Stage theStage)
     {
+        this.tStage = theStage;
         theStage.setTitle("Ball of Duty");
         theStage.setHeight(windowHeight);
         theStage.setWidth(windowWidth);
@@ -70,9 +83,9 @@ public class GUI extends Application
         });
 
         BorderPane startMenuRoot = new BorderPane();
-        Scene startMenu = new Scene(startMenuRoot);
+        startMenu = new Scene(startMenuRoot);
 
-        BorderPane gameBox = new BorderPane();
+        gameBox = new BorderPane();
         Scene gameScene = new Scene(gameBox);
 
         BorderPane createAccountRoot = new BorderPane();
@@ -100,30 +113,29 @@ public class GUI extends Application
         Image image = new Image("images/frontpage.png");
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
         // new BackgroundImage(image, repeatX, repeatY, position, size)
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                backgroundSize);
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
         // new Background(images...)
         Background background = new Background(backgroundImage);
         startMenuRoot.setBackground(background);
-        
+
         RadioButton chooseBlaster = new RadioButton("Blaster");
         RadioButton chooseRoller = new RadioButton("Roller");
         RadioButton chooseHeavy = new RadioButton("Heavy");
-        
+
         final ToggleGroup specializationGroup = new ToggleGroup();
-        
+
         chooseBlaster.setToggleGroup(specializationGroup);
         chooseRoller.setToggleGroup(specializationGroup);
         chooseHeavy.setToggleGroup(specializationGroup);
-        
+
         chooseBlaster.setSelected(true);
-        
+
         HBox specializationBox = new HBox();
         specializationBox.setSpacing(9);
         specializationBox.getChildren().add(chooseBlaster);
         specializationBox.getChildren().add(chooseRoller);
         specializationBox.getChildren().add(chooseHeavy);
-
 
         Label lblNickname = new Label("Nickname:");
         TextField tfNickname = new TextField();
@@ -147,39 +159,41 @@ public class GUI extends Application
 
         joinBtn.setOnAction(ActionEvent ->
         {
-            Specializations spec; 
+            Specializations spec;
             if (chooseRoller.isSelected())
             {
                 spec = Specializations.ROLLER;
-            } 
+            }
             else if (chooseHeavy.isSelected())
             {
                 spec = Specializations.HEAVY;
             }
-            else // Blaster is default, if something goes wrong with radio buttons
+            else // Blaster is default, if something goes wrong with radio
+                 // buttons
             {
                 spec = Specializations.BLASTER;
-            } 
-            
-            
+            }
+
             theStage.setScene(gameScene);
             gameManager.joinAsGuest(gameBox, tfNickname.getText(), spec);
+            gameManager.cMap.addObserver(this);
             gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
             gameBox.requestFocus();
 
         });
         tfNickname.setOnAction(ActionEvent ->
         {
-            Specializations spec; 
+            Specializations spec;
             if (chooseRoller.isSelected())
             {
                 spec = Specializations.ROLLER;
-            } 
+            }
             else if (chooseHeavy.isSelected())
             {
                 spec = Specializations.HEAVY;
             }
-            else // Blaster is default, if something goes wrong with radio buttons
+            else // Blaster is default, if something goes wrong with radio
+                 // buttons
             {
                 spec = Specializations.BLASTER;
             }
@@ -239,7 +253,8 @@ public class GUI extends Application
 
             createBtn.setOnAction(ActionEvent1 ->
             {
-                gameManager.createAccount(tfUserName.getText(), tfNickname2.getText(), pf.getText().toCharArray(), pf2.getText().toCharArray());
+                gameManager.createAccount(tfUserName.getText(), tfNickname2.getText(), pf.getText().toCharArray(),
+                        pf2.getText().toCharArray());
                 startMenuRoot.setLeft(mainButtonBox);
                 BorderPane.setMargin(mainButtonBox, new Insets(350, 0, 0, 150));
             });
@@ -265,20 +280,20 @@ public class GUI extends Application
             logInBtn.setStyle("-fx-font: 20 arial; -fx-base: #ff0717;");
             back2.setId("join-game");
             back2.setStyle("-fx-font: 20 arial; -fx-base: #ff0717;");
-            
+
             loginButtonBox.getChildren().add(lblUserName2);
             loginButtonBox.getChildren().add(tfUserName2);
             loginButtonBox.getChildren().add(lblPassword2);
             loginButtonBox.getChildren().add(pf3);
             loginButtonBox.getChildren().add(logInBtn);
             loginButtonBox.getChildren().add(back2);
-            
+
             startMenuRoot.setLeft(loginButtonBox);
             BorderPane.setMargin(loginButtonBox, new Insets(350, 0, 0, 150));
-            
+
             logInBtn.setOnAction(ActionEvent1 ->
             {
-                //TODO login
+                // TODO login
             });
 
             back2.setOnAction(ActionEvent1 ->
@@ -305,5 +320,61 @@ public class GUI extends Application
         gameBox.setBottom(quitBtn);
         BorderPane.setAlignment(quitBtn, Pos.BASELINE_LEFT);
         theStage.show();
+    }
+
+    @Override
+    public void update(Observable arg0, Object arg1)
+    {
+        if (arg0 instanceof ClientMap)
+        {
+            Platform.runLater(new Runnable() // Run later to modify GUI from
+                                             // outside GUI-thread
+            {
+                @Override
+                public void run()
+                {
+                    Alert alert = new Alert(AlertType.CONFIRMATION);
+                    alert.setTitle("Game over");
+                    alert.setHeaderText(null);
+                    alert.setContentText("You have died...\nDo you want to respawn?");
+
+                    ButtonType respawnBlaster = new ButtonType("Respawn as blaster");
+                    ButtonType respawnRoller = new ButtonType("Respawn as roller");
+                    ButtonType respawnHeavy = new ButtonType("Respawn as heavy");
+                    ButtonType spectate = new ButtonType("Spectate");
+                    ButtonType quit = new ButtonType("Quit");
+
+                    alert.getButtonTypes().setAll(respawnBlaster, respawnRoller, respawnHeavy, spectate, quit);
+
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == respawnBlaster)
+                    {
+                        System.out.println("Trying to respawn...");
+                        gameManager.respawn(gameBox, Specializations.BLASTER);
+                    }
+                    else if (result.get() == respawnRoller)
+                    {
+                        System.out.println("Trying to respawn...");
+                        gameManager.respawn(gameBox, Specializations.ROLLER);
+                    }
+                    else if (result.get() == respawnHeavy)
+                    {
+                        System.out.println("Trying to respawn...");
+                        gameManager.respawn(gameBox, Specializations.HEAVY);
+                    }
+                    else if (result.get() == spectate)
+                    {
+                        System.out.println("Spectating...");
+                        gameManager.cMap.setChoosing(false);
+                    }
+                    else if (result.get() == quit)
+                    {
+                        System.out.println("Trying to quit...");
+                        gameManager.quitGame();
+                        tStage.setScene(startMenu);
+                    }
+                }
+            });
+        }
     }
 }

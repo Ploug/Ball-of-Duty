@@ -68,5 +68,11 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     iBoDService.quitGame(clientPlayerId);
   }
   
+  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO respawn(java.lang.Integer clientPlayerId, java.lang.Integer clientSpecializations) throws java.rmi.RemoteException{
+    if (iBoDService == null)
+      _initIBoDServiceProxy();
+    return iBoDService.respawn(clientPlayerId, clientSpecializations);
+  }
+  
   
 }

@@ -6,6 +6,7 @@ import javax.xml.rpc.ServiceException;
 
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
@@ -157,6 +158,24 @@ public class GameClient
         characterController = new CharacterController(clientPlayer.getCharacter(), gameBox, sceneRelativeLocation);
         cMap.activate();
 
+    }
+
+    public void respawn(BorderPane gameBox, Specializations spec)
+    {
+        try
+        {
+            GameObjectDTO goDTO = ibs.respawn(clientPlayer.getId(), spec.getValue());
+            clientPlayer.createNewCharacter(goDTO.getId(), spec);
+            cMap.setCharacter(clientPlayer.getCharacter());
+
+            characterController = new CharacterController(clientPlayer.getCharacter(), gameBox, sceneRelativeLocation);
+            cMap.setChoosing(false);
+        }
+        catch (RemoteException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**

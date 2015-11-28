@@ -22,7 +22,7 @@ public class BoDServiceLocator extends org.apache.axis.client.Service implements
     }
 
     // Use to get a proxy class for BasicHttpBinding_IBoDService
-    private java.lang.String BasicHttpBinding_IBoDService_address = "http://localhost:8733/Ball_of_Duty_Server/Services/BoDService/";
+    private java.lang.String BasicHttpBinding_IBoDService_address = "http://localhost/Ball_of_Duty_Server/Services/BoDService/";
 
     public java.lang.String getBasicHttpBinding_IBoDServiceAddress() {
         return BasicHttpBinding_IBoDService_address;

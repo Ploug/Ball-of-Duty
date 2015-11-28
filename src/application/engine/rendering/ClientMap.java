@@ -38,7 +38,7 @@ import javafx.scene.layout.VBox;
  * @author Gruppe6
  *
  */
-public class ClientMap implements Observer
+public class ClientMap extends Observable implements Observer
 {
 
     private Broker broker;
@@ -57,6 +57,8 @@ public class ClientMap implements Observer
     private int serverGameId;
     private Leaderboard leaderboard;
     private ConcurrentLinkedQueue<GameObject> unassignedBullets;
+    private boolean choosing;
+    private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
 
     /**
      * Creates a client map defining the serverMap its based upon, the gamebox
@@ -75,9 +77,11 @@ public class ClientMap implements Observer
     public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, BoDCharacter clientChar)
     {
         this.unassignedBullets = new ConcurrentLinkedQueue<>();
+        this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
         this.clientChar = clientChar;
         this.clientChar.addObserver(this);
+        System.out.println("My id " + clientChar.getId());
         this.leaderboard = new Leaderboard();
         if (clientChar.getWeapon() != null)
         {
@@ -172,7 +176,9 @@ public class ClientMap implements Observer
 
                 if (timer.getDuration() > 250)
                 {
-                    fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
+                    fpsLabel.setText("fps: " + frames * 4);// every 0.25 second,
+                                                           // time by 4 to get
+                                                           // frame per second.
                     scoreLabel.setText("Score: " + (int)clientChar.getScore());
                     if (!clientChar.isDestroyed())
                     {
@@ -273,9 +279,10 @@ public class ClientMap implements Observer
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
-     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
-     * score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key
+     * in the scoreMap. If it does, and the go is an instance of BoDCharacter,
+     * then it calls the setScore method of the BoDCharacter and gives the value
+     * associated with the matching key as the score.
      * 
      * @param scoreMap
      */
@@ -322,8 +329,9 @@ public class ClientMap implements Observer
      */
     public void addGameObject(GameObjectDAO data)
     {
-        if (data.entityType != null)
+        if (!choosing && data.entityType != null)
         {
+
             if (data.ownerId == clientChar.getId())
             {
                 Bullet bullet = (Bullet)unassignedBullets.poll();
@@ -336,6 +344,10 @@ public class ClientMap implements Observer
             {
                 addGameObject(EntityFactory.getEntity(data, data.entityType));
             }
+        }
+        else if (choosing)
+        {
+            addQueue.add(data);
         }
     }
 
@@ -370,7 +382,8 @@ public class ClientMap implements Observer
     }
 
     /**
-     * Sends an update to the server which data such as the clients character position and active bullets.
+     * Sends an update to the server which data such as the clients character
+     * position and active bullets.
      */
 
     public void sendUpdate()
@@ -386,12 +399,28 @@ public class ClientMap implements Observer
         broker.sendUpdate(posList);
     }
 
+    public void setChoosing(boolean input)
+    {
+        choosing = input;
+        if (!choosing)
+        {
+            while (addQueue.peek() != null)
+            {
+                addGameObject(addQueue.poll());
+            }
+        }
+
+    }
+
     public void killNotification(int victimId, int killerId)
     {
         destroyGameObject(victimId);
         if (victimId == clientChar.getId())
         {
             System.out.println("YOU DIED MOTAFUCASPKDSAD FUCKA");
+            choosing = true;
+            setChanged();
+            notifyObservers(this); // Game over pop up
         }
         else if (killerId == clientChar.getId())
         {
@@ -438,7 +467,8 @@ public class ClientMap implements Observer
             gameObjects.remove(bullet.getId());
             clientChar.getWeapon().getActiveBullets().remove(bullet.getId());
             o.deleteObserver(this);
-            // TODO Server should handle if a bullet have been active for too long, not client.
+            // TODO Server should handle if a bullet have been active for too
+            // long, not client.
 
         }
         else if (o instanceof GameObject)
@@ -448,6 +478,17 @@ public class ClientMap implements Observer
             System.out.println("Game object destroyed: " + go.getId());
             gameObjects.remove(go.getId());
             o.deleteObserver(this);
+        }
+    }
+
+    public void setCharacter(BoDCharacter character)
+    {
+        clientChar = character;
+
+        addGameObject(clientChar);
+        if (clientChar.getWeapon() != null)
+        {
+            clientChar.getWeapon().addObserver(this);
         }
     }
 }
