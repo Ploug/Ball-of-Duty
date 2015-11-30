@@ -6,7 +6,7 @@ import application.engine.game_object.Health;
 import application.engine.game_object.View;
 import application.engine.game_object.Weapon;
 import application.engine.game_object.physics.Physics;
-import javafx.geometry.Point2D;
+import application.engine.rendering.TranslatedPoint;
 import javafx.scene.image.Image;
 
 /**

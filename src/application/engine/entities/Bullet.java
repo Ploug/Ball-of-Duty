@@ -3,14 +3,13 @@ package application.engine.entities;
 import java.util.HashMap;
 import java.util.Map;
 
-import application.communication.Opcodes;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.View;
 import application.engine.game_object.physics.Physics;
+import application.engine.rendering.TranslatedPoint;
 import application.util.Timer;
 import application.util.Vector2;
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 
 /**
@@ -73,7 +72,7 @@ public class Bullet extends GameObject
      * @param damage
      *            The amount of health reduced on another object if this bullet collides with the object.
      */
-    public Bullet(int id, Point2D position, double radius, Vector2 velocity, int damage, Type type, Image image, int ownerId)
+    public Bullet(int id, TranslatedPoint position, double radius, Vector2 velocity, int damage, Type type, Image image, int ownerId)
     {
         super(id);
         this.ownerId = ownerId;

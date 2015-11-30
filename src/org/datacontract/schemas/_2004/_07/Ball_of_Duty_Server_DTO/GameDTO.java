@@ -16,6 +16,10 @@ public class GameDTO  implements java.io.Serializable {
 
     private java.lang.String IPAddress;
 
+    private java.lang.Integer mapHeight;
+
+    private java.lang.Integer mapWidth;
+
     private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players;
 
     public GameDTO() {
@@ -26,11 +30,15 @@ public class GameDTO  implements java.io.Serializable {
            java.lang.Integer gameId,
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO[] gameObjects,
            java.lang.String IPAddress,
+           java.lang.Integer mapHeight,
+           java.lang.Integer mapWidth,
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players) {
            this.characterId = characterId;
            this.gameId = gameId;
            this.gameObjects = gameObjects;
            this.IPAddress = IPAddress;
+           this.mapHeight = mapHeight;
+           this.mapWidth = mapWidth;
            this.players = players;
     }
 
@@ -116,6 +124,46 @@ public class GameDTO  implements java.io.Serializable {
 
 
     /**
+     * Gets the mapHeight value for this GameDTO.
+     * 
+     * @return mapHeight
+     */
+    public java.lang.Integer getMapHeight() {
+        return mapHeight;
+    }
+
+
+    /**
+     * Sets the mapHeight value for this GameDTO.
+     * 
+     * @param mapHeight
+     */
+    public void setMapHeight(java.lang.Integer mapHeight) {
+        this.mapHeight = mapHeight;
+    }
+
+
+    /**
+     * Gets the mapWidth value for this GameDTO.
+     * 
+     * @return mapWidth
+     */
+    public java.lang.Integer getMapWidth() {
+        return mapWidth;
+    }
+
+
+    /**
+     * Sets the mapWidth value for this GameDTO.
+     * 
+     * @param mapWidth
+     */
+    public void setMapWidth(java.lang.Integer mapWidth) {
+        this.mapWidth = mapWidth;
+    }
+
+
+    /**
      * Gets the players value for this GameDTO.
      * 
      * @return players
@@ -158,6 +206,12 @@ public class GameDTO  implements java.io.Serializable {
             ((this.IPAddress==null && other.getIPAddress()==null) || 
              (this.IPAddress!=null &&
               this.IPAddress.equals(other.getIPAddress()))) &&
+            ((this.mapHeight==null && other.getMapHeight()==null) || 
+             (this.mapHeight!=null &&
+              this.mapHeight.equals(other.getMapHeight()))) &&
+            ((this.mapWidth==null && other.getMapWidth()==null) || 
+             (this.mapWidth!=null &&
+              this.mapWidth.equals(other.getMapWidth()))) &&
             ((this.players==null && other.getPlayers()==null) || 
              (this.players!=null &&
               java.util.Arrays.equals(this.players, other.getPlayers())));
@@ -191,6 +245,12 @@ public class GameDTO  implements java.io.Serializable {
         }
         if (getIPAddress() != null) {
             _hashCode += getIPAddress().hashCode();
+        }
+        if (getMapHeight() != null) {
+            _hashCode += getMapHeight().hashCode();
+        }
+        if (getMapWidth() != null) {
+            _hashCode += getMapWidth().hashCode();
         }
         if (getPlayers() != null) {
             for (int i=0;
@@ -241,6 +301,20 @@ public class GameDTO  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("mapHeight");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "MapHeight"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("mapWidth");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "MapWidth"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("players");

@@ -18,7 +18,7 @@ import application.engine.entities.specializations.Specializations;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Weapon;
 import application.util.Vector2;
-import javafx.geometry.Point2D;
+import application.engine.rendering.TranslatedPoint;
 import javafx.scene.image.Image;
 
 /**
@@ -84,7 +84,7 @@ public class EntityFactory
     {
 
         BodyDTO body = dto.getBody();
-        Point2D position = new Point2D(body.getPosition().getX(), body.getPosition().getY());
+        TranslatedPoint position = new TranslatedPoint(body.getPosition().getX(), body.getPosition().getY());
         switch (type)
         {
             case WALL:
@@ -130,7 +130,7 @@ public class EntityFactory
             case ENEMY_CHARACTER:
             {
                 BoDCharacter enemy = null;
-                Point2D position = new Point2D(data.x, data.y);
+                TranslatedPoint position = new TranslatedPoint(data.x, data.y);
 
                 switch (data.specialization)
                 {
@@ -151,7 +151,7 @@ public class EntityFactory
             }
             case BULLET:
             {
-                return new Bullet(data.objectId, new Point2D(data.x, data.y), data.height, new Vector2(data.velocityX, data.velocityY), data.damage,
+                return new Bullet(data.objectId, new TranslatedPoint(data.x, data.y), data.height, new Vector2(data.velocityX, data.velocityY), data.damage,
                         data.bulletType, (Image)Weapon.getBulletImages().get(data.bulletType), data.ownerId);
             }
             default:

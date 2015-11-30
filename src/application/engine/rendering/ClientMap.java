@@ -13,6 +13,7 @@ import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 
+import application.account.Player;
 import application.communication.Broker;
 import application.communication.GameObjectDAO;
 import application.engine.entities.BoDCharacter;
@@ -21,16 +22,20 @@ import application.engine.factories.EntityFactory;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Weapon;
+import application.gui.GUI;
 import application.gui.Leaderboard;
 import application.util.Timer;
 import javafx.animation.AnimationTimer;
-import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
+import application.engine.rendering.TranslatedPoint;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.transform.Affine;
 
 /**
  * The map is where all the game objects are being handled.
@@ -44,8 +49,9 @@ public class ClientMap extends Observable implements Observer
     private Broker broker;
     private GraphicsContext gc;
     private Canvas canvas;
-    private int mapWidth = 1200;
-    private int mapHeight = 700;
+    private int mapWidth;
+    private int mapHeight;
+    private static int MAP_OFFSET = 500;
     public ConcurrentMap<Integer, GameObject> gameObjects;
     public Timer timer;
     private Label fpsLabel, scoreLabel, healthLabel;
@@ -56,14 +62,15 @@ public class ClientMap extends Observable implements Observer
     private boolean mapActive = false;
     private int serverGameId;
     private Leaderboard leaderboard;
+    private TranslatedPoint mapPoint;
     private ConcurrentLinkedQueue<GameObject> unassignedBullets;
+    private Affine startingAffine;
     private boolean choosing;
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
 
     /**
-     * Creates a client map defining the serverMap its based upon, the gamebox
-     * it should be drawn in, the broker it uses to communicate with the server
-     * with and the character that belongs to the client.
+     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
+     * the server with and the character that belongs to the client.
      * 
      * @param serverGame
      *            The server map which the ClientMap is based upon.
@@ -74,12 +81,15 @@ public class ClientMap extends Observable implements Observer
      * @param clientChar
      *            The character of the client.
      */
-    public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, BoDCharacter clientChar)
+    public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, Player clientPlayer)
     {
+        mapPoint = new TranslatedPoint(0, 0);
+        mapWidth = serverGame.getMapWidth();
+        mapHeight = serverGame.getMapHeight();
         this.unassignedBullets = new ConcurrentLinkedQueue<>();
         this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
-        this.clientChar = clientChar;
+        this.clientChar = clientPlayer.getCharacter();
         this.clientChar.addObserver(this);
         System.out.println("My id " + clientChar.getId());
         this.leaderboard = new Leaderboard();
@@ -99,7 +109,6 @@ public class ClientMap extends Observable implements Observer
 
         for (GameObjectDTO dto : serverGame.getGameObjects())
         {
-
             if (dto.getBody().getType() == Body.Geometry.CIRCLE.ordinal())
             {
                 if (dto.getId() != clientChar.getId())
@@ -124,9 +133,12 @@ public class ClientMap extends Observable implements Observer
             }
             character.setNickname(pdto.getNickname());
             leaderboard.addCharacter(character);
-        }
-        gameBox.setRight(leaderboard);
+            if (clientPlayer.getId() == pdto.getId())
+            {
+                clientPlayer.setHighscore(pdto.getHighScore());
+            }
 
+        }
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         fpsLabel.setText("fps: ");
@@ -140,6 +152,8 @@ public class ClientMap extends Observable implements Observer
         labelBox = new VBox();
         labelBox.setSpacing(1);
         gameBox.setLeft(labelBox);
+        gameBox.setRight(leaderboard);
+        BorderPane.setAlignment(leaderboard, Pos.TOP_LEFT);
 
         labelBox.getChildren().add(fpsLabel);
         labelBox.getChildren().add(scoreLabel);
@@ -147,6 +161,8 @@ public class ClientMap extends Observable implements Observer
 
         this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
+        startingAffine = gc.getTransform();
+        
     }
 
     /**
@@ -155,13 +171,20 @@ public class ClientMap extends Observable implements Observer
     public void activate()
     {
         Image mapImage = new Image("images/map_field.png");
+
         animationTimer = new AnimationTimer()
         {
             int frames = 0;
 
             public void handle(long currentNanoTime)
             {
-                gc.drawImage(mapImage, 0, 0, mapWidth, mapHeight);
+                double translateX = clientChar.getBody().getCenter().getX() - canvas.getWidth() / 2;
+                double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
+                TranslatedPoint.setTranslate(-translateX, -translateY);
+
+                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), 1200, 700, false);
+                gc.setFill(mapPattern);
+                gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
                 for (GameObject go : gameObjects.values())
                 {
                     if (go != clientChar)
@@ -172,13 +195,11 @@ public class ClientMap extends Observable implements Observer
                 if (!clientChar.isDestroyed())
                 {
                     clientChar.updateWithCollision(gc, gameObjects);
-                }
 
+                }
                 if (timer.getDuration() > 250)
                 {
-                    fpsLabel.setText("fps: " + frames * 4);// every 0.25 second,
-                                                           // time by 4 to get
-                                                           // frame per second.
+                    fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
                     scoreLabel.setText("Score: " + (int)clientChar.getScore());
                     if (!clientChar.isDestroyed())
                     {
@@ -198,7 +219,6 @@ public class ClientMap extends Observable implements Observer
                     frames++;
                 }
                 canvas.requestFocus();
-
             }
         };
         animationTimer.start();
@@ -272,7 +292,7 @@ public class ClientMap extends Observable implements Observer
             }
             if (pos.objectId != clientChar.getId())
             {
-                go.getBody().setPosition(new Point2D(pos.x, pos.y));
+                go.getBody().setPosition(new TranslatedPoint(pos.x, pos.y));
             }
         }
 
@@ -331,7 +351,6 @@ public class ClientMap extends Observable implements Observer
     {
         if (!choosing && data.entityType != null)
         {
-
             if (data.ownerId == clientChar.getId())
             {
                 Bullet bullet = (Bullet)unassignedBullets.poll();
@@ -382,8 +401,7 @@ public class ClientMap extends Observable implements Observer
     }
 
     /**
-     * Sends an update to the server which data such as the clients character
-     * position and active bullets.
+     * Sends an update to the server which data such as the clients character position and active bullets.
      */
 
     public void sendUpdate()
@@ -409,7 +427,6 @@ public class ClientMap extends Observable implements Observer
                 addGameObject(addQueue.poll());
             }
         }
-
     }
 
     public void killNotification(int victimId, int killerId)
@@ -467,8 +484,7 @@ public class ClientMap extends Observable implements Observer
             gameObjects.remove(bullet.getId());
             clientChar.getWeapon().getActiveBullets().remove(bullet.getId());
             o.deleteObserver(this);
-            // TODO Server should handle if a bullet have been active for too
-            // long, not client.
+            // TODO Server should handle if a bullet have been active for too long, not client.
 
         }
         else if (o instanceof GameObject)
@@ -490,5 +506,11 @@ public class ClientMap extends Observable implements Observer
         {
             clientChar.getWeapon().addObserver(this);
         }
+    }
+
+    public void setScale(double xFactor, double yFactor)
+    {
+        gc.setTransform(startingAffine);
+        gc.scale(xFactor, yFactor);
     }
 }

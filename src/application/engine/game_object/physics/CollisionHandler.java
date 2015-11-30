@@ -3,8 +3,8 @@ package application.engine.game_object.physics;
 import application.engine.entities.Bullet;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
+import application.engine.rendering.TranslatedPoint;
 import application.util.Vector2;
-import javafx.geometry.Point2D;
 
 /**
  * Handles all collision in the game. Can check if an object is collided with another object and can provided a proper response.
@@ -23,7 +23,7 @@ public class CollisionHandler
      *            The object the acting object collided with.
      * @return Returns the new suggested position of the collided object.
      */
-    public static Point2D collisionResponse(GameObject collided, GameObject other)
+    public static TranslatedPoint collisionResponse(GameObject collided, GameObject other)
     {
         if(collided instanceof Bullet || other instanceof Bullet)
         {
@@ -57,7 +57,7 @@ public class CollisionHandler
      *            The object the acting object collided with.
      * @return Returns the new suggested position of the collided object.
      */
-    private static Point2D collisionResponseRectangleRectangle(GameObject collided, GameObject other)
+    private static TranslatedPoint collisionResponseRectangleRectangle(GameObject collided, GameObject other)
     {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -72,7 +72,7 @@ public class CollisionHandler
      *            The object the acting object collided with.
      * @return Returns the new suggested position of the collided object.
      */
-    private static Point2D collisionResponseRectangleCircle(GameObject other, GameObject collided)
+    private static TranslatedPoint collisionResponseRectangleCircle(GameObject other, GameObject collided)
     {
         throw new UnsupportedOperationException("Not implemented");
     }
@@ -119,7 +119,7 @@ public class CollisionHandler
      *            The object the acting object collided with.
      * @return Returns the new suggested position of the collided object.
      */
-    public static Point2D collisionResponseCircleCircle(GameObject collided, GameObject other)
+    public static TranslatedPoint collisionResponseCircleCircle(GameObject collided, GameObject other)
     {
         double collidedx = collided.getBody().getPosition().getX();
         double otherx = other.getBody().getPosition().getX();
@@ -128,7 +128,7 @@ public class CollisionHandler
         // http://ericleong.me/research/circle-circle/ Need this link for bullet bounce or similar.
         Vector2 distanceBetweenObjects = new Vector2(collidedx - otherx, collidedy - othery);
         distanceBetweenObjects.setMagnitude(collided.getBody().getHeight() / 2 + other.getBody().getHeight() / 2);
-        return new Point2D(otherx + distanceBetweenObjects.getX(), othery + distanceBetweenObjects.getY());
+        return new TranslatedPoint(otherx + distanceBetweenObjects.getX(), othery + distanceBetweenObjects.getY());
     }
 
     /**
@@ -141,7 +141,7 @@ public class CollisionHandler
      *            The object the acting object collided with.
      * @return Returns the new suggested position of the collided object.
      */
-    public static Point2D collisionResponseCircleRectangle(GameObject collided, GameObject other)
+    public static TranslatedPoint collisionResponseCircleRectangle(GameObject collided, GameObject other)
     {
         double collidedx = collided.getBody().getPosition().getX();
         double collidedy = collided.getBody().getPosition().getY();
@@ -160,11 +160,11 @@ public class CollisionHandler
         {
             if (collidedCenterY < otherCenterY)
             {
-                return new Point2D(collidedx, othery - collidedHeight);
+                return new TranslatedPoint(collidedx, othery - collidedHeight);
             }
             else
             {
-                return new Point2D(collidedx, othery + otherHeight);
+                return new TranslatedPoint(collidedx, othery + otherHeight);
             }
 
         }
@@ -172,11 +172,11 @@ public class CollisionHandler
         {
             if (collidedCenterX < otherCenterX)
             {
-                return new Point2D(otherx - collidedWidth, collidedy);
+                return new TranslatedPoint(otherx - collidedWidth, collidedy);
             }
             else
             {
-                return new Point2D(otherx + otherWidth, collidedy);
+                return new TranslatedPoint(otherx + otherWidth, collidedy);
             }
         }
 
@@ -201,7 +201,7 @@ public class CollisionHandler
         // http://math.stackexchange.com/questions/356792/how-to-find-nearest-point-on-line-of-rectangle-from-anywhere
         Vector2 distanceBetweenObjects = new Vector2(collidedCenterX - cornerX, collidedCenterY - cornerY);
         distanceBetweenObjects.setMagnitude(collided.getBody().getHeight() / 2);
-        return new Point2D(cornerX + distanceBetweenObjects.getX() - collided.getBody().getWidth() / 2,
+        return new TranslatedPoint(cornerX + distanceBetweenObjects.getX() - collided.getBody().getWidth() / 2,
                 cornerY + distanceBetweenObjects.getY() - collided.getBody().getHeight() / 2);
     }
 

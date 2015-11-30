@@ -4,14 +4,15 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
 
+import application.account.Player;
 import application.communication.GameClient;
 import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.ClientMap;
+import application.engine.rendering.TranslatedPoint;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -33,6 +34,7 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -40,11 +42,15 @@ public class GUI extends Application implements Observer
 {
 
     public static GameClient gameManager;
-    private static int windowWidth = 1280;
-    private static int windowHeight = 720;
+    private static final int WINDOW_START_WIDTH = 1350;
+    private static final int WINDOW_START_HEIGHT = 760;
     private BorderPane gameBox;
     private Stage tStage;
     private Scene startMenu;
+    public static final int CANVAS_START_WIDTH = 1100;
+    public static final int CANVAS_START_HEIGHT = 680;
+    public static Scale scale;
+    Canvas canvas;
 
     public static void main(String[] args)
     {
@@ -61,9 +67,9 @@ public class GUI extends Application implements Observer
      *         based on how the scene's is located relative to the operating
      *         system.
      */
-    private Point2D getRelativeSceneLocation(Stage stage)
+    private TranslatedPoint getRelativeSceneLocation(Stage stage)
     {
-        return new Point2D(stage.getX() + stage.getScene().getX(), stage.getY() + stage.getScene().getY());
+        return new TranslatedPoint(stage.getX() + stage.getScene().getX(), stage.getY() + stage.getScene().getY());
     }
 
     @Override
@@ -71,8 +77,10 @@ public class GUI extends Application implements Observer
     {
         this.tStage = theStage;
         theStage.setTitle("Ball of Duty");
-        theStage.setHeight(windowHeight);
-        theStage.setWidth(windowWidth);
+        theStage.setHeight(WINDOW_START_HEIGHT);
+        theStage.setWidth(WINDOW_START_WIDTH);
+        theStage.centerOnScreen();
+        theStage.setResizable(false);
         theStage.setOnCloseRequest(new EventHandler<WindowEvent>()
         {
             public void handle(WindowEvent we)
@@ -94,6 +102,30 @@ public class GUI extends Application implements Observer
         theStage.setScene(startMenu);
 
         gameManager = new GameClient(getRelativeSceneLocation(theStage));
+
+        scale = new Scale();
+        scale.xProperty().bind(gameScene.widthProperty().divide(WINDOW_START_WIDTH));
+        scale.yProperty().bind(gameScene.heightProperty().divide(WINDOW_START_HEIGHT));
+        scale.setPivotX(0);
+        scale.setPivotY(0);
+        // gameBox.getTransforms().add(scale);
+        // gameBox.setBackground(null);
+        // TODO scaling
+
+        theStage.heightProperty().addListener(e ->
+        {
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage)); // This
+                                                                                      // only
+                                                                                      // happens
+                                                                                      // once
+                                                                                      // for
+                                                                                      // some
+                                                                                      // reason.
+        });
+        theStage.widthProperty().addListener(e ->
+        {
+            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
+        });
         theStage.xProperty().addListener(e ->
         {
             gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
@@ -146,6 +178,52 @@ public class GUI extends Application implements Observer
         mainButtonBox.setSpacing(5);
         Button joinBtn = new Button("Join game");
 
+        Button viewLB = new Button("Leaderboard");
+        viewLB.setPrefSize(150, 50);
+        viewLB.setId("viewLB");
+        viewLB.setStyle("-fx-font: 20 arial; -fx-base: #ff0717;");
+
+        BorderPane lbBorder = new BorderPane();
+        VBox lbBox = new VBox();
+        Scene lbScene = new Scene(lbBorder);
+
+        Button lbBack = new Button("Start menu");
+        lbBox.getChildren().add(lbBack);
+        lbBorder.setLeft(lbBox);
+        lbBack.setStyle("-fx-font: 20 arial; -fx-base: #ff0717;");
+
+        Label topText = new Label("Only shows scores higher than 100!");
+        topText.setStyle("-fx-font-size: 20pt;-fx-font-family: Segoe UI Semibold;");
+
+        viewLB.setOnAction(ActionEvent ->
+        {
+            HighscoreLeaderboard hBoard = gameManager.getHighscoreLeaderboard();
+            hBoard.setFocusTraversable(false);
+            lbBorder.setCenter(hBoard);
+            if (gameManager.getPlayer() != null)
+            {
+                Player client = gameManager.getPlayer();
+                Label you = new Label("YOU:    " + client.getNickname() + " [" + client.getId() + "]    | Score: "
+                        + client.getHighscore());
+
+                you.setStyle("-fx-font-size: 15pt;-fx-font-family: Segoe UI Semibold;");
+                lbBorder.setBottom(you);
+            }
+
+            BorderPane.setMargin(hBoard, new Insets(12, 12, 12, 12));
+
+            lbBorder.setTop(topText);
+            theStage.setScene(lbScene);
+
+            lbBack.setOnAction(ActionEvent1 ->
+            {
+                theStage.setScene(startMenu);
+                startMenuRoot.setLeft(mainButtonBox);
+
+                BorderPane.setMargin(mainButtonBox, new Insets(350, 0, 0, 150));
+            });
+        });
+
         joinBtn.setPrefSize(150, 50);
         tfNickname.setPrefSize(150, 20);
         joinBtn.setId("joinBtn");
@@ -176,7 +254,7 @@ public class GUI extends Application implements Observer
 
             theStage.setScene(gameScene);
             gameManager.joinAsGuest(gameBox, tfNickname.getText(), spec);
-            gameManager.cMap.addObserver(this);
+            gameManager.getMap().addObserver(this);
             gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
             gameBox.requestFocus();
 
@@ -210,6 +288,7 @@ public class GUI extends Application implements Observer
         mainButtonBox.getChildren().add(joinBtn);
         mainButtonBox.getChildren().add(loginStart);
         mainButtonBox.getChildren().add(createStart);
+        mainButtonBox.getChildren().add(viewLB);
         startMenuRoot.setLeft(mainButtonBox);
 
         createStart.setOnAction(ActionEvent ->
@@ -314,11 +393,13 @@ public class GUI extends Application implements Observer
             gameManager.quitGame();
             theStage.setScene(startMenu);
         });
-        Canvas canvas = new Canvas(1100, 660);
 
+        canvas = new Canvas(CANVAS_START_WIDTH, CANVAS_START_HEIGHT);
         gameBox.setCenter(canvas);
+        BorderPane.setAlignment(canvas, Pos.TOP_LEFT);
+
         gameBox.setBottom(quitBtn);
-        BorderPane.setAlignment(quitBtn, Pos.BASELINE_LEFT);
+        BorderPane.setAlignment(quitBtn, Pos.TOP_LEFT);
         theStage.show();
     }
 
@@ -365,7 +446,7 @@ public class GUI extends Application implements Observer
                     else if (result.get() == spectate)
                     {
                         System.out.println("Spectating...");
-                        gameManager.cMap.setChoosing(false);
+                        gameManager.getMap().setChoosing(false);
                     }
                     else if (result.get() == quit)
                     {

@@ -3,7 +3,7 @@ package application.engine.entities;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.View;
-import javafx.geometry.Point2D;
+import application.engine.rendering.TranslatedPoint;
 import javafx.scene.image.Image;
 
 /**
@@ -39,7 +39,7 @@ public class Wall extends GameObject
      * @param width
      *            The width of the wall.
      */
-    public Wall(int id, Point2D position, double height, double width, Image image)
+    public Wall(int id, TranslatedPoint position, double height, double width, Image image)
     {
         super(id);
         this.body = new Body(this, position, height, width, TYPE);

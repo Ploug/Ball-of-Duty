@@ -60,7 +60,7 @@ public class Physics
         }
         double secondsSinceLast = timer.getDuration() / 1000;// compensating for
                                                              // lag
-        gameObject.getBody().increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        gameObject.getBody().getPosition().add(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
 
         timer.reset();
 

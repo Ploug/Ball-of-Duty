@@ -1,9 +1,6 @@
 package application.gui;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -30,25 +27,20 @@ public class Leaderboard extends ListView<BoDCharacter>
         setItems(characters);
     }
 
-    public Leaderboard(List<BoDCharacter> charList)
-    {
-
-        characters = FXCollections.observableArrayList(charList);
-        addedCharacters = new HashSet<>();
-        setItems(characters);
-    }
-
-    @Override
     public void refresh()
     {
 
-        while(addQueue.peek()!=null){characters.add(addQueue.poll());
-
-        }while(removeQueue.peek()!=null){characters.remove(removeQueue.poll());
+        while (addQueue.peek() != null)
+        {
+            characters.add(addQueue.poll());
 
         }
-         characters.sort((c1, c2) -> Double.compare(c2.getScore(), c1.getScore()));
-        super.refresh();
+        while (removeQueue.peek() != null)
+        {
+            characters.remove(removeQueue.poll());
+
+        }
+        characters.sort((c1, c2) -> Double.compare(c2.getScore(), c1.getScore()));
     }
 
     public void addCharacter(BoDCharacter character)

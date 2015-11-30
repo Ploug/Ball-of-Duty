@@ -1,7 +1,7 @@
 package application.engine.game_object;
 
+import application.engine.rendering.TranslatedPoint;
 import application.util.Vector2;
-import javafx.geometry.Point2D;
 
 /**
  * The body describes an objects dimensional properties, such as height, width and position. Without a body an object cannot be on a map.
@@ -11,7 +11,7 @@ import javafx.geometry.Point2D;
 public class Body 
 {
     private GameObject _gameObject;
-    private Point2D _position;
+    private TranslatedPoint _position;
     private double _height;
     private double _width;
     private Vector2 _orientation;
@@ -35,7 +35,7 @@ public class Body
      * @param height The height of the game objects body on a map.
      * @param type The type of body, i.e. rectangular or circle etc.
      */
-    public Body(GameObject gameObject, Point2D position, double width, double height, Geometry type)
+    public Body(GameObject gameObject, TranslatedPoint position, double width, double height, Geometry type)
     {
         this._type = type;
         this._gameObject = gameObject;
@@ -49,7 +49,7 @@ public class Body
      * The position of the top left corner of this body.
      * @return Returns the position of the top left corner of this body.
      */
-    public Point2D getPosition()
+    public TranslatedPoint getPosition()
     {
         return _position;
     }
@@ -58,16 +58,16 @@ public class Body
      * Sets the center position of this body.
      * @param position The new center position of this body.
      */
-    public void setCenter(Point2D position)
+    public void setCenter(TranslatedPoint position)
     {
-        this._position = new Point2D(position.getX() - _width / 2, position.getY() - _height / 2);
+        this._position = new TranslatedPoint(position.getX() - _width / 2, position.getY() - _height / 2);
     }
 
     /**
      * Sets the top left corner position of this body.
      * @param position The new top left corner position of this body.
      */
-    public void setPosition(Point2D position)
+    public void setPosition(TranslatedPoint position)
     {
         this._position = position;
     }
@@ -76,9 +76,9 @@ public class Body
      * The center position of this body.
      * @return Returns the current center position of this body.
      */
-    public Point2D getCenter()
+    public TranslatedPoint getCenter()
     {
-        return new Point2D((_position.getX() + (_width / 2)), _position.getY() + (_height / 2));
+        return new TranslatedPoint((_position.getX() + (_width / 2)), _position.getY() + (_height / 2));
     }
 
     /**
@@ -142,7 +142,7 @@ public class Body
      */
     public void increasePosition(double xIncrease, double yIncrease)
     {
-        _position = new Point2D(_position.getX() + xIncrease, _position.getY() + yIncrease);
+        _position = new TranslatedPoint(_position.getX() + xIncrease, _position.getY() + yIncrease);
     }
 
     /**

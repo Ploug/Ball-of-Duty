@@ -43,7 +43,7 @@ public class View
     {
         // System.out.println((int) gameObject.getBody().getPosition().getX()+" "+(int) gameObject.getBody().getPosition().getY()+" "+
         // gameObject.getBody().getLength()+" "+ gameObject.getBody().getWidth());
-        gc.drawImage(image, (int)gameObject.getBody().getPosition().getX(), (int)gameObject.getBody().getPosition().getY(),
+        gc.drawImage(image, (int)gameObject.getBody().getPosition().getTranslatedX(), (int)gameObject.getBody().getPosition().getTranslatedY(),
                 gameObject.getBody().getHeight(), gameObject.getBody().getWidth());
         // debug info
         // gc.setLineWidth(2);
@@ -53,8 +53,8 @@ public class View
         if (gameObject instanceof BoDCharacter)
         {
             BoDCharacter character = (BoDCharacter)gameObject;
-            double centerX = gameObject.getBody().getCenter().getX();
-            double centerY = gameObject.getBody().getCenter().getY();
+            double centerX = gameObject.getBody().getCenter().getTranslatedX();
+            double centerY = gameObject.getBody().getCenter().getTranslatedY();
             if (gameObject.getPhysics() != null)
             {
                 gc.setLineWidth(3);
@@ -74,15 +74,15 @@ public class View
                 int healthValueBoxWidth= (int)(0.4*gameObject.getHealth().getValue());
                 int maxHealthBoxWidth= (int)(0.4*gameObject.getHealth().getMax());
                 int healthBoxX = (int)(centerX-maxHealthBoxWidth/2);
-                int healthBoxY = (int)(gameObject.getBody().getPosition().getY()-healthBoxHeight-2);
+                int healthBoxY = (int)(gameObject.getBody().getPosition().getTranslatedY()-healthBoxHeight-2);
                 
                 gc.setFill(Color.RED);
                 gc.fillRect(healthBoxX,healthBoxY, maxHealthBoxWidth, healthBoxHeight);
                 gc.setFill(Color.GREENYELLOW);
                 gc.fillRect(healthBoxX,healthBoxY, healthValueBoxWidth, healthBoxHeight);
             }
-            double bottomX = gameObject.getBody().getPosition().getX();
-            double bottomY = gameObject.getBody().getPosition().getY()+gameObject.getBody().getHeight()+10;
+            double bottomX = gameObject.getBody().getPosition().getTranslatedX();
+            double bottomY = gameObject.getBody().getPosition().getTranslatedY()+gameObject.getBody().getHeight()+10;
             gc.setLineWidth(1);
             gc.setFont(Font.font ("Verdana", 12));
             gc.strokeText(character.getNickname(), bottomX,bottomY, 200);

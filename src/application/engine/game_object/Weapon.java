@@ -14,7 +14,7 @@ import application.engine.entities.Bullet.Type;
 import application.engine.game_object.GameObject;
 import application.util.Timer;
 import application.util.Vector2;
-import javafx.geometry.Point2D;
+import application.engine.rendering.TranslatedPoint;
 import javafx.scene.image.Image;
 
 /**
@@ -96,7 +96,7 @@ public class Weapon extends Observable
                 if (!reloading)
                 {
                     Vector2 orientation = gameObject.getBody().getOrientation().setMagnitude(gameObject.getBody().getHeight() / 2);
-                    Point2D position = new Point2D(gameObject.getBody().getCenter().getX() + orientation.getX(),
+                    TranslatedPoint position = new TranslatedPoint(gameObject.getBody().getCenter().getX() + orientation.getX(),
                             gameObject.getBody().getCenter().getY() + orientation.getY());
                     Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                     velocity.setMagnitude(bulletSpeed);

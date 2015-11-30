@@ -6,11 +6,13 @@ import java.util.Observer;
 
 import application.engine.entities.BoDCharacter;
 import application.util.Vector2;
-import javafx.geometry.Point2D;
+import application.engine.rendering.TranslatedPoint;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
+
 /**
  * Controls a character with input from peripherals such as keyboard and mouse.
+ * 
  * @author gruppe6
  *
  */
@@ -22,21 +24,25 @@ public class CharacterController implements Observer
     private static final Vector2 RIGHT_VECTOR = new Vector2(1, 0);
     private static final Vector2 LEFT_VECTOR = new Vector2(-1, 0);
     private KeyHandler keyHandler;
-    private Point2D canvasRelativeLocation;
+    private TranslatedPoint canvasRelativeLocation;
     private BorderPane gameBox;
 
     /**
-     * Creates a controller defining the character to control, the gamebox on which it is being controlled, and the windows relative location. 
-     * The action a input starts is defined by the key handler.
-     * @param inputChar The character to control.
-     * @param gameBox The game box on which the character is being controlled.
-     * @param windowRelativeLocation The relative location is based on how the scene's is located relative to the operating system.
+     * Creates a controller defining the character to control, the gamebox on which it is being controlled, and the windows relative
+     * location. The action a input starts is defined by the key handler.
+     * 
+     * @param inputChar
+     *            The character to control.
+     * @param gameBox
+     *            The game box on which the character is being controlled.
+     * @param windowRelativeLocation
+     *            The relative location is based on how the scene's is located relative to the operating system.
      */
-    public CharacterController(BoDCharacter inputChar, BorderPane gameBox, Point2D windowRelativeLocation)
+    public CharacterController(BoDCharacter inputChar, BorderPane gameBox, TranslatedPoint windowRelativeLocation)
     {
         this.gameBox = gameBox;
-        this.canvasRelativeLocation = windowRelativeLocation.add(gameBox.getCenter().getLayoutX(), gameBox.getCenter().getLayoutY());
-
+        this.canvasRelativeLocation = new TranslatedPoint(windowRelativeLocation.getX(), windowRelativeLocation.getY());
+        this.canvasRelativeLocation.add(gameBox.getCenter().getLayoutX(), gameBox.getCenter().getLayoutY());
         character = inputChar;
         character.addObserver(this);
         keyHandler = new KeyHandler();
@@ -96,18 +102,18 @@ public class CharacterController implements Observer
                 character.getPhysics().removeDirection(RIGHT_VECTOR);
             }
         });
-        
+
         gameBox.setOnMousePressed(actionEvent ->
         {
             if (character == null)
             {
                 return;
             }
-            if(actionEvent.getButton() == MouseButton.PRIMARY)
+            if (actionEvent.getButton() == MouseButton.PRIMARY)
             {
-               character.getWeapon().startShooting();
+                character.getWeapon().startShooting();
             }
-            
+
         });
         gameBox.setOnMouseReleased(actionEvent ->
         {
@@ -115,13 +121,13 @@ public class CharacterController implements Observer
             {
                 return;
             }
-            if(actionEvent.getButton() == MouseButton.PRIMARY)
+            if (actionEvent.getButton() == MouseButton.PRIMARY)
             {
-               character.getWeapon().stopShooting();
+                character.getWeapon().stopShooting();
             }
-            
+
         });
-        
+
         character.getPhysics().addMethod(() ->
         {
 
@@ -129,7 +135,7 @@ public class CharacterController implements Observer
             {
                 return;
             }
-            Point2D position = character.getBody().getCenter();
+            TranslatedPoint position = character.getBody().getCenter();
             double deltaX = getMousePoint().getX() - position.getX();
             double deltaY = getMousePoint().getY() - position.getY();
             character.getBody().setOrientation(new Vector2(deltaX, deltaY));
@@ -138,20 +144,23 @@ public class CharacterController implements Observer
 
     /**
      * The current mouse position, relative to the canvas location. (Canvas is where the game is drawn).
+     * 
      * @return
      */
-    public Point2D getMousePoint()
+    public TranslatedPoint getMousePoint()
     {
-        return new Point2D(
-                MouseInfo.getPointerInfo().getLocation().getX() - (canvasRelativeLocation.getX() + gameBox.getCenter().getLayoutX()),
-                MouseInfo.getPointerInfo().getLocation().getY() - (canvasRelativeLocation.getY() + gameBox.getCenter().getLayoutY()));
+        return new TranslatedPoint(
+                MouseInfo.getPointerInfo().getLocation().getX() - (canvasRelativeLocation.getTranslatedX() + gameBox.getCenter().getLayoutX()),
+                MouseInfo.getPointerInfo().getLocation().getY() - (canvasRelativeLocation.getTranslatedY() + gameBox.getCenter().getLayoutY()));
     }
 
     /**
      * Sets the relative location of the canvas compared to the operating system..
-     * @param windowRelativeLocation The relative location is based on how the scene's is located relative to the operating system.
+     * 
+     * @param windowRelativeLocation
+     *            The relative location is based on how the scene's is located relative to the operating system.
      */
-    public void setCanvasRelativeLocation(Point2D canvasRelativeLocation)
+    public void setCanvasRelativeLocation(TranslatedPoint canvasRelativeLocation)
     {
 
         this.canvasRelativeLocation = canvasRelativeLocation;

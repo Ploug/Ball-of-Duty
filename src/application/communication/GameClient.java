@@ -7,6 +7,7 @@ import javax.xml.rpc.ServiceException;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
@@ -14,8 +15,9 @@ import application.account.Account;
 import application.account.Player;
 import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.ClientMap;
+import application.engine.rendering.TranslatedPoint;
+import application.gui.HighscoreLeaderboard;
 import application.input.CharacterController;
-import javafx.geometry.Point2D;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -28,11 +30,11 @@ import javafx.scene.layout.BorderPane;
 public class GameClient
 {
 
-    public ClientMap cMap;
-    public Player clientPlayer;
-    public Account account;
-    public CharacterController characterController;
-    public Point2D sceneRelativeLocation;
+    private ClientMap cMap;
+    private Player clientPlayer;
+    private Account account;
+    private CharacterController characterController;
+    private TranslatedPoint sceneRelativeLocation;
     IBoDService ibs;
 
     /**
@@ -45,7 +47,7 @@ public class GameClient
      *            location is based on how the scene's is located relative to
      *            the operating system,
      */
-    public GameClient(Point2D windowRelativeLocation)
+    public GameClient(TranslatedPoint windowRelativeLocation)
     {
 
         this.sceneRelativeLocation = windowRelativeLocation;
@@ -62,6 +64,27 @@ public class GameClient
             e.printStackTrace();
         }
 
+    }
+
+    public HighscoreLeaderboard getHighscoreLeaderboard()
+    {
+
+        HighscoreLeaderboard leaderboard = new HighscoreLeaderboard();
+
+        try
+        {
+            PlayerDTO[] players = ibs.getLeaderboard();
+            for (PlayerDTO pdto : players)
+            {
+                leaderboard.addEntry(pdto.getNickname(), pdto.getId(), pdto.getHighScore());
+            }
+            leaderboard.refresh();
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+        }
+        return leaderboard;
     }
 
     public void joinAsGuest(BorderPane gameBox, String nickname, Specializations spec)
@@ -122,7 +145,7 @@ public class GameClient
      *            The scenes relative location. he relative location is based on
      *            how the scene's is located relative to the operating system.
      */
-    public void setSceneRelativeLocation(Point2D sceneRelativeLocation)
+    public void setSceneRelativeLocation(TranslatedPoint sceneRelativeLocation)
     {
         this.sceneRelativeLocation = sceneRelativeLocation;
         if (characterController != null)
@@ -147,7 +170,7 @@ public class GameClient
             Broker broker = new Broker();
             GameDTO map = ibs.joinGame(clientPlayer.getId(), broker.getUdpPort(), broker.getTcpPort(), spec.getValue());
             clientPlayer.createNewCharacter(map.getCharacterId(), spec);
-            cMap = new ClientMap(map, gameBox, broker, clientPlayer.getCharacter());
+            cMap = new ClientMap(map, gameBox, broker, clientPlayer);
 
         }
         catch (RemoteException e)
@@ -216,4 +239,19 @@ public class GameClient
 
     }
 
+    /**
+     * Gets the current player of the client.
+     * 
+     * @return Returns the current player of the client.
+     */
+    public Player getPlayer()
+    {
+        return clientPlayer;
+
+    }
+
+    public ClientMap getMap()
+    {
+        return cMap;
+    }
 }

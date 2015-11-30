@@ -74,13 +74,13 @@ public class GameObject extends Observable
      */
     public void update(GraphicsContext gc)
     {
-        if (getPhysics() != null)
-        {
-            getPhysics().update();
-        }
         if (view != null)
         {
-            view.draw(gc);
+            view.draw(gc); 
+        }
+        if (getPhysics() != null) // TODO Figure out why there is visual bug on bullets when character is moving, if the view is updated after physics.
+        {
+            getPhysics().update();
         }
     }
 
@@ -91,15 +91,17 @@ public class GameObject extends Observable
      */
     public void updateWithCollision(GraphicsContext gc, ConcurrentMap<Integer, GameObject> objects)
     {
-        if (getPhysics() != null)
-        {
-            getPhysics().updateWithCollision(objects);
-        }
-        if (view != null)
+        if(view != null)
         {
             view.draw(gc);
         }
+        if (physics != null)
+        {
+            getPhysics().updateWithCollision(objects);
+        }
     }
+    
+    
 
     /**
      * Checks if the game object is destroyed. This would for example result in it no longer being drawn etc.
