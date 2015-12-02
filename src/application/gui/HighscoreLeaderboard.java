@@ -74,7 +74,7 @@ public class HighscoreLeaderboard extends ListView<HighscoreLeaderboard.Entry>
     {
         entries.clear();
         int i = 0;
-        for(Entry e : sortedEntries)
+        for (Entry e : sortedEntries)
         {
             i++;
             entries.add(e);
@@ -84,13 +84,15 @@ public class HighscoreLeaderboard extends ListView<HighscoreLeaderboard.Entry>
 
     public void addEntry(String nickname, int id, double score)
     {
-
-        sortedEntries.add(new Entry(nickname, id, score));
+        if (score > 100)
+        {
+            sortedEntries.add(new Entry(nickname, id, score));
+        }
 
     }
 
     public void remove(int id)
     {
-       sortedEntries.removeIf((e)-> e.id == id);
+        sortedEntries.removeIf((e) -> e.id == id);
     }
 }
