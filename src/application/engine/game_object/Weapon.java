@@ -44,7 +44,7 @@ public class Weapon extends Observable
     static
     {
         bulletImages = new HashMap<>();
-        bulletImages.put(Type.RIFLE, new Image("images/silver_ball.png"));
+        bulletImages.put(Type.RIFLE, new Image("images/ball_black.png"));
     }
 
     /**

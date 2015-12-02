@@ -170,7 +170,7 @@ public class ClientMap extends Observable implements Observer
      */
     public void activate()
     {
-        Image mapImage = new Image("images/map_field.png");
+        Image mapImage = new Image("images/texture_dirt.png");
 
         animationTimer = new AnimationTimer()
         {
@@ -182,7 +182,7 @@ public class ClientMap extends Observable implements Observer
                 double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
                 TranslatedPoint.setTranslate(-translateX, -translateY);
 
-                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), 1200, 700, false);
+                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
                 gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
                 for (GameObject go : gameObjects.values())
