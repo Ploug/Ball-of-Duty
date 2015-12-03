@@ -329,8 +329,11 @@ public class Broker
      * @param buf
      *            The byte array to be sent.
      */
-    public void sendTcp(byte[] data)
+    public void sendTcp(ByteBuffer buffer)
     {
+        // Remove trash data from the buffer before sending.
+        // Otherwise bytesRead will be useless on the receiving side.
+        byte[] data = Arrays.copyOf(buffer.array(), buffer.position());
         try
         {
             output.write(data);
@@ -366,8 +369,7 @@ public class Broker
         buffer.putInt(data.entityType.ordinal());
 
         buffer.put((byte)4); // ASCII Standard for End of transmission
-
-        sendTcp(buffer.array());
+        sendTcp(buffer);
     }
 
     /**
