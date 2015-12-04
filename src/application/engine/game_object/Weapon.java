@@ -191,6 +191,21 @@ public class Weapon extends Observable
     {
         this.magazineMaxSize = magazineMaxSize;
     }
+    
+    public int getMagazineMaxSize()
+    {
+        return this.magazineMaxSize;
+    }
+    
+    public int getMagazineSize()
+    {
+        return this.magazineSize;
+    }
+    
+    public boolean getReloading()
+    {
+        return this.reloading;
+    }
 
     public void setReloadSpeed(int reloadSpeed)
     {

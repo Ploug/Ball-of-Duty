@@ -54,7 +54,7 @@ public class ClientMap extends Observable implements Observer
     private static int MAP_OFFSET = 500;
     public ConcurrentMap<Integer, GameObject> gameObjects;
     public Timer timer;
-    private Label fpsLabel, scoreLabel, healthLabel;
+    private Label fpsLabel, scoreLabel, healthLabel, ammoLabel, reloadingLabel;
     private VBox labelBox;
     private BoDCharacter clientChar;
     private Thread updateThread;
@@ -137,8 +137,8 @@ public class ClientMap extends Observable implements Observer
             {
                 clientPlayer.setHighscore(pdto.getHighScore());
             }
-
         }
+        
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         fpsLabel.setText("fps: ");
@@ -148,6 +148,12 @@ public class ClientMap extends Observable implements Observer
         healthLabel = new Label();
         healthLabel.setPrefSize(80, 20);
         healthLabel.setText("Health: ");
+        ammoLabel = new Label();
+        ammoLabel.setPrefSize(80, 20);
+        ammoLabel.setText("Ammo: ");
+        reloadingLabel = new Label();
+        reloadingLabel.setPrefSize(80, 20);
+        reloadingLabel.setText("");
 
         labelBox = new VBox();
         labelBox.setSpacing(1);
@@ -158,11 +164,12 @@ public class ClientMap extends Observable implements Observer
         labelBox.getChildren().add(fpsLabel);
         labelBox.getChildren().add(scoreLabel);
         labelBox.getChildren().add(healthLabel);
+        labelBox.getChildren().add(ammoLabel);
+        labelBox.getChildren().add(reloadingLabel);
 
         this.canvas = (Canvas)gameBox.getCenter();
         gc = canvas.getGraphicsContext2D();
         startingAffine = gc.getTransform();
-        
     }
 
     /**
@@ -197,6 +204,17 @@ public class ClientMap extends Observable implements Observer
                     clientChar.updateWithCollision(gc, gameObjects);
 
                 }
+                
+                ammoLabel.setText(clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
+                if (clientChar.getWeapon().getReloading())
+                {
+                    reloadingLabel.setText("Reloading");
+                }
+                else
+                {
+                    reloadingLabel.setText("");
+                }
+                
                 if (timer.getDuration() > 250)
                 {
                     fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
