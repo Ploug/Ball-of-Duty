@@ -25,6 +25,7 @@ import application.gui.GUI;
 import application.gui.Leaderboard;
 import application.util.Observable;
 import application.util.Observation;
+import application.util.Resources;
 import application.util.Timer;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
@@ -44,7 +45,7 @@ import javafx.scene.transform.Affine;
  * @author Gruppe6
  *
  */
-public class ClientMap extends Observable 
+public class ClientMap extends Observable
 {
 
     private Broker broker;
@@ -89,13 +90,12 @@ public class ClientMap extends Observable
         this.unassignedBullets = new ConcurrentLinkedQueue<>();
         this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
-        setCharacter(clientPlayer.getCharacter());
-        
-        System.out.println("My id " + clientChar.getId());
         this.leaderboard = new Leaderboard();
+
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
-        addGameObject(clientChar);
+        setCharacter(clientPlayer.getCharacter());
+        System.out.println("My id " + clientChar.getId());
 
         this.broker = broker;
         broker.activate(this);
@@ -134,7 +134,7 @@ public class ClientMap extends Observable
                 clientPlayer.setHighscore(pdto.getHighScore());
             }
         }
-        
+
         fpsLabel = new Label();
         fpsLabel.setPrefSize(50, 20);
         fpsLabel.setText("fps: ");
@@ -185,7 +185,8 @@ public class ClientMap extends Observable
                 double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
                 TranslatedPoint.setTranslate(-translateX, -translateY);
 
-                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
+                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), mapImage.getWidth(),
+                        mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
                 gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
                 for (GameObject go : gameObjects.values())
@@ -200,7 +201,7 @@ public class ClientMap extends Observable
                     clientChar.updateWithCollision(gc, gameObjects);
 
                 }
-                
+
                 ammoLabel.setText(clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
                 if (clientChar.getWeapon().getReloading())
                 {
@@ -210,7 +211,7 @@ public class ClientMap extends Observable
                 {
                     reloadingLabel.setText("");
                 }
-                
+
                 if (timer.getDuration() > 250)
                 {
                     fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
@@ -313,10 +314,9 @@ public class ClientMap extends Observable
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key
-     * in the scoreMap. If it does, and the go is an instance of BoDCharacter,
-     * then it calls the setScore method of the BoDCharacter and gives the value
-     * associated with the matching key as the score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
+     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
+     * score.
      * 
      * @param scoreMap
      */
@@ -363,29 +363,35 @@ public class ClientMap extends Observable
      */
     public void addGameObject(GameObjectDAO data)
     {
-            if (data.ownerId == clientChar.getId())
-            {
-                Bullet bullet = (Bullet)unassignedBullets.poll();
-                bullet.setId(data.objectId);
-                addGameObject(bullet);
-                return;
-            }
+        if (data.ownerId == clientChar.getId())
+        {
+            Bullet bullet = (Bullet)unassignedBullets.poll();
+            bullet.setId(data.objectId);
+            addGameObject(bullet);
+            return;
+        }
 
-            if (data.objectId != clientChar.getId())
-            {
-                addGameObject(EntityFactory.getEntity(data, data.entityType));
-            }
-       
+        if (data.objectId != clientChar.getId())
+        {
+            addGameObject(EntityFactory.getEntity(data, data.entityType));
+        }
+
     }
 
     private void addGameObject(GameObject go)
     {
         if (go instanceof BoDCharacter)
         {
-            leaderboard.addCharacter((BoDCharacter)go);
-        } 
+            BoDCharacter character = (BoDCharacter)go;
+            leaderboard.addCharacter(character);
+            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
+                    && !Resources.johnCena.isPlaying())
+            {
+                Resources.johnCena.play();
+            }
+        }
         gameObjects.put(go.getId(), go);
-        go.register(Observation.EXTERMINATION, this, (observable, data)->removeGameObject((GameObject)observable));
+        go.register(Observation.EXTERMINATION, this, (observable, data) -> removeGameObject((GameObject)observable));
     }
 
     /**
@@ -425,16 +431,14 @@ public class ClientMap extends Observable
         broker.sendUpdate(posList);
     }
 
-    
-
     public void killNotification(int victimId, int killerId)
     {
-        
+
         destroyGameObject(victimId);
         if (victimId == clientChar.getId())
         {
             System.out.println("YOU DIED");
-            
+
         }
         else if (killerId == clientChar.getId())
         {
@@ -445,7 +449,7 @@ public class ClientMap extends Observable
             System.out.println(killerId + " pwned " + victimId + "'s head");
         }
     }
-    
+
     @Override
     public int hashCode()
     {
@@ -460,12 +464,12 @@ public class ClientMap extends Observable
     {
         gameObjects.remove(go.getId());
         go.unregisterAll(this);
-        if(go.getWeapon() != null)
+        if (go.getWeapon() != null)
         {
             go.getWeapon().unregisterAll(this);
         }
     }
-    
+
     public void newBullet(Bullet bullet)
     {
         unassignedBullets.add(bullet);
@@ -481,13 +485,14 @@ public class ClientMap extends Observable
         data.entityType = EntityFactory.EntityType.BULLET;
         broker.requestBulletCreation(data);
     }
+
     public void setCharacter(BoDCharacter character)
     {
         clientChar = character;
         addGameObject(clientChar);
         if (clientChar.getWeapon() != null)
         {
-            clientChar.getWeapon().register(Observation.SPAWNING, this, (observable, data)->newBullet((Bullet)data));
+            clientChar.getWeapon().register(Observation.SPAWNING, this, (observable, data) -> newBullet((Bullet)data));
         }
     }
 

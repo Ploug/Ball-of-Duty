@@ -21,9 +21,8 @@ import application.engine.factories.EntityFactory;
 import application.engine.rendering.ClientMap;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman
- * between server and client objects, such as ClientMap, that needs to
- * communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
+ * needs to communicate with the server.
  * 
  */
 public class Broker
@@ -121,16 +120,14 @@ public class Broker
     }
 
     /**
-     * Sends a packet to the server with updated information from the clients
-     * game.
+     * Sends a packet to the server with updated information from the clients game.
      * 
      * @param position
      *            The position of the clients character.
      * @param id
      *            The id of the clients character.
      * @param bullets
-     *            the bullets that needs to have its position updated to the
-     *            server.
+     *            the bullets that needs to have its position updated to the server.
      * @throws IOException
      */
     public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly
@@ -181,8 +178,7 @@ public class Broker
      * Handles reading of score updates;
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readScoreUpdate(ByteBuffer buffer)
     {
@@ -204,8 +200,7 @@ public class Broker
      * Handles reading of health updates
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readHealthUpdate(ByteBuffer buffer)
     {
@@ -367,7 +362,7 @@ public class Broker
         buffer.putInt(data.damage);
         buffer.putInt(data.ownerId);
         buffer.putInt(data.entityType.ordinal());
-
+        
         buffer.put((byte)4); // ASCII Standard for End of transmission
         sendTcp(buffer);
     }
@@ -454,8 +449,7 @@ public class Broker
      * Handles players disconnected from the server
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readDisconnectedPlayer(ByteBuffer input)
     {
@@ -468,8 +462,7 @@ public class Broker
      * Handles destroyed objects
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readDestroyedObject(ByteBuffer input)
     {
@@ -481,8 +474,7 @@ public class Broker
      * Handles new players created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readNewPlayer(ByteBuffer input) // Should probably tell
                                                  // GameClient about the new
@@ -510,8 +502,7 @@ public class Broker
      * Handles new bullets created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readBulletCreation(ByteBuffer input)
     {
@@ -533,8 +524,7 @@ public class Broker
      * Handles reading of kill notifications
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readKillNotification(ByteBuffer input)
     {
