@@ -70,7 +70,7 @@ public class CharacterController
             }
             else if (action == KeyHandler.Action.BLINK)
             {
-                character.getBody().setCenter(getMousePoint());
+//                character.getBody().setCenter(getMousePoint());
             }
             else if (action == KeyHandler.Action.RELOAD)
             {
