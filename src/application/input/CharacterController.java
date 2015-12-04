@@ -72,6 +72,10 @@ public class CharacterController
             {
                 character.getBody().setCenter(getMousePoint());
             }
+            else if (action == KeyHandler.Action.RELOAD)
+            {
+                character.getWeapon().reload();
+            }
 
         });
         gameBox.setOnKeyReleased(actionEvent ->
