@@ -3,7 +3,6 @@ package application.engine.rendering;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
@@ -20,16 +19,15 @@ import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
-import application.engine.game_object.Weapon;
 import application.gui.GUI;
 import application.gui.Leaderboard;
+import application.util.LightEvent;
 import application.util.Observable;
 import application.util.Observation;
 import application.util.Resources;
-import application.util.Timer;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
-import application.engine.rendering.TranslatedPoint;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -47,15 +45,15 @@ import javafx.scene.transform.Affine;
  */
 public class ClientMap extends Observable
 {
-
+    private static final long DATETIME_TICKS_TO_MILLISECONDS = 1000000;
     private Broker broker;
     private GraphicsContext gc;
     private Canvas canvas;
     private int mapWidth;
     private int mapHeight;
+    private int frames = 0;
     private static int MAP_OFFSET = 500;
     public ConcurrentMap<Integer, GameObject> gameObjects;
-    public Timer timer;
     private Label fpsLabel, scoreLabel, healthLabel, ammoLabel, reloadingLabel;
     private VBox labelBox;
     private BoDCharacter clientChar;
@@ -70,8 +68,9 @@ public class ClientMap extends Observable
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
 
     /**
-     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
-     * the server with and the character that belongs to the client.
+     * Creates a client map defining the serverMap its based upon, the gamebox
+     * it should be drawn in, the broker it uses to communicate with the server
+     * with and the character that belongs to the client.
      * 
      * @param serverGame
      *            The server map which the ClientMap is based upon.
@@ -100,9 +99,6 @@ public class ClientMap extends Observable
         this.broker = broker;
         broker.activate(this);
 
-        timer = new Timer();
-        timer.start();
-
         for (GameObjectDTO dto : serverGame.getGameObjects())
         {
             if (dto.getBody().getType() == Body.Geometry.CIRCLE.ordinal())
@@ -110,14 +106,12 @@ public class ClientMap extends Observable
                 if (dto.getId() != clientChar.getId())
                 {
                     addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.ENEMY_CHARACTER));
-
                 }
             }
             else if (dto.getBody().getType() == Body.Geometry.RECTANGLE.ordinal())
             {
                 addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL));
             }
-
         }
 
         for (PlayerDTO pdto : serverGame.getPlayers())
@@ -174,18 +168,47 @@ public class ClientMap extends Observable
     {
         Image mapImage = new Image("images/texture_dirt.png");
 
+        LightEvent uiPanelEvent = new LightEvent(250, () ->
+        {
+            ammoLabel.setText(
+                    clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
+            if (clientChar.getWeapon().getReloading())
+            {
+                reloadingLabel.setText("Reloading");
+            }
+            else
+            {
+                reloadingLabel.setText("");
+            }
+
+            fpsLabel.setText("fps: " + frames * 4);// every 0.25 second,
+                                                   // time by 4 to get
+                                                   // frame per second.
+            scoreLabel.setText("Score: " + (int)clientChar.getScore());
+            if (!clientChar.isDestroyed())
+            {
+                healthLabel.setText("Health: " + clientChar.getHealth().getValue());
+            }
+            else
+            {
+                healthLabel.setText("Health: DEAD");
+            }
+            leaderboard.refresh();
+
+            frames = 0;
+
+        });
+
         animationTimer = new AnimationTimer()
         {
-            int frames = 0;
-
             public void handle(long currentNanoTime)
             {
                 double translateX = clientChar.getBody().getCenter().getX() - canvas.getWidth() / 2;
                 double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
                 TranslatedPoint.setTranslate(-translateX, -translateY);
 
-                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), mapImage.getWidth(),
-                        mapImage.getHeight(), false);
+                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(),
+                        mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
                 gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
                 for (GameObject go : gameObjects.values())
@@ -198,40 +221,9 @@ public class ClientMap extends Observable
                 if (!clientChar.isDestroyed())
                 {
                     clientChar.updateWithCollision(gc, gameObjects);
-
                 }
 
-                ammoLabel.setText(clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
-                if (clientChar.getWeapon().getReloading())
-                {
-                    reloadingLabel.setText("Reloading");
-                }
-                else
-                {
-                    reloadingLabel.setText("");
-                }
-
-                if (timer.getDuration() > 250)
-                {
-                    fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
-                    scoreLabel.setText("Score: " + (int)clientChar.getScore());
-                    if (!clientChar.isDestroyed())
-                    {
-                        healthLabel.setText("Health: " + clientChar.getHealth().getValue());
-                    }
-                    else
-                    {
-                        healthLabel.setText("Health: DEAD");
-                    }
-                    leaderboard.refresh();
-
-                    timer.reset();
-                    frames = 0;
-                }
-                else
-                {
-                    frames++;
-                }
+                ++frames; // fps is reliant on the refresh rate.
                 canvas.requestFocus();
             }
         };
@@ -239,9 +231,30 @@ public class ClientMap extends Observable
 
         updateThread = new Thread(() ->
         {
+            long lastUpdate = System.nanoTime();
+
             while (mapActive)
             {
+                long currentTime = System.nanoTime();
+                long deltaTime = (currentTime - lastUpdate) / DATETIME_TICKS_TO_MILLISECONDS;
+                lastUpdate = currentTime;
+
+                Platform.runLater(() ->
+                {
+                    uiPanelEvent.update(deltaTime);
+                });
+
                 sendUpdate();
+                broker.update(deltaTime);
+
+                try
+                {
+                    Thread.sleep(20);
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
         updateThread.start();
@@ -313,9 +326,10 @@ public class ClientMap extends Observable
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
-     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
-     * score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key
+     * in the scoreMap. If it does, and the go is an instance of BoDCharacter,
+     * then it calls the setScore method of the BoDCharacter and gives the value
+     * associated with the matching key as the score.
      * 
      * @param scoreMap
      */
@@ -383,8 +397,8 @@ public class ClientMap extends Observable
         {
             BoDCharacter character = (BoDCharacter)go;
             leaderboard.addCharacter(character);
-            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
-                    && !Resources.johnCena.isPlaying())
+            if (character.getNickname().toLowerCase().contains("john")
+                    && character.getNickname().toLowerCase().contains("cena") && !Resources.johnCena.isPlaying())
             {
                 Resources.johnCena.setVolume(0.3);
                 Resources.johnCena.play();
@@ -410,13 +424,14 @@ public class ClientMap extends Observable
                 leaderboard.remove((BoDCharacter)go);
             }
             go.destroy();
-            
+
             gameObjects.remove(id);
         }
     }
 
     /**
-     * Sends an update to the server which data such as the clients character position and active bullets.
+     * Sends an update to the server which data such as the clients character
+     * position and active bullets.
      */
 
     public void sendUpdate()

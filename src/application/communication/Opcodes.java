@@ -1,9 +1,7 @@
 package application.communication;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Handles operation codes for communication between client and server.
@@ -13,8 +11,16 @@ import java.util.Set;
  */
 public enum Opcodes
 {
-
-    BROADCAST_POSITION_UPDATE(1), POSITION_UPDATE(2), REQUEST_BULLET(3), NEW_PLAYER(4), DISCONNECTED_PLAYER(5), BROADCAST_SCORE_UPDATE(6), BROADCAST_HEALTH_UPDATE(7), KILL_NOTIFICATION(8), OBJECT_DESTRUCTION(9);
+    BROADCAST_POSITION_UPDATE(1),
+    POSITION_UPDATE(2),
+    REQUEST_BULLET(3),
+    NEW_PLAYER(4),
+    DISCONNECTED_PLAYER(5),
+    BROADCAST_SCORE_UPDATE(6),
+    BROADCAST_HEALTH_UPDATE(7),
+    KILL_NOTIFICATION(8),
+    OBJECT_DESTRUCTION(9),
+    PING(10);
 
     private int value;
 
@@ -22,16 +28,16 @@ public enum Opcodes
 
     static
     {
-
-        values.put(1, BROADCAST_POSITION_UPDATE);
-        values.put(2, POSITION_UPDATE);
-        values.put(3, REQUEST_BULLET);
-        values.put(4, NEW_PLAYER);
-        values.put(5, DISCONNECTED_PLAYER);
-        values.put(6, BROADCAST_SCORE_UPDATE);
-        values.put(7, BROADCAST_HEALTH_UPDATE);
-        values.put(8, KILL_NOTIFICATION);
-        values.put(9, OBJECT_DESTRUCTION);
+        values.put(BROADCAST_POSITION_UPDATE.value, BROADCAST_POSITION_UPDATE);
+        values.put(POSITION_UPDATE.value, POSITION_UPDATE);
+        values.put(REQUEST_BULLET.value, REQUEST_BULLET);
+        values.put(NEW_PLAYER.value, NEW_PLAYER);
+        values.put(DISCONNECTED_PLAYER.value, DISCONNECTED_PLAYER);
+        values.put(BROADCAST_SCORE_UPDATE.value, BROADCAST_SCORE_UPDATE);
+        values.put(BROADCAST_HEALTH_UPDATE.value, BROADCAST_HEALTH_UPDATE);
+        values.put(KILL_NOTIFICATION.value, KILL_NOTIFICATION);
+        values.put(OBJECT_DESTRUCTION.value, OBJECT_DESTRUCTION);
+        values.put(PING.value, PING);
     }
 
     /**
@@ -46,7 +52,6 @@ public enum Opcodes
 
     public static Opcodes fromInteger(int x) // Better for performance
     {
-
         return values.get(x);
     }
 
