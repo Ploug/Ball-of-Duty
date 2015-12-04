@@ -58,7 +58,6 @@ public class GUI extends Application
     public static final int CANVAS_START_HEIGHT = 680;
     public static Scale scale;
 
-    private AudioClip johnCena = new AudioClip(new File("src/sounds/JohnCena.mp3").toURI().toString());
     Canvas canvas;
 
     public static void main(String[] args)
@@ -372,10 +371,6 @@ public class GUI extends Application
 
     public void joinGame(String nickname)
     {
-        if (nickname.toLowerCase().contains("john")&&nickname.toLowerCase().contains("cena"))
-        {
-            johnCena.play();
-        }
         Specializations spec;
         if (chooseRoller.isSelected())
         {
