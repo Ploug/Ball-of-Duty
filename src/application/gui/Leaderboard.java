@@ -27,6 +27,7 @@ public class Leaderboard extends ListView<BoDCharacter>
         setItems(characters);
     }
 
+    @Override
     public void refresh()
     {
 
@@ -41,6 +42,8 @@ public class Leaderboard extends ListView<BoDCharacter>
 
         }
         characters.sort((c1, c2) -> Double.compare(c2.getScore(), c1.getScore()));
+        
+        super.refresh();
     }
 
     public void addCharacter(BoDCharacter character)

@@ -8,6 +8,7 @@ import application.engine.game_object.GameObject;
 import application.engine.game_object.View;
 import application.engine.game_object.physics.Physics;
 import application.engine.rendering.TranslatedPoint;
+import application.util.Observation;
 import application.util.Timer;
 import application.util.Vector2;
 import javafx.scene.image.Image;
@@ -99,8 +100,7 @@ public class Bullet extends GameObject
                     e.printStackTrace();
                 }
             }
-            setChanged();
-            notifyObservers();
+            destroy();
         }).start();
         ;
 

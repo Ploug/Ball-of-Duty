@@ -1,9 +1,10 @@
 package application.engine.game_object;
 
-import java.util.Observable;
 import java.util.concurrent.ConcurrentMap;
 
 import application.engine.game_object.physics.Physics;
+import application.util.Observable;
+import application.util.Observation;
 import application.util.Vector2;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -122,8 +123,7 @@ public class GameObject extends Observable
             return;
         }
         destroyed = true; 
-        setChanged();
-        notifyObservers();
+        notifyObservers(Observation.EXTERMINATION);
     }
 
     /**
@@ -250,7 +250,7 @@ public class GameObject extends Observable
         return String.format("GameObject [body=%s, physics=%s, health=%s, weapon=%s, id=%s, destroyed=%s]", body, physics,  health,
                 weapon, id, destroyed);
     }
-
+    
     
     
     

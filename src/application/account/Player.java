@@ -8,6 +8,8 @@ import application.engine.entities.specializations.Heavy;
 import application.engine.entities.specializations.Roller;
 import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.TranslatedPoint;
+import application.util.Observable;
+import application.util.Observation;
 import javafx.scene.image.Image;
 
 /**
@@ -16,7 +18,7 @@ import javafx.scene.image.Image;
  * @author Gruppe6
  *
  */
-public class Player
+public class  Player extends Observable
 {
 
     private BoDCharacter _character;
@@ -55,6 +57,10 @@ public class Player
         int x = 100 + (int)(Math.random() * 900);
         int y = 100 + (int)(Math.random() * 400);
         Image myCharImage = new Image("images/ball_blue.png");
+        if(_character != null)
+        {
+            _character.unregisterAll(this);
+        }
         switch (spec)
         {
             case BLASTER:
@@ -69,7 +75,9 @@ public class Player
             default:
                 break;
         } // TODO image would be dynamic if player has different cosmetics
-        this._character.setNickname(_nickname);
+        _character.setNickname(_nickname);
+        _character.register(Observation.EXTERMINATION, this, (observable, data)->characterDeath());
+        
     }
 
     /**
@@ -80,6 +88,11 @@ public class Player
     public int getId()
     {
         return _id;
+    }
+    
+    public void characterDeath()
+    {
+        notifyObservers(Observation.EXTERMINATION);
     }
 
     public String getNickname()

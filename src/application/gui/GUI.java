@@ -1,5 +1,6 @@
 package application.gui;
 
+import java.io.File;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Optional;
@@ -9,6 +10,7 @@ import application.communication.GameClient;
 import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.ClientMap;
 import application.engine.rendering.TranslatedPoint;
+import application.util.Observation;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -34,11 +36,12 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-public class GUI extends Application implements Observer
+public class GUI extends Application
 {
 
     public static GameClient gameManager;
@@ -47,9 +50,15 @@ public class GUI extends Application implements Observer
     private BorderPane gameBox;
     private Stage tStage;
     private Scene startMenu;
+    private Scene gameScene;
+    private RadioButton chooseBlaster;
+    private RadioButton chooseHeavy;
+    private RadioButton chooseRoller;
     public static final int CANVAS_START_WIDTH = 1100;
     public static final int CANVAS_START_HEIGHT = 680;
     public static Scale scale;
+
+    private AudioClip johnCena = new AudioClip(new File("src/sounds/JohnCena.mp3").toURI().toString());
     Canvas canvas;
 
     public static void main(String[] args)
@@ -58,13 +67,11 @@ public class GUI extends Application implements Observer
     }
 
     /**
-     * Gets the scenes relative location. The relative location is based on how
-     * the scene's is located relative to the operating system.
+     * Gets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is
-     *         based on how the scene's is located relative to the operating
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
      *         system.
      */
     private TranslatedPoint getRelativeSceneLocation(Stage stage)
@@ -94,7 +101,7 @@ public class GUI extends Application implements Observer
         startMenu = new Scene(startMenuRoot);
 
         gameBox = new BorderPane();
-        Scene gameScene = new Scene(gameBox);
+        gameScene = new Scene(gameBox);
 
         BorderPane createAccountRoot = new BorderPane();
         BorderPane lohInRoot = new BorderPane();
@@ -145,15 +152,15 @@ public class GUI extends Application implements Observer
         Image image = new Image("images/frontpage.png");
         BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
         // new BackgroundImage(image, repeatX, repeatY, position, size)
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT,
-                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                backgroundSize);
         // new Background(images...)
         Background background = new Background(backgroundImage);
         startMenuRoot.setBackground(background);
 
-        RadioButton chooseBlaster = new RadioButton("Blaster");
-        RadioButton chooseRoller = new RadioButton("Roller");
-        RadioButton chooseHeavy = new RadioButton("Heavy");
+        chooseBlaster = new RadioButton("Blaster");
+        chooseRoller = new RadioButton("Roller");
+        chooseHeavy = new RadioButton("Heavy");
 
         final ToggleGroup specializationGroup = new ToggleGroup();
 
@@ -203,8 +210,7 @@ public class GUI extends Application implements Observer
             if (gameManager.getPlayer() != null)
             {
                 Player client = gameManager.getPlayer();
-                Label you = new Label("YOU:    " + client.getNickname() + " [" + client.getId() + "]    | Score: "
-                        + client.getHighscore());
+                Label you = new Label("YOU:    " + client.getNickname() + " [" + client.getId() + "]    | Score: " + client.getHighscore());
 
                 you.setStyle("-fx-font-size: 15pt;-fx-font-family: Segoe UI Semibold;");
                 lbBorder.setBottom(you);
@@ -237,49 +243,12 @@ public class GUI extends Application implements Observer
 
         joinBtn.setOnAction(ActionEvent ->
         {
-            Specializations spec;
-            if (chooseRoller.isSelected())
-            {
-                spec = Specializations.ROLLER;
-            }
-            else if (chooseHeavy.isSelected())
-            {
-                spec = Specializations.HEAVY;
-            }
-            else // Blaster is default, if something goes wrong with radio
-                 // buttons
-            {
-                spec = Specializations.BLASTER;
-            }
-
-            theStage.setScene(gameScene);
-            gameManager.joinAsGuest(gameBox, tfNickname.getText(), spec);
-            gameManager.getMap().addObserver(this);
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
-            gameBox.requestFocus();
+            joinGame(tfNickname.getText());
 
         });
         tfNickname.setOnAction(ActionEvent ->
         {
-            Specializations spec;
-            if (chooseRoller.isSelected())
-            {
-                spec = Specializations.ROLLER;
-            }
-            else if (chooseHeavy.isSelected())
-            {
-                spec = Specializations.HEAVY;
-            }
-            else // Blaster is default, if something goes wrong with radio
-                 // buttons
-            {
-                spec = Specializations.BLASTER;
-            }
-            theStage.setScene(gameScene);
-            gameManager.joinAsGuest(gameBox, tfNickname.getText(), spec);
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(theStage));
-            gameBox.requestFocus();
-
+            joinGame(tfNickname.getText());
         });
 
         mainButtonBox.getChildren().add(lblNickname);
@@ -332,8 +301,7 @@ public class GUI extends Application implements Observer
 
             createBtn.setOnAction(ActionEvent1 ->
             {
-                gameManager.createAccount(tfUserName.getText(), tfNickname2.getText(), pf.getText().toCharArray(),
-                        pf2.getText().toCharArray());
+                gameManager.createAccount(tfUserName.getText(), tfNickname2.getText(), pf.getText().toCharArray(), pf2.getText().toCharArray());
                 startMenuRoot.setLeft(mainButtonBox);
                 BorderPane.setMargin(mainButtonBox, new Insets(350, 0, 0, 150));
             });
@@ -390,8 +358,7 @@ public class GUI extends Application implements Observer
 
         quitBtn.setOnAction(ActionEvent ->
         {
-            gameManager.quitGame();
-            theStage.setScene(startMenu);
+            quitGame();
         });
 
         canvas = new Canvas(CANVAS_START_WIDTH, CANVAS_START_HEIGHT);
@@ -403,59 +370,89 @@ public class GUI extends Application implements Observer
         theStage.show();
     }
 
-    @Override
-    public void update(Observable arg0, Object arg1)
+    public void joinGame(String nickname)
     {
-        if (arg0 instanceof ClientMap)
+        if (nickname.toLowerCase().contains("john")&&nickname.toLowerCase().contains("cena"))
         {
-            Platform.runLater(new Runnable() // Run later to modify GUI from
-                                             // outside GUI-thread
-            {
-                @Override
-                public void run()
-                {
-                    Alert alert = new Alert(AlertType.CONFIRMATION);
-                    alert.setTitle("Game over");
-                    alert.setHeaderText(null);
-                    alert.setContentText("You have died...\nDo you want to respawn?");
-
-                    ButtonType respawnBlaster = new ButtonType("Respawn as blaster");
-                    ButtonType respawnRoller = new ButtonType("Respawn as roller");
-                    ButtonType respawnHeavy = new ButtonType("Respawn as heavy");
-                    ButtonType spectate = new ButtonType("Spectate");
-                    ButtonType quit = new ButtonType("Quit");
-
-                    alert.getButtonTypes().setAll(respawnBlaster, respawnRoller, respawnHeavy, spectate, quit);
-
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() == respawnBlaster)
-                    {
-                        System.out.println("Trying to respawn...");
-                        gameManager.respawn(gameBox, Specializations.BLASTER);
-                    }
-                    else if (result.get() == respawnRoller)
-                    {
-                        System.out.println("Trying to respawn...");
-                        gameManager.respawn(gameBox, Specializations.ROLLER);
-                    }
-                    else if (result.get() == respawnHeavy)
-                    {
-                        System.out.println("Trying to respawn...");
-                        gameManager.respawn(gameBox, Specializations.HEAVY);
-                    }
-                    else if (result.get() == spectate)
-                    {
-                        System.out.println("Spectating...");
-                        gameManager.getMap().setChoosing(false);
-                    }
-                    else if (result.get() == quit)
-                    {
-                        System.out.println("Trying to quit...");
-                        gameManager.quitGame();
-                        tStage.setScene(startMenu);
-                    }
-                }
-            });
+            johnCena.play();
         }
+        Specializations spec;
+        if (chooseRoller.isSelected())
+        {
+            spec = Specializations.ROLLER;
+        }
+        else if (chooseHeavy.isSelected())
+        {
+            spec = Specializations.HEAVY;
+        }
+        else // Blaster is default, if something goes wrong with radio
+             // buttons
+        {
+            spec = Specializations.BLASTER;
+        }
+        tStage.setScene(gameScene);
+        gameManager.joinAsGuest(gameBox, nickname, spec);
+        gameManager.getPlayer().register(Observation.EXTERMINATION, this, (observable, data) -> playerDeath());
+        gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+        gameBox.requestFocus();
+    }
+
+    public void quitGame()
+    {
+        gameManager.getPlayer().unregisterAll(this);
+        gameManager.quitGame();
+        tStage.setScene(startMenu);
+    }
+
+    public void playerDeath()
+    {
+        Platform.runLater(new Runnable()
+
+        {
+            @Override
+            public void run()
+            {
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Game over");
+                alert.setHeaderText(null);
+                alert.setContentText("You have died...\nDo you want to respawn?");
+
+                ButtonType respawnBlaster = new ButtonType("Respawn as blaster");
+                ButtonType respawnRoller = new ButtonType("Respawn as roller");
+                ButtonType respawnHeavy = new ButtonType("Respawn as heavy");
+                ButtonType spectate = new ButtonType("Spectate");
+                ButtonType quit = new ButtonType("Quit");
+
+                alert.getButtonTypes().setAll(respawnBlaster, respawnRoller, respawnHeavy, spectate, quit);
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == respawnBlaster)
+                {
+                    System.out.println("Trying to respawn...");
+                    gameManager.respawn(gameBox, Specializations.BLASTER);
+                    gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+                }
+                else if (result.get() == respawnRoller)
+                {
+                    System.out.println("Trying to respawn...");
+                    gameManager.respawn(gameBox, Specializations.ROLLER);
+                    gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+                }
+                else if (result.get() == respawnHeavy)
+                {
+                    System.out.println("Trying to respawn...");
+                    gameManager.respawn(gameBox, Specializations.HEAVY);
+                    gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+                }
+                else if (result.get() == spectate)
+                {
+                    System.out.println("Spectating...");
+                }
+                else if (result.get() == quit)
+                {
+                    quitGame();
+                }
+            }
+        });
     }
 }
