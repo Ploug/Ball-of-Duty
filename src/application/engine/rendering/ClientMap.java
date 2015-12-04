@@ -128,7 +128,6 @@ public class ClientMap extends Observable
                 continue;
             }
             character.setNickname(pdto.getNickname());
-            leaderboard.addCharacter(character);
             if (clientPlayer.getId() == pdto.getId())
             {
                 clientPlayer.setHighscore(pdto.getHighScore());
@@ -387,6 +386,7 @@ public class ClientMap extends Observable
             if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
                     && !Resources.johnCena.isPlaying())
             {
+                Resources.johnCena.setVolume(0.3);
                 Resources.johnCena.play();
             }
         }
@@ -405,11 +405,12 @@ public class ClientMap extends Observable
         GameObject go = gameObjects.get(id);
         if (go != null)
         {
-            go.destroy();
             if (go instanceof BoDCharacter)
             {
                 leaderboard.remove((BoDCharacter)go);
             }
+            go.destroy();
+            
             gameObjects.remove(id);
         }
     }

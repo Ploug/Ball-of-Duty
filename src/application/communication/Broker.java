@@ -8,12 +8,16 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.swing.plaf.synth.SynthSplitPaneUI;
 
 import application.engine.entities.Bullet;
 import application.engine.entities.specializations.Specializations;
@@ -32,7 +36,7 @@ public class Broker
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "localhost";
+    private static final String SERVER_IP = "10.126.26.46";
     private static final int SERVER_UDP_PORT = 15001;
     private static final int SERVER_TCP_PORT = 15010;
     private DataOutputStream output = null;
@@ -339,6 +343,9 @@ public class Broker
         }
     }
 
+    AtomicInteger send = new AtomicInteger(0);
+    AtomicInteger received = new AtomicInteger(0);
+
     /**
      * Creates a bullet and returns it Id.
      * 
@@ -362,7 +369,6 @@ public class Broker
         buffer.putInt(data.damage);
         buffer.putInt(data.ownerId);
         buffer.putInt(data.entityType.ordinal());
-        
         buffer.put((byte)4); // ASCII Standard for End of transmission
         sendTcp(buffer);
     }
@@ -381,13 +387,13 @@ public class Broker
 
                 while (isActive)
                 {
-                    byte[] buf = new byte[512];
-                    input.read(buf);
-                    if (buf.length == 0)
+                    byte[] buf = new byte[1024];
+                    int bytesRead = input.read(buf);
+                    if (bytesRead == 0)
                     {
                         break;
                     }
-                    receiveTCP(buf);
+                    receiveTCP(Arrays.copyOf(buf, bytesRead));
                 }
             }
             catch (IOException e)
@@ -403,45 +409,53 @@ public class Broker
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put(data);
         buffer.rewind();
-
-        if (buffer.get() != 1) // start of heading
+        
+        try
         {
-            return;
+            while (buffer.get() == 1) // start of heading
+            {
+                byte value = buffer.get();
+                Opcodes opcode = Opcodes.fromInteger(value);
+
+                buffer.get(); // start of text
+
+                switch (opcode)
+                {
+                    case REQUEST_BULLET:
+                    {
+                        readBulletCreation(buffer);
+                        break;
+                    }
+                    case NEW_PLAYER:
+                    {
+                        readNewPlayer(buffer);
+                        break;
+                    }
+                    case DISCONNECTED_PLAYER:
+                    {
+                        readDisconnectedPlayer(buffer);
+                        break;
+                    }
+                    case KILL_NOTIFICATION:
+                    {
+                        readKillNotification(buffer);
+                        break;
+                    }
+                    case OBJECT_DESTRUCTION:
+                    {
+                        readDestroyedObject(buffer);
+                        break;
+                    }
+                    default:
+                        break;
+                }
+                buffer.get(); // Consuming end of transmission
+                
+            }
         }
-        byte value = buffer.get();
-        Opcodes opcode = Opcodes.fromInteger(value);
-
-        buffer.get(); // start of text
-
-        switch (opcode)
+        catch(BufferUnderflowException e)
         {
-            case REQUEST_BULLET:
-            {
-                readBulletCreation(buffer);
-                break;
-            }
-            case NEW_PLAYER:
-            {
-                readNewPlayer(buffer);
-                break;
-            }
-            case DISCONNECTED_PLAYER:
-            {
-                readDisconnectedPlayer(buffer);
-                break;
-            }
-            case KILL_NOTIFICATION:
-            {
-                readKillNotification(buffer);
-                break;
-            }
-            case OBJECT_DESTRUCTION:
-            {
-                readDestroyedObject(buffer);
-                break;
-            }
-            default:
-                break;
+            
         }
     }
 
