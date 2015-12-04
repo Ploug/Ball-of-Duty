@@ -3,7 +3,6 @@ package application.engine.rendering;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -24,6 +23,8 @@ import application.engine.game_object.GameObject;
 import application.engine.game_object.Weapon;
 import application.gui.GUI;
 import application.gui.Leaderboard;
+import application.util.Observable;
+import application.util.Observation;
 import application.util.Timer;
 import javafx.animation.AnimationTimer;
 import javafx.geometry.Pos;
@@ -43,7 +44,7 @@ import javafx.scene.transform.Affine;
  * @author Gruppe6
  *
  */
-public class ClientMap extends Observable implements Observer
+public class ClientMap extends Observable 
 {
 
     private Broker broker;
@@ -65,7 +66,6 @@ public class ClientMap extends Observable implements Observer
     private TranslatedPoint mapPoint;
     private ConcurrentLinkedQueue<GameObject> unassignedBullets;
     private Affine startingAffine;
-    private boolean choosing;
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
 
     /**
@@ -89,14 +89,10 @@ public class ClientMap extends Observable implements Observer
         this.unassignedBullets = new ConcurrentLinkedQueue<>();
         this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
-        this.clientChar = clientPlayer.getCharacter();
-        this.clientChar.addObserver(this);
+        setCharacter(clientPlayer.getCharacter());
+        
         System.out.println("My id " + clientChar.getId());
         this.leaderboard = new Leaderboard();
-        if (clientChar.getWeapon() != null)
-        {
-            clientChar.getWeapon().addObserver(this);
-        }
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
         addGameObject(clientChar);
@@ -349,8 +345,6 @@ public class ClientMap extends Observable implements Observer
      */
     public void addGameObject(GameObjectDAO data)
     {
-        if (!choosing && data.entityType != null)
-        {
             if (data.ownerId == clientChar.getId())
             {
                 Bullet bullet = (Bullet)unassignedBullets.poll();
@@ -363,11 +357,7 @@ public class ClientMap extends Observable implements Observer
             {
                 addGameObject(EntityFactory.getEntity(data, data.entityType));
             }
-        }
-        else if (choosing)
-        {
-            addQueue.add(data);
-        }
+       
     }
 
     private void addGameObject(GameObject go)
@@ -375,9 +365,9 @@ public class ClientMap extends Observable implements Observer
         if (go instanceof BoDCharacter)
         {
             leaderboard.addCharacter((BoDCharacter)go);
-        }
+        } 
         gameObjects.put(go.getId(), go);
-        go.addObserver(this);
+        go.register(Observation.EXTERMINATION, this, (observable, data)->removeGameObject((GameObject)observable));
     }
 
     /**
@@ -417,27 +407,16 @@ public class ClientMap extends Observable implements Observer
         broker.sendUpdate(posList);
     }
 
-    public void setChoosing(boolean input)
-    {
-        choosing = input;
-        if (!choosing)
-        {
-            while (addQueue.peek() != null)
-            {
-                addGameObject(addQueue.poll());
-            }
-        }
-    }
+    
 
     public void killNotification(int victimId, int killerId)
     {
+        
         destroyGameObject(victimId);
         if (victimId == clientChar.getId())
         {
-            System.out.println("YOU DIED MOTAFUCASPKDSAD FUCKA");
-            choosing = true;
-            setChanged();
-            notifyObservers(this); // Game over pop up
+            System.out.println("YOU DIED");
+            
         }
         else if (killerId == clientChar.getId())
         {
@@ -448,7 +427,7 @@ public class ClientMap extends Observable implements Observer
             System.out.println(killerId + " pwned " + victimId + "'s head");
         }
     }
-
+    
     @Override
     public int hashCode()
     {
@@ -459,52 +438,38 @@ public class ClientMap extends Observable implements Observer
         return result;
     }
 
-    @Override
-    public void update(Observable o, Object arg)
+    public void removeGameObject(GameObject go)
     {
-        if (o instanceof Weapon) // Spawned a bullet.
+        gameObjects.remove(go.getId());
+        go.unregisterAll(this);
+        if(go.getWeapon() != null)
         {
-            Bullet bullet = (Bullet)arg;
-            unassignedBullets.add(bullet);
-            GameObjectDAO data = new GameObjectDAO();
-            data.x = bullet.getBody().getPosition().getX();
-            data.y = bullet.getBody().getPosition().getY();
-            data.height = bullet.getBody().getHeight();
-            data.velocityX = bullet.getPhysics().getVelocity().getX();
-            data.velocityY = bullet.getPhysics().getVelocity().getY();
-            data.bulletType = bullet.getType();
-            data.damage = bullet.getDamage();
-            data.ownerId = bullet.getOwnerId();
-            data.entityType = EntityFactory.EntityType.BULLET;
-            broker.requestBulletCreation(data);
-        }
-        else if (o instanceof Bullet)
-        {
-            Bullet bullet = (Bullet)o;
-            gameObjects.remove(bullet.getId());
-            clientChar.getWeapon().getActiveBullets().remove(bullet.getId());
-            o.deleteObserver(this);
-            // TODO Server should handle if a bullet have been active for too long, not client.
-
-        }
-        else if (o instanceof GameObject)
-        {
-            GameObject go = (GameObject)o;
-
-            System.out.println("Game object destroyed: " + go.getId());
-            gameObjects.remove(go.getId());
-            o.deleteObserver(this);
+            go.getWeapon().unregisterAll(this);
         }
     }
-
+    
+    public void newBullet(Bullet bullet)
+    {
+        unassignedBullets.add(bullet);
+        GameObjectDAO data = new GameObjectDAO();
+        data.x = bullet.getBody().getPosition().getX();
+        data.y = bullet.getBody().getPosition().getY();
+        data.height = bullet.getBody().getHeight();
+        data.velocityX = bullet.getPhysics().getVelocity().getX();
+        data.velocityY = bullet.getPhysics().getVelocity().getY();
+        data.bulletType = bullet.getType();
+        data.damage = bullet.getDamage();
+        data.ownerId = bullet.getOwnerId();
+        data.entityType = EntityFactory.EntityType.BULLET;
+        broker.requestBulletCreation(data);
+    }
     public void setCharacter(BoDCharacter character)
     {
         clientChar = character;
-
         addGameObject(clientChar);
         if (clientChar.getWeapon() != null)
         {
-            clientChar.getWeapon().addObserver(this);
+            clientChar.getWeapon().register(Observation.SPAWNING, this, (observable, data)->newBullet((Bullet)data));
         }
     }
 

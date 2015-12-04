@@ -41,33 +41,34 @@ public abstract class BoDCharacter extends GameObject
     {
         super(id);
     }
-    
+
     public double getScore()
     {
         return _score;
     }
-    
+
     public String getNickname()
     {
         return _nickname;
     }
-    
+
     public void setNickname(String nickname)
     {
         this._nickname = nickname;
     }
-    
+
     public void setScore(double score)
     {
         this._score = score;
         updateStats();
     }
-    
+
     public String toString()
     {
-        return _nickname+" | "+_score;
+        return _nickname + " | " + _score;
     }
-    
+
+   
     public abstract void updateStats();
 
 }

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,6 +11,8 @@ import application.communication.GameObjectDAO;
 import application.engine.entities.Bullet;
 import application.engine.entities.Bullet.Type;
 import application.engine.game_object.GameObject;
+import application.util.Observable;
+import application.util.Observation;
 import application.util.Timer;
 import application.util.Vector2;
 import application.engine.rendering.TranslatedPoint;
@@ -37,7 +38,6 @@ public class Weapon extends Observable
 
     private boolean reloading = false;
     private boolean shooting = false;
-    private Set<GameObject> activeBullets;
     Timer timer;
     private static Map<Type, Image> bulletImages;
 
@@ -61,7 +61,6 @@ public class Weapon extends Observable
      */
     public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, double bulletSpeed, int reloadSpeed, int bulletSize)
     {
-        activeBullets = Collections.newSetFromMap(new ConcurrentHashMap<GameObject, Boolean>());
         timer = new Timer();
         timer.start();
         this.gameObject = gameObject;
@@ -103,9 +102,7 @@ public class Weapon extends Observable
                     Bullet bullet = new Bullet(bulletsCreated++, position, bulletSize, velocity, damage, Bullet.Type.RIFLE,
                             bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
                     bullet.getBody().setCenter(position);
-                    activeBullets.add(bullet);
-                    setChanged();
-                    notifyObservers(bullet);
+                    notifyObservers(Observation.SPAWNING, bullet);
                     magazineSize--;
                 }
                 try
@@ -148,10 +145,6 @@ public class Weapon extends Observable
         }
     }
 
-    public Set<GameObject> getActiveBullets()
-    {
-        return activeBullets;
-    }
 
     /**
      * The weapon stops shooting bullets.

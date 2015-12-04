@@ -60,7 +60,6 @@ public class GameClient
         }
         catch (ServiceException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -96,7 +95,6 @@ public class GameClient
         }
         catch (RemoteException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -132,7 +130,6 @@ public class GameClient
         }
         catch (RemoteException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -192,11 +189,9 @@ public class GameClient
             cMap.setCharacter(clientPlayer.getCharacter());
 
             characterController = new CharacterController(clientPlayer.getCharacter(), gameBox, sceneRelativeLocation);
-            cMap.setChoosing(false);
         }
         catch (RemoteException e)
         {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

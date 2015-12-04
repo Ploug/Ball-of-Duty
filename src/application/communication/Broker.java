@@ -503,7 +503,6 @@ public class Broker
         data.specialization = Specializations.fromInteger(input.getInt());
         int value = input.getInt();
         data.entityType = EntityFactory.EntityType.fromInteger(value);
-        System.out.println("NEW PLAYER JOINED: " + data.objectId);
         map.addGameObject(data);
     }
 
