@@ -65,7 +65,7 @@ public abstract class BoDCharacter extends GameObject
 
     public String toString()
     {
-        return _nickname + " | " + _score;
+        return String.format("%s | Score: %.2f", _nickname, _score);
     }
 
    

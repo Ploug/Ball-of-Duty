@@ -400,12 +400,11 @@ public class ClientMap extends Observable
             if (character.getNickname().toLowerCase().contains("john")
                     && character.getNickname().toLowerCase().contains("cena") && !Resources.johnCena.isPlaying())
             {
-                Resources.johnCena.setVolume(0.3);
+                Resources.johnCena.setVolume(0.2);
                 Resources.johnCena.play();
             }
         }
         gameObjects.put(go.getId(), go);
-        go.register(Observation.EXTERMINATION, this, (observable, data) -> removeGameObject((GameObject)observable));
     }
 
     /**
@@ -426,6 +425,12 @@ public class ClientMap extends Observable
             go.destroy();
 
             gameObjects.remove(id);
+            
+            go.unregisterAll(this);
+            if (go.getWeapon() != null)
+            {
+                go.getWeapon().unregisterAll(this);
+            }
         }
     }
 
@@ -476,15 +481,7 @@ public class ClientMap extends Observable
         return result;
     }
 
-    public void removeGameObject(GameObject go)
-    {
-        gameObjects.remove(go.getId());
-        go.unregisterAll(this);
-        if (go.getWeapon() != null)
-        {
-            go.getWeapon().unregisterAll(this);
-        }
-    }
+ 
 
     public void newBullet(Bullet bullet)
     {
