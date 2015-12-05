@@ -1,21 +1,15 @@
 package application.engine.game_object;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import application.communication.GameObjectDAO;
 import application.engine.entities.Bullet;
 import application.engine.entities.Bullet.Type;
-import application.engine.game_object.GameObject;
+import application.engine.rendering.TranslatedPoint;
 import application.util.Observable;
 import application.util.Observation;
 import application.util.Timer;
 import application.util.Vector2;
-import application.engine.rendering.TranslatedPoint;
 import javafx.scene.image.Image;
 
 /**
@@ -55,11 +49,13 @@ public class Weapon extends Observable
      * @param firerate
      *            How many bullets the weapon shoots per second.
      * @param magazineSize
-     *            The size of the magazine. Example: Value of 30 would result in a need to reload every time 30 bullets was spawned.
+     *            The size of the magazine. Example: Value of 30 would result in
+     *            a need to reload every time 30 bullets was spawned.
      * @param damage
      *            Damage per bullet.
      */
-    public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, double bulletSpeed, int reloadSpeed, int bulletSize)
+    public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, double bulletSpeed,
+            int reloadSpeed, int bulletSize)
     {
         timer = new Timer();
         timer.start();
@@ -72,8 +68,6 @@ public class Weapon extends Observable
         this.magazineSize = magazineMaxSize;
         this.bulletSize = bulletSize;
     }
-
-    int bulletsCreated = 500; // FIXME need better way of handling ID.
 
     /**
      * The weapons starts shooting bullets by its firerate.
@@ -94,12 +88,14 @@ public class Weapon extends Observable
             {
                 if (!reloading)
                 {
-                    Vector2 orientation = gameObject.getBody().getOrientation().setMagnitude(gameObject.getBody().getHeight() / 2);
-                    TranslatedPoint position = new TranslatedPoint(gameObject.getBody().getCenter().getX() + orientation.getX(),
+                    Vector2 orientation = gameObject.getBody().getOrientation()
+                            .setMagnitude(gameObject.getBody().getHeight() / 2);
+                    TranslatedPoint position = new TranslatedPoint(
+                            gameObject.getBody().getCenter().getX() + orientation.getX(),
                             gameObject.getBody().getCenter().getY() + orientation.getY());
                     Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                     velocity.setMagnitude(bulletSpeed);
-                    Bullet bullet = new Bullet(bulletsCreated++, position, bulletSize, velocity, damage, Bullet.Type.RIFLE,
+                    Bullet bullet = new Bullet(0, position, bulletSize, velocity, damage, Bullet.Type.RIFLE,
                             bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
                     bullet.getBody().setCenter(position);
                     notifyObservers(Observation.SPAWNING, bullet);
@@ -107,7 +103,7 @@ public class Weapon extends Observable
                 }
                 try
                 {
-                    Thread.sleep((long) (1000 / fireRate));
+                    Thread.sleep((long)(1000 / fireRate));
                 }
                 catch (Exception e)
                 {
@@ -145,7 +141,6 @@ public class Weapon extends Observable
         }
     }
 
-
     /**
      * The weapon stops shooting bullets.
      */
@@ -160,7 +155,8 @@ public class Weapon extends Observable
     }
 
     /**
-     * The current active bullets of the weapon. I.e the bullets that are still in the air that this weapon has created.
+     * The current active bullets of the weapon. I.e the bullets that are still
+     * in the air that this weapon has created.
      * 
      * @return Returns the active bullets this weapon has created.
      */
@@ -174,7 +170,7 @@ public class Weapon extends Observable
     {
         this.fireRate = fireRate;
     }
-    
+
     public void setBulletSpeed(double bulletSpeed)
     {
         this.bulletSpeed = bulletSpeed;
@@ -184,17 +180,17 @@ public class Weapon extends Observable
     {
         this.magazineMaxSize = magazineMaxSize;
     }
-    
+
     public int getMagazineMaxSize()
     {
         return this.magazineMaxSize;
     }
-    
+
     public int getMagazineSize()
     {
         return this.magazineSize;
     }
-    
+
     public boolean getReloading()
     {
         return this.reloading;
@@ -208,8 +204,8 @@ public class Weapon extends Observable
     @Override
     public String toString()
     {
-        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", fireRate, magazineSize,
-                gameObject, damage, shooting);
+        return String.format("Weapon [firerate=%s, magazineSize=%s, gameObject=%s, damage=%s, shooting=%s,]", fireRate,
+                magazineSize, gameObject, damage, shooting);
     }
 
 }

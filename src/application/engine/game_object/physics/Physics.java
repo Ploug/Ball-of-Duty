@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentMap;
 import application.engine.entities.Bullet;
 import application.engine.game_object.GameObject;
 import application.util.CallBack;
-import application.util.Timer;
 import application.util.Vector2;
 
 /**
@@ -23,9 +22,7 @@ public class Physics
     private Vector2 velocity;
     private double topspeed;
     private HashSet<Vector2> directionVectors;
-    private Timer timer;
     private List<CallBack> callbacks;
-    boolean firstUpdate;
 
     /**
      * Creates the physical property of the object describing its topspeed.
@@ -42,33 +39,21 @@ public class Physics
         this.velocity = new Vector2(0, 0);
         this.callbacks = new ArrayList<>();
         directionVectors = new HashSet<>();
-        timer = new Timer();
-        firstUpdate = true;
 
     }
 
     /**
      * Updates the position of the object based on the physics calculations.
      */
-    public void update()
+    public void update(double secondsSinceLastUpdate)
     {
-        if (firstUpdate)
-        {
-            timer.start();
-            firstUpdate = false;
-            return;
-        }
-        double secondsSinceLast = timer.getDuration() / 1000;// compensating for
-                                                             // lag
-        gameObject.getBody().getPosition().add(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
-
-        timer.reset();
+        gameObject.getBody().getPosition().add(velocity.getX() * secondsSinceLastUpdate,
+                velocity.getY() * secondsSinceLastUpdate);
 
         for (CallBack cb : callbacks)
         {
             cb.call();
         }
-
     }
 
     /**
@@ -77,20 +62,12 @@ public class Physics
      * @param gameobjects
      *            The objects which need to be checked for collision.
      */
-    public void updateWithCollision(ConcurrentMap<Integer, GameObject> gameobjects)
+    public void updateWithCollision(double secondsSinceLastUpdate, ConcurrentMap<Integer, GameObject> gameobjects)
     {
-        if (firstUpdate)
-        {
-            timer.start();
-            firstUpdate = false;
-            return;
-        }
-        double secondsSinceLast = timer.getDuration() / 1000;// compensating for lag
-        timer.reset();
-
         GameObject temp = new GameObject(gameObject);
 
-        temp.getBody().increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+        temp.getBody().increasePosition(velocity.getX() * secondsSinceLastUpdate,
+                velocity.getY() * secondsSinceLastUpdate);
         boolean collision = false;
 
         for (GameObject obj : gameobjects.values()) // Checks if it collides with anything. only O(n^3) on very very rare occasions.
@@ -114,7 +91,8 @@ public class Physics
                     {
                         for (GameObject obj3 : gameobjects.values())
                         {
-                            if (obj3.getId() == temp.getId() || obj3.getId() == obj.getId() || obj3.getId() == obj2.getId()|| obj3 instanceof Bullet)
+                            if (obj3.getId() == temp.getId() || obj3.getId() == obj.getId()
+                                    || obj3.getId() == obj2.getId() || obj3 instanceof Bullet)
                             {
                                 continue;
                             }
@@ -127,9 +105,8 @@ public class Physics
                         }
                         if (!collision)
                         {
-                            gameObject.getBody().setPosition(CollisionHandler.collisionResponse(temp, obj2)); // if it doesnt collide with a
-                                                                                                              // third object, put it to the
-                                                                                                              // secondcalculated position.
+                            // if it doesnt collide with a third object, put it to the secondcalculated position.
+                            gameObject.getBody().setPosition(CollisionHandler.collisionResponse(temp, obj2));
                         }
                         collision = true;
                         break;
@@ -149,7 +126,8 @@ public class Physics
 
         if (!collision)
         {
-            gameObject.getBody().increasePosition(velocity.getX() * secondsSinceLast, velocity.getY() * secondsSinceLast);
+            gameObject.getBody().increasePosition(velocity.getX() * secondsSinceLastUpdate,
+                    velocity.getY() * secondsSinceLastUpdate);
         }
 
         for (CallBack cb : callbacks)
@@ -213,8 +191,7 @@ public class Physics
     }
 
     /**
-     * Adds a direction to the game objects velocity, this direction will be averaged in with all the other directions requested on the
-     * velocity.
+     * Adds a direction to the game objects velocity, this direction will be averaged in with all the other directions requested on the velocity.
      * 
      * @param direction
      *            The direction to be added.
@@ -252,21 +229,29 @@ public class Physics
     @Override
     public boolean equals(Object obj)
     {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
         Physics other = (Physics)obj;
         if (directionVectors == null)
         {
-            if (other.directionVectors != null) return false;
+            if (other.directionVectors != null)
+                return false;
         }
-        else if (!directionVectors.equals(other.directionVectors)) return false;
-        if (topspeed != other.topspeed) return false;
+        else if (!directionVectors.equals(other.directionVectors))
+            return false;
+        if (topspeed != other.topspeed)
+            return false;
         if (velocity == null)
         {
-            if (other.velocity != null) return false;
+            if (other.velocity != null)
+                return false;
         }
-        else if (!velocity.equals(other.velocity)) return false;
+        else if (!velocity.equals(other.velocity))
+            return false;
         return true;
     }
 
