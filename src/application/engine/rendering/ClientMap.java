@@ -45,14 +45,14 @@ import javafx.scene.transform.Affine;
  */
 public class ClientMap extends Observable
 {
-    private static final long DATETIME_TICKS_TO_MILLISECONDS = 1000000;
+    private static final long NANOSECONDS_TO_MILLISECONDS = 1000000;
+    private static final long MILLISECONDS_TO_SECONDS = 1000;
     private Broker broker;
     private GraphicsContext gc;
     private Canvas canvas;
     private int mapWidth;
     private int mapHeight;
     private int frames = 0;
-    private static int MAP_OFFSET = 500;
     public ConcurrentMap<Integer, GameObject> gameObjects;
     private Label fpsLabel, scoreLabel, healthLabel, ammoLabel, reloadingLabel;
     private VBox labelBox;
@@ -63,14 +63,13 @@ public class ClientMap extends Observable
     private int serverGameId;
     private Leaderboard leaderboard;
     private TranslatedPoint mapPoint;
-    private ConcurrentLinkedQueue<GameObject> unassignedBullets;
+    // private ConcurrentLinkedQueue<GameObject> unassignedBullets;
     private Affine startingAffine;
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
 
     /**
-     * Creates a client map defining the serverMap its based upon, the gamebox
-     * it should be drawn in, the broker it uses to communicate with the server
-     * with and the character that belongs to the client.
+     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with the
+     * server with and the character that belongs to the client.
      * 
      * @param serverGame
      *            The server map which the ClientMap is based upon.
@@ -86,7 +85,7 @@ public class ClientMap extends Observable
         mapPoint = new TranslatedPoint(0, 0);
         mapWidth = serverGame.getMapWidth();
         mapHeight = serverGame.getMapHeight();
-        this.unassignedBullets = new ConcurrentLinkedQueue<>();
+        // this.unassignedBullets = new ConcurrentLinkedQueue<>();
         this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
         this.leaderboard = new Leaderboard();
@@ -181,9 +180,7 @@ public class ClientMap extends Observable
                 reloadingLabel.setText("");
             }
 
-            fpsLabel.setText("fps: " + frames * 4);// every 0.25 second,
-                                                   // time by 4 to get
-                                                   // frame per second.
+            fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
             scoreLabel.setText("Score: " + (int)clientChar.getScore());
             if (!clientChar.isDestroyed())
             {
@@ -201,8 +198,21 @@ public class ClientMap extends Observable
 
         animationTimer = new AnimationTimer()
         {
+            boolean firstUpdate = true;
+            long lastNanoTime;
+
             public void handle(long currentNanoTime)
             {
+                if (firstUpdate)
+                {
+                    lastNanoTime = currentNanoTime;
+                    firstUpdate = false;
+                }
+
+                double secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime))
+                        / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
+                lastNanoTime = currentNanoTime;
+
                 double translateX = clientChar.getBody().getCenter().getX() - canvas.getWidth() / 2;
                 double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
                 TranslatedPoint.setTranslate(-translateX, -translateY);
@@ -211,16 +221,17 @@ public class ClientMap extends Observable
                         mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
                 gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
+
                 for (GameObject go : gameObjects.values())
                 {
                     if (go != clientChar)
                     {
-                        go.update(gc);
+                        go.update(secondsSinceLastUpdate, gc);
                     }
                 }
                 if (!clientChar.isDestroyed())
                 {
-                    clientChar.updateWithCollision(gc, gameObjects);
+                    clientChar.updateWithCollision(secondsSinceLastUpdate, gc, gameObjects);
                 }
 
                 ++frames; // fps is reliant on the refresh rate.
@@ -236,13 +247,18 @@ public class ClientMap extends Observable
             while (mapActive)
             {
                 long currentTime = System.nanoTime();
-                long deltaTime = (currentTime - lastUpdate) / DATETIME_TICKS_TO_MILLISECONDS;
+                long deltaTime = (currentTime - lastUpdate) / NANOSECONDS_TO_MILLISECONDS;
                 lastUpdate = currentTime;
 
                 Platform.runLater(() ->
                 {
                     uiPanelEvent.update(deltaTime);
                 });
+
+                for (GameObject go : gameObjects.values())
+                {
+                    go.update(deltaTime);
+                }
 
                 sendUpdate();
                 broker.update(deltaTime);
@@ -279,37 +295,6 @@ public class ClientMap extends Observable
      */
     public void updatePositions(List<GameObjectDAO> positions)
     {
-
-        if (positions.size() < gameObjects.values().size())
-        {
-            boolean isInGame = false;
-            for (GameObject go : gameObjects.values())
-            {
-                if (go.getBody().getType() == Body.Geometry.RECTANGLE)
-                {
-                    continue;
-                }
-                isInGame = false;
-                for (GameObjectDAO pos : positions)
-                {
-                    if (go.getId() == pos.objectId || go instanceof Bullet)
-                    {
-                        isInGame = true;
-                        break;
-                    }
-
-                }
-                if (!isInGame)
-                {
-                    if (go.getId() != clientChar.getId())
-                    {
-                        destroyGameObject(go.getId());
-                    }
-                    break;
-                }
-
-            }
-        }
         for (GameObjectDAO pos : positions)
         {
             GameObject go = gameObjects.get(pos.objectId);
@@ -322,14 +307,11 @@ public class ClientMap extends Observable
                 go.getBody().setPosition(new TranslatedPoint(pos.x, pos.y));
             }
         }
-
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key
-     * in the scoreMap. If it does, and the go is an instance of BoDCharacter,
-     * then it calls the setScore method of the BoDCharacter and gives the value
-     * associated with the matching key as the score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of BoDCharacter,
+     * then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the score.
      * 
      * @param scoreMap
      */
@@ -376,14 +358,10 @@ public class ClientMap extends Observable
      */
     public void addGameObject(GameObjectDAO data)
     {
-        if (data.ownerId == clientChar.getId())
-        {
-            Bullet bullet = (Bullet)unassignedBullets.poll();
-            bullet.setId(data.objectId);
-            addGameObject(bullet);
-            return;
-        }
-
+        /*
+         * if (data.ownerId == clientChar.getId()) { Bullet bullet = (Bullet)unassignedBullets.poll(); bullet.setId(data.objectId);
+         * addGameObject(bullet); return; }
+         */
         if (data.objectId != clientChar.getId())
         {
             addGameObject(EntityFactory.getEntity(data, data.entityType));
@@ -435,8 +413,7 @@ public class ClientMap extends Observable
     }
 
     /**
-     * Sends an update to the server which data such as the clients character
-     * position and active bullets.
+     * Sends an update to the server which data such as the clients character position and active bullets.
      */
 
     public void sendUpdate()
@@ -485,7 +462,7 @@ public class ClientMap extends Observable
 
     public void newBullet(Bullet bullet)
     {
-        unassignedBullets.add(bullet);
+        // unassignedBullets.add(bullet);
         GameObjectDAO data = new GameObjectDAO();
         data.x = bullet.getBody().getPosition().getX();
         data.y = bullet.getBody().getPosition().getY();

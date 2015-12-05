@@ -8,7 +8,7 @@ import application.engine.game_object.GameObject;
 import application.engine.game_object.View;
 import application.engine.game_object.physics.Physics;
 import application.engine.rendering.TranslatedPoint;
-import application.util.Observation;
+import application.util.LightEvent;
 import application.util.Timer;
 import application.util.Vector2;
 import javafx.scene.image.Image;
@@ -53,9 +53,13 @@ public class Bullet extends GameObject
     private final Type type;
     private int damage;
     private Timer timer;
-    private int lifeTime;
+    private int _lifeTime = 30000;
     public static final Body.Geometry BODYTYPE = Body.Geometry.CIRCLE;
     private int ownerId;
+    private LightEvent _timeoutEvent = new LightEvent(_lifeTime, () ->
+    {
+        this.destroy();
+    });
 
     /**
      * Creates a bullet with a body, physics, view and damage.
@@ -73,7 +77,8 @@ public class Bullet extends GameObject
      * @param damage
      *            The amount of health reduced on another object if this bullet collides with the object.
      */
-    public Bullet(int id, TranslatedPoint position, double radius, Vector2 velocity, int damage, Type type, Image image, int ownerId)
+    public Bullet(int id, TranslatedPoint position, double radius, Vector2 velocity, int damage, Type type, Image image,
+            int ownerId)
     {
         super(id);
         this.ownerId = ownerId;
@@ -83,27 +88,12 @@ public class Bullet extends GameObject
         this.setPhysics(new Physics(this, velocity.getMagnitude()));
         getPhysics().setVelocity(velocity);
         this.view = new View(this, image);
-        lifeTime = 5;
-        new Thread(() ->
-        {
-            timer = new Timer();
-            timer.start();
-            while ((timer.getDuration() < 1000 * lifeTime))
-            {
-                try
-                {
-                    Thread.sleep(20);
-                }
-                catch (Exception e)
-                {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            destroy();
-        }).start();
-        ;
+    }
 
+    @Override
+    public void update(long deltaTime)
+    {
+        _timeoutEvent.update(deltaTime);
     }
 
     /**
