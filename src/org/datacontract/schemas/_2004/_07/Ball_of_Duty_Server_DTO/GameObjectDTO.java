@@ -10,20 +10,32 @@ package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 public class GameObjectDTO  implements java.io.Serializable {
     private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body;
 
+    private int bulletType;
+
     private int id;
 
+    private org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PhysicsDTO physics;
+
     private int specialization;
+
+    private int type;
 
     public GameObjectDTO() {
     }
 
     public GameObjectDTO(
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.BodyDTO body,
+           int bulletType,
            int id,
-           int specialization) {
+           org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PhysicsDTO physics,
+           int specialization,
+           int type) {
            this.body = body;
+           this.bulletType = bulletType;
            this.id = id;
+           this.physics = physics;
            this.specialization = specialization;
+           this.type = type;
     }
 
 
@@ -48,6 +60,26 @@ public class GameObjectDTO  implements java.io.Serializable {
 
 
     /**
+     * Gets the bulletType value for this GameObjectDTO.
+     * 
+     * @return bulletType
+     */
+    public int getBulletType() {
+        return bulletType;
+    }
+
+
+    /**
+     * Sets the bulletType value for this GameObjectDTO.
+     * 
+     * @param bulletType
+     */
+    public void setBulletType(int bulletType) {
+        this.bulletType = bulletType;
+    }
+
+
+    /**
      * Gets the id value for this GameObjectDTO.
      * 
      * @return id
@@ -64,6 +96,26 @@ public class GameObjectDTO  implements java.io.Serializable {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+
+    /**
+     * Gets the physics value for this GameObjectDTO.
+     * 
+     * @return physics
+     */
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PhysicsDTO getPhysics() {
+        return physics;
+    }
+
+
+    /**
+     * Sets the physics value for this GameObjectDTO.
+     * 
+     * @param physics
+     */
+    public void setPhysics(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PhysicsDTO physics) {
+        this.physics = physics;
     }
 
 
@@ -86,6 +138,26 @@ public class GameObjectDTO  implements java.io.Serializable {
         this.specialization = specialization;
     }
 
+
+    /**
+     * Gets the type value for this GameObjectDTO.
+     * 
+     * @return type
+     */
+    public int getType() {
+        return type;
+    }
+
+
+    /**
+     * Sets the type value for this GameObjectDTO.
+     * 
+     * @param type
+     */
+    public void setType(int type) {
+        this.type = type;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GameObjectDTO)) return false;
@@ -101,8 +173,13 @@ public class GameObjectDTO  implements java.io.Serializable {
             ((this.body==null && other.getBody()==null) || 
              (this.body!=null &&
               this.body.equals(other.getBody()))) &&
+            this.bulletType == other.getBulletType() &&
             this.id == other.getId() &&
-            this.specialization == other.getSpecialization();
+            ((this.physics==null && other.getPhysics()==null) || 
+             (this.physics!=null &&
+              this.physics.equals(other.getPhysics()))) &&
+            this.specialization == other.getSpecialization() &&
+            this.type == other.getType();
         __equalsCalc = null;
         return _equals;
     }
@@ -117,8 +194,13 @@ public class GameObjectDTO  implements java.io.Serializable {
         if (getBody() != null) {
             _hashCode += getBody().hashCode();
         }
+        _hashCode += getBulletType();
         _hashCode += getId();
+        if (getPhysics() != null) {
+            _hashCode += getPhysics().hashCode();
+        }
         _hashCode += getSpecialization();
+        _hashCode += getType();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -136,14 +218,32 @@ public class GameObjectDTO  implements java.io.Serializable {
         elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("bulletType");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "BulletType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("id");
         elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Id"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("physics");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Physics"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PhysicsDTO"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("specialization");
         elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Specialization"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("type");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Type"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

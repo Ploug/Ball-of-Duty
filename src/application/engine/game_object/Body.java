@@ -1,5 +1,8 @@
 package application.engine.game_object;
 
+import java.util.Collection;
+
+import application.engine.game_object.physics.CollisionHandler;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Vector2;
 
@@ -55,8 +58,40 @@ public class Body
     }
 
     /**
+     * Sets the position of the body to a random point that doesnt collide with other objects. It sets the position within the specified square.
+     * @param collection The other objects to check for collision
+     * @param x The x value of the specified square to set the point within.
+     * @param y The y value of the specified square to set the point within.
+     * @param width The width value of the specified square to set the point within.
+     * @param height The height value of the specified square to set the point within.
+     */
+    public void setRandomPosition(Collection<GameObject> gameObjects, double x, double y, double width, double height)
+    {
+        do
+        {
+            _position = new TranslatedPoint(x+Math.random()*width,y+Math.random()*height);
+        }
+        while(collidingWith(gameObjects));
+    }
+    
+    public boolean collidingWith(Collection<GameObject> gameObjects)
+    {
+        for (GameObject other : gameObjects)
+        {
+            if (CollisionHandler.isColliding(this, other.body))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Sets the center position of this body.
      * @param position The new center position of this body.
+     * 
+     * @param position
+     * 
      */
     public void setCenter(TranslatedPoint position)
     {
@@ -99,6 +134,8 @@ public class Body
         this._height = height;
     }
 
+    
+    
     /**
      * The width of this body.
      * @return Returns the current width of this body.

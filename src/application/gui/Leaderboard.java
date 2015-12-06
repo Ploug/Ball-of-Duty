@@ -1,8 +1,10 @@
 package application.gui;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import application.engine.entities.BoDCharacter;
@@ -13,33 +15,23 @@ import javafx.scene.control.ListView;
 public class Leaderboard extends ListView<BoDCharacter>
 {
     ObservableList<BoDCharacter> characters;
-    Set<Integer> addedCharacters;
+    Map<Integer, BoDCharacter> addedCharacters;
 
-    Queue<BoDCharacter> removeQueue;
-    Queue<BoDCharacter> addQueue;
 
     public Leaderboard()
     {
-        removeQueue = new ConcurrentLinkedQueue<>();
-        addQueue = new ConcurrentLinkedQueue<>();
         characters = FXCollections.observableArrayList();
-        addedCharacters = new HashSet<>();
+        addedCharacters = new ConcurrentHashMap<>();
         setItems(characters);
     }
 
     @Override
     public void refresh()
     {
-
-        while (addQueue.peek() != null)
+        characters.clear();
+        for(BoDCharacter c : addedCharacters.values())
         {
-            characters.add(addQueue.poll());
-
-        }
-        while (removeQueue.peek() != null)
-        {
-            characters.remove(removeQueue.poll());
-
+            characters.add(c);
         }
         characters.sort((c1, c2) -> Double.compare(c2.getScore(), c1.getScore()));
 
@@ -48,13 +40,11 @@ public class Leaderboard extends ListView<BoDCharacter>
 
     public void addCharacter(BoDCharacter character)
     {
-        addQueue.add(character);
-        addedCharacters.add(character.getId());
+        addedCharacters.put(character.getId(), character);
     }
 
     public void remove(BoDCharacter character)
     {
-        removeQueue.add(character);
         addedCharacters.remove(character.getId());
     }
 }

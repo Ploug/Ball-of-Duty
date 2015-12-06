@@ -53,7 +53,7 @@ public class HighscoreLeaderboard extends ListView<HighscoreLeaderboard.Entry>
         public String toString()
         {
             String startText = String.format("#%s: %s [%s]", position, nickName, id);
-            return String.format("%s     | Score: %s", startText, score);
+            return String.format("%s     | Score: %.2f", startText, score);
         }
 
         private HighscoreLeaderboard getOuterType()

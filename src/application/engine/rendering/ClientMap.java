@@ -74,8 +74,8 @@ public class ClientMap extends Observable
     private int killNotisCounter = 0;
 
     /**
-     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with the
-     * server with and the character that belongs to the client.
+     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
+     * the server with and the character that belongs to the client.
      * 
      * @param serverGame
      *            The server map which the ClientMap is based upon.
@@ -99,27 +99,20 @@ public class ClientMap extends Observable
 
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
+
+        for (GameObjectDTO dto : serverGame.getGameObjects())
+        {
+            if (dto.getId() != clientPlayer.getCharacter().getId())
+            {
+                addGameObject(EntityFactory.getEntity(dto));
+            }
+
+        }
         setCharacter(clientPlayer.getCharacter());
         System.out.println("My id " + clientChar.getId());
 
         this.broker = broker;
         broker.activate(this);
-
-        for (GameObjectDTO dto : serverGame.getGameObjects())
-        {
-            if (dto.getBody().getType() == Body.Geometry.CIRCLE.ordinal())
-            {
-                if (dto.getId() != clientChar.getId())
-                {
-                    addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.ENEMY_CHARACTER));
-                }
-            }
-            else if (dto.getBody().getType() == Body.Geometry.RECTANGLE.ordinal())
-            {
-                addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL));
-            }
-        }
-
         for (PlayerDTO pdto : serverGame.getPlayers())
         {
             BoDCharacter character = (BoDCharacter)gameObjects.get(pdto.getCharacterId());
@@ -165,16 +158,15 @@ public class ClientMap extends Observable
                     firstUpdate = false;
                 }
 
-                double secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime))
-                        / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
+                double secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime)) / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
                 lastNanoTime = currentNanoTime;
 
                 double translateX = clientChar.getBody().getCenter().getX() - canvas.getWidth() / 2;
                 double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
                 TranslatedPoint.setTranslate(-translateX, -translateY);
 
-                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(),
-                        mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
+                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), mapImage.getWidth(),
+                        mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
                 gc.fillRect(0, 0, GUI.WINDOW_START_WIDTH, GUI.WINDOW_START_HEIGHT);
 
@@ -351,10 +343,6 @@ public class ClientMap extends Observable
      */
     public void addGameObject(GameObjectDAO data)
     {
-        /*
-         * if (data.ownerId == clientChar.getId()) { Bullet bullet = (Bullet)unassignedBullets.poll(); bullet.setId(data.objectId);
-         * addGameObject(bullet); return; }
-         */
         if (data.objectId != clientChar.getId())
         {
             addGameObject(EntityFactory.getEntity(data, data.entityType));
@@ -368,15 +356,15 @@ public class ClientMap extends Observable
         {
             BoDCharacter character = (BoDCharacter)go;
             leaderboard.addCharacter(character);
-            if (character.getNickname().toLowerCase().contains("john")
-                    && character.getNickname().toLowerCase().contains("cena") && !Resources.johnCena.isPlaying())
+            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
+                    && !Resources.johnCena.isPlaying())
             {
-                Resources.johnCena.setVolume(0.3);
+                Resources.johnCena.setVolume(0.07);
                 Resources.johnCena.play();
             }
         }
-        gameObjects.put(go.getId(), go);
         go.register(Observation.EXTERMINATION, this, (observable, data) -> removeGameObject((GameObject)observable));
+        gameObjects.put(go.getId(), go);
     }
 
     /**
@@ -395,8 +383,6 @@ public class ClientMap extends Observable
                 leaderboard.remove((BoDCharacter)go);
             }
             go.destroy();
-
-            gameObjects.remove(id);
         }
     }
 
@@ -493,6 +479,7 @@ public class ClientMap extends Observable
     public void setCharacter(BoDCharacter character)
     {
         clientChar = character;
+        clientChar.getBody().setRandomPosition(gameObjects.values(), 100, 100, mapWidth - 200, mapHeight - 200);
         addGameObject(clientChar);
         if (clientChar.getWeapon() != null)
         {

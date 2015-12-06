@@ -6,6 +6,7 @@ encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/Charact
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/GameDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/GameObjectDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/MapDTO.java=UTF-8
+encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/PhysicsDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/PlayerDTO.java=UTF-8
 encoding//src/org/datacontract/schemas/_2004/_07/Ball_of_Duty_Server_DTO/PointDTO.java=UTF-8
 encoding//src/org/tempuri/BasicHttpBinding_IBoDServiceStub.java=UTF-8

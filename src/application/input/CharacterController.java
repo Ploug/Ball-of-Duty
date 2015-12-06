@@ -3,9 +3,9 @@ package application.input;
 import java.awt.MouseInfo;
 
 import application.engine.entities.BoDCharacter;
+import application.engine.rendering.TranslatedPoint;
 import application.util.Observation;
 import application.util.Vector2;
-import application.engine.rendering.TranslatedPoint;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
@@ -29,8 +29,8 @@ public class CharacterController
     private Canvas canvas;
 
     /**
-     * Creates a controller defining the character to control, the gamebox on which it is being controlled, and the windows relative
-     * location. The action a input starts is defined by the key handler.
+     * Creates a controller defining the character to control, the gamebox on which it is being controlled, and the windows relative location. The
+     * action a input starts is defined by the key handler.
      * 
      * @param inputChar
      *            The character to control.
@@ -42,74 +42,100 @@ public class CharacterController
     public CharacterController(BoDCharacter inputChar, Pane gameBox, TranslatedPoint windowRelativeLocation)
     {
         this.gameBox = gameBox;
-        this.canvas = (Canvas) gameBox.getChildren().get(0);
+        this.canvas = (Canvas)gameBox.getChildren().get(0);
         this.canvasRelativeLocation = new TranslatedPoint(windowRelativeLocation.getX(), windowRelativeLocation.getY());
         this.canvasRelativeLocation.add(canvas.getLayoutX(), canvas.getLayoutY());
         character = inputChar;
-        character.register(Observation.EXTERMINATION, this,(observable, data)->characterDeath() );
+        character.register(Observation.EXTERMINATION, this, (observable, data) -> characterDeath());
         keyHandler = new KeyHandler();
 
         gameBox.setOnKeyPressed(actionEvent ->
         {
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
-
-            if (action == KeyHandler.Action.MOVE_UP)
+            if (action == null)
             {
-                character.getPhysics().addDirection(UP_VECTOR);
+                return;
             }
-            else if (action == KeyHandler.Action.MOVE_DOWN)
+            switch (action)
             {
-                character.getPhysics().addDirection(DOWN_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_LEFT)
-            {
-                character.getPhysics().addDirection(LEFT_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_RIGHT)
-            {
-                character.getPhysics().addDirection(RIGHT_VECTOR);
-            }
-            else if (action == KeyHandler.Action.BLINK)
-            {
-//                character.getBody().setCenter(getMousePoint());
-            }
-            else if (action == KeyHandler.Action.RELOAD)
-            {
-                character.getWeapon().reload();
-            }
-
-            else if (action == KeyHandler.Action.PAUSE_MENU)
-            {
-                if (!gameBox.getChildren().get(1).isVisible()) 
+                case MOVE_UP:
                 {
-                	gameBox.getChildren().get(1).setVisible(true);
+                    character.getPhysics().addDirection(UP_VECTOR);
+                    break;
                 }
-                else
+                case MOVE_DOWN:
                 {
-                	gameBox.getChildren().get(1).setVisible(false);
+                    character.getPhysics().addDirection(DOWN_VECTOR);
+                    break;
                 }
+                case MOVE_LEFT:
+                {
+                    character.getPhysics().addDirection(LEFT_VECTOR);
+                    break;
+                }
+                case MOVE_RIGHT:
+                {
+                    character.getPhysics().addDirection(RIGHT_VECTOR);
+                    break;
+                }
+                case BLINK:
+                {
+                    // character.getBody().setCenter(getMousePoint());
+                    break;
+                }
+                case RELOAD:
+                {
+                    character.getWeapon().reload();
+                    break;
+                }
+                case PAUSE_MENU:
+                {
+                    if (!gameBox.getChildren().get(1).isVisible())
+                    {
+                        gameBox.getChildren().get(1).setVisible(true);
+                    }
+                    else
+                    {
+                        gameBox.getChildren().get(1).setVisible(false);
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
-
         });
         gameBox.setOnKeyReleased(actionEvent ->
         {
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
 
-            if (action == KeyHandler.Action.MOVE_UP)
+            if (action == null)
             {
-                character.getPhysics().removeDirection(UP_VECTOR);
+                return;
             }
-            else if (action == KeyHandler.Action.MOVE_DOWN)
+            switch (action)
             {
-                character.getPhysics().removeDirection(DOWN_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_LEFT)
-            {
-                character.getPhysics().removeDirection(LEFT_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_RIGHT)
-            {
-                character.getPhysics().removeDirection(RIGHT_VECTOR);
+                case MOVE_UP:
+                {
+                    character.getPhysics().removeDirection(UP_VECTOR);
+                    break;
+                }
+                case MOVE_DOWN:
+                {
+                    character.getPhysics().removeDirection(DOWN_VECTOR);
+                    break;
+                }
+                case MOVE_LEFT:
+                {
+                    character.getPhysics().removeDirection(LEFT_VECTOR);
+                    break;
+                }
+                case MOVE_RIGHT:
+                {
+                    character.getPhysics().removeDirection(RIGHT_VECTOR);
+                    break;
+                }
+                default:
+                    break;
             }
         });
 
@@ -155,7 +181,7 @@ public class CharacterController
     {
         character.getWeapon().stopShooting();
     }
-    
+
     /**
      * Sets the relative location of the canvas compared to the operating system..
      * 
@@ -168,5 +194,4 @@ public class CharacterController
         this.canvasRelativeLocation = canvasRelativeLocation;
     }
 
-    
 }

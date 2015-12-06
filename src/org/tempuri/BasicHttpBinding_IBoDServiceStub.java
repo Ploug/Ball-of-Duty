@@ -192,6 +192,13 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PhysicsDTO");
+            cachedSerQNames.add(qName);
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PhysicsDTO.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
             qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO");
             cachedSerQNames.add(qName);
             cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class;
