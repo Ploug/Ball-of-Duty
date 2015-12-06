@@ -72,6 +72,9 @@ public class ClientMap extends Observable
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
     private ConcurrentMap<Integer, String> killNotis;
     private int killNotisCounter = 0;
+    private double secondsSinceLastUpdate = 0;
+    private int fps = 0;
+    private ArrayList<Double> drawtimes;
 
     /**
      * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
@@ -88,6 +91,7 @@ public class ClientMap extends Observable
      */
     public ClientMap(GameDTO serverGame, Pane gameBox, Broker broker, Player clientPlayer)
     {
+        drawtimes = new ArrayList<>();
         mapPoint = new TranslatedPoint(0, 0);
         mapWidth = serverGame.getMapWidth();
         mapHeight = serverGame.getMapHeight();
@@ -142,7 +146,13 @@ public class ClientMap extends Observable
         LightEvent uiPanelEvent = new LightEvent(250, () ->
         {
             leaderboard.refresh();
-            frames = 0;
+            double total = 0;
+            for(double d : drawtimes)
+            {
+                total+= d;
+            }
+            fps = (int)(1/(total/drawtimes.size()));
+            drawtimes.clear();
         });
 
         animationTimer = new AnimationTimer()
@@ -158,7 +168,8 @@ public class ClientMap extends Observable
                     firstUpdate = false;
                 }
 
-                double secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime)) / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
+                secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime)) / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
+                drawtimes.add(secondsSinceLastUpdate);
                 lastNanoTime = currentNanoTime;
 
                 double translateX = clientChar.getBody().getCenter().getX() - canvas.getWidth() / 2;
@@ -177,6 +188,11 @@ public class ClientMap extends Observable
                         go.update(secondsSinceLastUpdate, gc);
                     }
                 }
+                if (clientChar.getWeapon().getReloading())
+                {
+                    gc.strokeText("Reloading", clientChar.getBody().getCenter().getTranslatedX(),
+                            clientChar.getBody().getPosition().getTranslatedY() - 20, 100);
+                }
                 if (!clientChar.isDestroyed())
                 {
                     clientChar.updateWithCollision(secondsSinceLastUpdate, gc, gameObjects);
@@ -184,7 +200,7 @@ public class ClientMap extends Observable
                 gc.setLineWidth(1);
                 gc.setFont(Font.font("Verdana", 12));
 
-                gc.strokeText("fps: " + frames * 4, 10, 20, 200);
+                gc.strokeText("fps: " + fps, 10, 20, 200);
                 gc.strokeText("Score: " + (int)clientChar.getScore(), 10, 40, 200);
                 if (!clientChar.isDestroyed())
                 {
@@ -196,11 +212,6 @@ public class ClientMap extends Observable
                 }
                 gc.strokeText(clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize(), 10, 80, 200);
 
-                if (clientChar.getWeapon().getReloading())
-                {
-                    gc.strokeText("Reloading", clientChar.getBody().getPosition().getTranslatedX(),
-                            clientChar.getBody().getPosition().getTranslatedY() - 20, 100);
-                }
                 int LeaderboardY = 20;
                 ObservableList<BoDCharacter> bodChars = leaderboard.getItems();
                 gc.setTextAlign(TextAlignment.RIGHT);
@@ -295,8 +306,9 @@ public class ClientMap extends Observable
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of BoDCharacter,
-     * then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
+     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
+     * score.
      * 
      * @param scoreMap
      */
@@ -307,7 +319,7 @@ public class ClientMap extends Observable
 
             GameObject go = gameObjects.get(id);
 
-            if (go != null)
+            if (go != null&&go instanceof BoDCharacter)
             {
 
                 BoDCharacter bodCharacter = (BoDCharacter)go;
@@ -356,12 +368,12 @@ public class ClientMap extends Observable
         {
             BoDCharacter character = (BoDCharacter)go;
             leaderboard.addCharacter(character);
-            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
-                    && !Resources.johnCena.isPlaying())
-            {
-                Resources.johnCena.setVolume(0.07);
-                Resources.johnCena.play();
-            }
+//            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
+//                    && !Resources.johnCena.isPlaying())
+//            {
+//                Resources.johnCena.setVolume(0.07);
+//                Resources.johnCena.play();
+//            }
         }
         go.register(Observation.EXTERMINATION, this, (observable, data) -> removeGameObject((GameObject)observable));
         gameObjects.put(go.getId(), go);
@@ -405,6 +417,13 @@ public class ClientMap extends Observable
 
     public void killNotification(int victimId, int killerId)
     {
+        GameObject killer = gameObjects.get(killerId);
+        GameObject victim = gameObjects.get(victimId);
+        if(killer  == null&&victim != null || !(victim instanceof BoDCharacter)|| !(killer instanceof BoDCharacter))  // if no killer killerId is 0
+        {
+            destroyGameObject(victimId);
+            return;
+        }
         String killString = ((BoDCharacter)gameObjects.get(killerId)).getNickname() + " killed "
                 + ((BoDCharacter)gameObjects.get(victimId)).getNickname();
         Thread killNotisThread = new Thread(() ->

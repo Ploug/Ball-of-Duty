@@ -121,7 +121,7 @@ public class Weapon extends Observable
 
     public void reload()
     {
-        if (!reloading)
+        if (!reloading&&magazineSize < magazineMaxSize )
         {
             reloading = true;
             new Thread(() ->

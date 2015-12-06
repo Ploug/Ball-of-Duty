@@ -24,8 +24,8 @@ import application.engine.rendering.ClientMap;
 import application.util.LightEvent;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that needs to
- * communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
+ * needs to communicate with the server.
  * 
  */
 public class Broker
@@ -261,8 +261,7 @@ public class Broker
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i])
-                throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -279,8 +278,7 @@ public class Broker
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i])
-                throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
         }
     }
 
@@ -485,11 +483,6 @@ public class Broker
                         readKillNotification(buffer);
                         break;
                     }
-                    case OBJECT_DESTRUCTION:
-                    {
-                        readDestroyedObject(buffer);
-                        break;
-                    }
                     default:
                         break;
                 }
@@ -516,17 +509,7 @@ public class Broker
         map.destroyGameObject(objectId);
     }
 
-    /**
-     * Handles destroyed objects
-     * 
-     * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
-     */
-    private void readDestroyedObject(ByteBuffer input)
-    {
-        int objectId = input.getInt();
-        map.destroyGameObject(objectId);
-    }
+   
 
     /**
      * Handles new players created by the server.
@@ -539,7 +522,7 @@ public class Broker
                                                  // player instead
     {
         GameObjectDAO data = new GameObjectDAO();
-        char[] nickname = new char[input.get()];
+        char[] nickname = new char[input.get()]; //FIXME can randomly very rarely return negative. (Probably serverside problem)
         for (int i = 0; i < nickname.length; ++i)
         {
             nickname[i] = (char)(input.get());

@@ -88,6 +88,10 @@ public class GameClient
     {
         try
         {
+            if(nickname.length() > 20)
+            {
+                nickname = nickname.substring(0, 20);
+            }
             clientPlayer = new Player(ibs.newGuest(nickname));
             joinGame(gameBox, spec);
         }
