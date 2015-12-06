@@ -24,8 +24,7 @@ import application.engine.rendering.ClientMap;
 import application.util.LightEvent;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman
- * between server and client objects, such as ClientMap, that needs to
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that needs to
  * communicate with the server.
  * 
  */
@@ -36,7 +35,7 @@ public class Broker
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "localhost";
+    private static final String SERVER_IP = "192.168.1.27";
     private static final int SERVER_UDP_PORT = 15001;
     private static final int SERVER_TCP_PORT = 15010;
     private DataOutputStream output = null;
@@ -131,16 +130,14 @@ public class Broker
     }
 
     /**
-     * Sends a packet to the server with updated information from the clients
-     * game.
+     * Sends a packet to the server with updated information from the clients game.
      * 
      * @param position
      *            The position of the clients character.
      * @param id
      *            The id of the clients character.
      * @param bullets
-     *            the bullets that needs to have its position updated to the
-     *            server.
+     *            the bullets that needs to have its position updated to the server.
      * @throws IOException
      */
     public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly
@@ -195,8 +192,7 @@ public class Broker
      * Handles reading of score updates;
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readScoreUpdate(ByteBuffer buffer)
     {
@@ -218,8 +214,7 @@ public class Broker
      * Handles reading of health updates
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readHealthUpdate(ByteBuffer buffer)
     {
@@ -253,6 +248,40 @@ public class Broker
         while (buffer.get() == 31); // unit separator
 
         map.updatePositions(positions);
+    }
+
+    // TODO: improve this thingy.
+    public void readSessionId(byte[] sessionId) throws IOException
+    {
+        output.write(sessionId);
+
+        DataInputStream input = new DataInputStream(tcpSocket.getInputStream());
+        byte[] b = new byte[32];
+        input.read(b);
+
+        for (int i = 0; i < sessionId.length; ++i)
+        {
+            if (b[i] != sessionId[i])
+                throw new Error("Rest in pepperoni m9");
+        }
+
+        ByteBuffer buffer = ByteBuffer.allocate(256);
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.put((byte)1);
+        buffer.put((byte)Opcodes.UDP_CONNECT.getValue());
+        buffer.put((byte)2);
+        buffer.put(sessionId);
+        buffer.put((byte)4);
+        byte[] buf = buffer.array();
+        _socket.send(new DatagramPacket(buf, buf.length, ina, SERVER_UDP_PORT));
+
+        input.read(b);
+
+        for (int i = 0; i < sessionId.length; ++i)
+        {
+            if (b[i] != sessionId[i])
+                throw new Error("Rest in pepperoni m9");
+        }
     }
 
     private void receiveUdp()
@@ -404,7 +433,7 @@ public class Broker
                 {
                     byte[] buf = new byte[1024];
                     int bytesRead = input.read(buf);
-                    if (bytesRead == 0)
+                    if (bytesRead <= 0)
                     {
                         break;
                     }
@@ -478,8 +507,7 @@ public class Broker
      * Handles players disconnected from the server
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readDisconnectedPlayer(ByteBuffer input)
     {
@@ -492,8 +520,7 @@ public class Broker
      * Handles destroyed objects
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readDestroyedObject(ByteBuffer input)
     {
@@ -505,8 +532,7 @@ public class Broker
      * Handles new players created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readNewPlayer(ByteBuffer input) // Should probably tell
                                                  // GameClient about the new
@@ -534,8 +560,7 @@ public class Broker
      * Handles new bullets created by the server.
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readBulletCreation(ByteBuffer input)
     {
@@ -557,8 +582,7 @@ public class Broker
      * Handles reading of kill notifications
      * 
      * @param input
-     *            The ByteBuffer that handles reading of data send from the
-     *            server.
+     *            The ByteBuffer that handles reading of data send from the server.
      */
     private void readKillNotification(ByteBuffer input)
     {
