@@ -45,58 +45,85 @@ public class CharacterController
         this.canvasRelativeLocation = new TranslatedPoint(windowRelativeLocation.getX(), windowRelativeLocation.getY());
         this.canvasRelativeLocation.add(gameBox.getCenter().getLayoutX(), gameBox.getCenter().getLayoutY());
         character = inputChar;
-        character.register(Observation.EXTERMINATION, this,(observable, data)->characterDeath() );
+        character.register(Observation.EXTERMINATION, this, (observable, data) -> characterDeath());
         keyHandler = new KeyHandler();
 
         gameBox.setOnKeyPressed(actionEvent ->
         {
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
 
-            if (action == KeyHandler.Action.MOVE_UP)
+            if(action == null)
             {
-                character.getPhysics().addDirection(UP_VECTOR);
+                return;
             }
-            else if (action == KeyHandler.Action.MOVE_DOWN)
+            switch (action)
             {
-                character.getPhysics().addDirection(DOWN_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_LEFT)
-            {
-                character.getPhysics().addDirection(LEFT_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_RIGHT)
-            {
-                character.getPhysics().addDirection(RIGHT_VECTOR);
-            }
-            else if (action == KeyHandler.Action.BLINK)
-            {
-//                character.getBody().setCenter(getMousePoint());
-            }
-            else if (action == KeyHandler.Action.RELOAD)
-            {
-                character.getWeapon().reload();
+                case MOVE_UP:
+                {
+                    character.getPhysics().addDirection(UP_VECTOR);
+                    break;
+                }
+                case MOVE_DOWN:
+                {
+                    character.getPhysics().addDirection(DOWN_VECTOR);
+                    break;
+                }
+                case MOVE_LEFT:
+                {
+                    character.getPhysics().addDirection(LEFT_VECTOR);
+                    break;
+                }
+                case MOVE_RIGHT:
+                {
+                    character.getPhysics().addDirection(RIGHT_VECTOR);
+                    break;
+                }
+                case BLINK:
+                {
+                    // character.getBody().setCenter(getMousePoint());
+                    break;
+                }
+                case RELOAD:
+                {
+                    character.getWeapon().reload();
+                    break;
+                }
+                default:
+                    break;
             }
 
         });
         gameBox.setOnKeyReleased(actionEvent ->
         {
             KeyHandler.Action action = keyHandler.getAction(actionEvent.getCode());
-
-            if (action == KeyHandler.Action.MOVE_UP)
+            if(action == null)
             {
-                character.getPhysics().removeDirection(UP_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_DOWN)
+                return;
+            }   
+            switch (action)
             {
-                character.getPhysics().removeDirection(DOWN_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_LEFT)
-            {
-                character.getPhysics().removeDirection(LEFT_VECTOR);
-            }
-            else if (action == KeyHandler.Action.MOVE_RIGHT)
-            {
-                character.getPhysics().removeDirection(RIGHT_VECTOR);
+                case MOVE_UP:
+                {
+                    character.getPhysics().removeDirection(UP_VECTOR);
+                    break;
+                }
+                case MOVE_DOWN:
+                {
+                    character.getPhysics().removeDirection(DOWN_VECTOR);
+                    break;
+                }
+                case MOVE_LEFT:
+                {
+                    character.getPhysics().removeDirection(LEFT_VECTOR);
+                    break;
+                }
+                case MOVE_RIGHT:
+                {
+                    character.getPhysics().removeDirection(RIGHT_VECTOR);
+                    break;
+                }
+                default:
+                    break;
             }
         });
 
@@ -142,7 +169,7 @@ public class CharacterController
     {
         character.getWeapon().stopShooting();
     }
-    
+
     /**
      * Sets the relative location of the canvas compared to the operating system..
      * 
@@ -155,5 +182,4 @@ public class CharacterController
         this.canvasRelativeLocation = canvasRelativeLocation;
     }
 
-    
 }

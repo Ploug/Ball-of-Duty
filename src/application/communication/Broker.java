@@ -25,7 +25,6 @@ import application.util.LightEvent;
 
 /**
  * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that needs to
- * communicate with the server.
  * 
  */
 public class Broker

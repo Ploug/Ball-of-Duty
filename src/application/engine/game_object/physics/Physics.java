@@ -77,17 +77,17 @@ public class Physics
                 continue;
             }
 
-            if (CollisionHandler.isColliding(temp, obj))
+            if (CollisionHandler.isColliding(temp.getBody(), obj.getBody()))
             {
 
-                temp.getBody().setPosition(CollisionHandler.collisionResponse(temp, obj)); // Gives new position so it doesnt collide
+                temp.getBody().setPosition(CollisionHandler.collisionResponse(temp.getBody(), obj.getBody())); // Gives new position so it doesnt collide
                 for (GameObject obj2 : gameobjects.values()) // Checks if it collides with anything.
                 {
                     if (obj2.getId() == temp.getId() || obj2.getId() == obj.getId() || obj2 instanceof Bullet)
                     {
                         continue;
                     }
-                    if (CollisionHandler.isColliding(temp, obj2))
+                    if (CollisionHandler.isColliding(temp.getBody(), obj2.getBody()))
                     {
                         for (GameObject obj3 : gameobjects.values())
                         {
@@ -96,7 +96,7 @@ public class Physics
                             {
                                 continue;
                             }
-                            if (CollisionHandler.isColliding(temp, obj3))
+                            if (CollisionHandler.isColliding(temp.getBody(), obj3.getBody()))
                             {
                                 collision = true;
                                 break;
@@ -106,7 +106,7 @@ public class Physics
                         if (!collision)
                         {
                             // if it doesnt collide with a third object, put it to the secondcalculated position.
-                            gameObject.getBody().setPosition(CollisionHandler.collisionResponse(temp, obj2));
+                            gameObject.getBody().setPosition(CollisionHandler.collisionResponse(temp.getBody(), obj2.getBody()));
                         }
                         collision = true;
                         break;

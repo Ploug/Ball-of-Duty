@@ -54,8 +54,6 @@ public class  Player extends Observable
      */
     public void createNewCharacter(int id, Specializations spec)
     {
-        int x = 100 + (int)(Math.random() * 900);
-        int y = 100 + (int)(Math.random() * 400);
         Image myCharImage = new Image("images/ball_blue.png");
         if(_character != null)
         {
@@ -64,13 +62,13 @@ public class  Player extends Observable
         switch (spec)
         {
             case BLASTER:
-                this._character = new Blaster(id, new TranslatedPoint(x, y), myCharImage);
+                this._character = new Blaster(id, new TranslatedPoint(0, 0), myCharImage);
                 break;
             case HEAVY:
-                this._character = new Heavy(id, new TranslatedPoint(x, y), myCharImage);
+                this._character = new Heavy(id, new TranslatedPoint(0, 0), myCharImage);
                 break;
             case ROLLER:
-                this._character = new Roller(id, new TranslatedPoint(x, y), myCharImage);
+                this._character = new Roller(id, new TranslatedPoint(0, 0), myCharImage);
                 break;
             default:
                 break;

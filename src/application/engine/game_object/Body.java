@@ -1,14 +1,18 @@
 package application.engine.game_object;
 
+import java.util.Collection;
+
+import application.engine.game_object.physics.CollisionHandler;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Vector2;
 
 /**
  * The body describes an objects dimensional properties, such as height, width and position. Without a body an object cannot be on a map.
+ * 
  * @author Gruppe6
  *
  */
-public class Body 
+public class Body
 {
     private GameObject _gameObject;
     private TranslatedPoint _position;
@@ -19,8 +23,9 @@ public class Body
 
     public enum Geometry
     {
-        CIRCLE, RECTANGLE; 
+        CIRCLE, RECTANGLE;
         private static final Geometry[] types = Geometry.values();
+
         public static Geometry getType(int index)
         {
             return types[index];
@@ -28,12 +33,18 @@ public class Body
     }
 
     /**
-     *  Creates a body for the object.
-     * @param gameObject The game object that this body is a composition of/belongs to.
-     * @param position The position of the game objects body on a map.
-     * @param width The width of the game objects body on a map.
-     * @param height The height of the game objects body on a map.
-     * @param type The type of body, i.e. rectangular or circle etc.
+     * Creates a body for the object.
+     * 
+     * @param gameObject
+     *            The game object that this body is a composition of/belongs to.
+     * @param position
+     *            The position of the game objects body on a map.
+     * @param width
+     *            The width of the game objects body on a map.
+     * @param height
+     *            The height of the game objects body on a map.
+     * @param type
+     *            The type of body, i.e. rectangular or circle etc.
      */
     public Body(GameObject gameObject, TranslatedPoint position, double width, double height, Geometry type)
     {
@@ -47,6 +58,7 @@ public class Body
 
     /**
      * The position of the top left corner of this body.
+     * 
      * @return Returns the position of the top left corner of this body.
      */
     public TranslatedPoint getPosition()
@@ -55,8 +67,39 @@ public class Body
     }
 
     /**
+     * Sets the position of the body to a random point that doesnt collide with other objects. It sets the position within the specified square.
+     * @param collection The other objects to check for collision
+     * @param x The x value of the specified square to set the point within.
+     * @param y The y value of the specified square to set the point within.
+     * @param width The width value of the specified square to set the point within.
+     * @param height The height value of the specified square to set the point within.
+     */
+    public void setRandomPosition(Collection<GameObject> gameObjects, double x, double y, double width, double height)
+    {
+        do
+        {
+            _position = new TranslatedPoint(x+Math.random()*width,y+Math.random()*height);
+        }
+        while(collidingWith(gameObjects));
+    }
+    
+    public boolean collidingWith(Collection<GameObject> gameObjects)
+    {
+        for (GameObject other : gameObjects)
+        {
+            if (CollisionHandler.isColliding(this, other.body))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Sets the center position of this body.
-     * @param position The new center position of this body.
+     * 
+     * @param position
+     *            The new center position of this body.
      */
     public void setCenter(TranslatedPoint position)
     {
@@ -65,7 +108,9 @@ public class Body
 
     /**
      * Sets the top left corner position of this body.
-     * @param position The new top left corner position of this body.
+     * 
+     * @param position
+     *            The new top left corner position of this body.
      */
     public void setPosition(TranslatedPoint position)
     {
@@ -74,6 +119,7 @@ public class Body
 
     /**
      * The center position of this body.
+     * 
      * @return Returns the current center position of this body.
      */
     public TranslatedPoint getCenter()
@@ -83,6 +129,7 @@ public class Body
 
     /**
      * The height of this body.
+     * 
      * @return Returns the current height of this body.
      */
     public double getHeight()
@@ -92,7 +139,9 @@ public class Body
 
     /**
      * Sets the height of this body
-     * @param height The new height of this body. 
+     * 
+     * @param height
+     *            The new height of this body.
      */
     public void setHeight(double height)
     {
@@ -101,16 +150,19 @@ public class Body
 
     /**
      * The width of this body.
+     * 
      * @return Returns the current width of this body.
      */
     public double getWidth()
     {
         return _width;
     }
-    
+
     /**
      * Sets the width of this body.
-     * @param width The new width of this body.
+     * 
+     * @param width
+     *            The new width of this body.
      */
     public void setWidth(double width)
     {
@@ -119,6 +171,7 @@ public class Body
 
     /**
      * The orientation of this body described as a vector.
+     * 
      * @return Returns the orientation of this body as a vector.
      */
     public Vector2 getOrientation()
@@ -128,7 +181,9 @@ public class Body
 
     /**
      * Sets the orientation of this body as a vector.
-     * @param orientation The new vector to describe the orientation of this boy.
+     * 
+     * @param orientation
+     *            The new vector to describe the orientation of this boy.
      */
     public void setOrientation(Vector2 orientation)
     {
@@ -137,8 +192,11 @@ public class Body
 
     /**
      * Increases the current position of this body.
-     * @param xIncrease The amount to add to the current x value of the body.
-     * @param yIncrease The amount to add to the current y value of the body.
+     * 
+     * @param xIncrease
+     *            The amount to add to the current x value of the body.
+     * @param yIncrease
+     *            The amount to add to the current y value of the body.
      */
     public void increasePosition(double xIncrease, double yIncrease)
     {
@@ -147,6 +205,7 @@ public class Body
 
     /**
      * The bodytype. I.e circle or rectangle.
+     * 
      * @return Returns the bodytype. I.e circle or rectangle
      */
     public Geometry getType()
@@ -156,7 +215,9 @@ public class Body
 
     /**
      * Change the bodytype. I.e circle of rectangle.
-     * @param type The new bodytype. I.e circle or rectangle.
+     * 
+     * @param type
+     *            The new bodytype. I.e circle or rectangle.
      */
     public void setType(Geometry type)
     {
@@ -169,8 +230,5 @@ public class Body
     {
         return String.format("Body [position=%s, height=%s, width=%s, orientation=%s, type=%s]", _position, _height, _width, _orientation, _type);
     }
-
-   
-    
 
 }

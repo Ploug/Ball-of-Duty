@@ -20,6 +20,7 @@ import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
 import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
+import application.engine.game_object.physics.CollisionHandler;
 import application.gui.GUI;
 import application.gui.Leaderboard;
 import application.util.LightEvent;
@@ -95,21 +96,22 @@ public class ClientMap extends Observable
 
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
-        setCharacter(clientPlayer.getCharacter());
-        System.out.println("My id " + clientChar.getId());
 
-        this.broker = broker;
-        broker.activate(this);
+       
 
         for (GameObjectDTO dto : serverGame.getGameObjects())
         {
-            if (dto.getId() != clientChar.getId())
+                if (dto.getId() != clientPlayer.getCharacter().getId())
             {
                 addGameObject(EntityFactory.getEntity(dto));
             }
 
         }
-
+        setCharacter(clientPlayer.getCharacter());
+        System.out.println("My id " + clientChar.getId());
+        
+        this.broker = broker;
+        broker.activate(this);
         for (PlayerDTO pdto : serverGame.getPlayers())
         {
             BoDCharacter character = (BoDCharacter)gameObjects.get(pdto.getCharacterId());
@@ -157,6 +159,7 @@ public class ClientMap extends Observable
         startingAffine = gc.getTransform();
     }
 
+    
     /**
      * Activates the game loop.
      */
@@ -354,10 +357,6 @@ public class ClientMap extends Observable
      */
     public void addGameObject(GameObjectDAO data)
     {
-        /*
-         * if (data.ownerId == clientChar.getId()) { Bullet bullet = (Bullet)unassignedBullets.poll(); bullet.setId(data.objectId);
-         * addGameObject(bullet); return; }
-         */
         if (data.objectId != clientChar.getId())
         {
             addGameObject(EntityFactory.getEntity(data, data.entityType));
@@ -371,10 +370,10 @@ public class ClientMap extends Observable
         {
             BoDCharacter character = (BoDCharacter)go;
             leaderboard.addCharacter(character);
-            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
+            
                     && !Resources.johnCena.isPlaying())
             {
-                Resources.johnCena.setVolume(0.2);
+                Resources.johnCena.setVolume(0.1);
                 Resources.johnCena.play();
             }
         }
@@ -473,6 +472,9 @@ public class ClientMap extends Observable
     public void setCharacter(BoDCharacter character)
     {
         clientChar = character;
+        clientChar.getBody().setRandomPosition(gameObjects.values(), 100, 100, mapWidth-200, mapHeight-200);
+        
+        
         addGameObject(clientChar);
         if (clientChar.getWeapon() != null)
         {
