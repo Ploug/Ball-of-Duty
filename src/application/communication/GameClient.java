@@ -19,7 +19,7 @@ import application.engine.rendering.ClientMap;
 import application.engine.rendering.TranslatedPoint;
 import application.gui.HighscoreLeaderboard;
 import application.input.CharacterController;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 
 /**
  * Communicates with the server via webservices and is the main facade for a game.
@@ -84,7 +84,7 @@ public class GameClient
         return leaderboard;
     }
 
-    public void joinAsGuest(BorderPane gameBox, String nickname, Specializations spec)
+    public void joinAsGuest(Pane gameBox, String nickname, Specializations spec)
     {
         try
         {
@@ -154,7 +154,7 @@ public class GameClient
      * @param gameBox
      *            The BorderPane where the game graphics and UI is handled.
      */
-    private void joinGame(BorderPane gameBox, Specializations spec)
+    private void joinGame(Pane gameBox, Specializations spec)
     {
         System.out.println("trying to join game");
         try
@@ -184,7 +184,7 @@ public class GameClient
 
     }
 
-    public void respawn(BorderPane gameBox, Specializations spec)
+    public void respawn(Pane gameBox, Specializations spec)
     {
         try
         {

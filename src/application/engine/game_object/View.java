@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 /**
  * Handles how the game object should be rendered
@@ -58,11 +59,10 @@ public class View
             if (gameObject.getPhysics() != null)
             {
                 gc.setLineWidth(3);
-                /* DEBUG MODE 
-                // Velocity vector drawn.
-                gc.setStroke(Color.BLACK);
-                gc.strokeLine(centerX, centerY, centerX + gameObject.getPhysics().getVelocity().getX(),
-                        centerY + gameObject.getPhysics().getVelocity().getY());*/
+                /*
+                 * DEBUG MODE // Velocity vector drawn. gc.setStroke(Color.BLACK); gc.strokeLine(centerX, centerY, centerX +
+                 * gameObject.getPhysics().getVelocity().getX(), centerY + gameObject.getPhysics().getVelocity().getY());
+                 */
                 // Draw orientation vector.
                 gc.setStroke(Color.BLACK);
                 gc.strokeLine(centerX, centerY, centerX + gameObject.getBody().getOrientation().getX(),
@@ -71,23 +71,24 @@ public class View
             if (gameObject.getHealth() != null)
             {
                 int healthBoxHeight = 8;
-                int healthValueBoxWidth= (int)(0.4*gameObject.getHealth().getValue());
-                int maxHealthBoxWidth= (int)(0.4*gameObject.getHealth().getMax());
-                int healthBoxX = (int)(centerX-maxHealthBoxWidth/2);
-                int healthBoxY = (int)(gameObject.getBody().getPosition().getTranslatedY()-healthBoxHeight-2);
-                
+                int healthValueBoxWidth = (int)(0.4 * gameObject.getHealth().getValue());
+                int maxHealthBoxWidth = (int)(0.4 * gameObject.getHealth().getMax());
+                int healthBoxX = (int)(centerX - maxHealthBoxWidth / 2);
+                int healthBoxY = (int)(gameObject.getBody().getPosition().getTranslatedY() - healthBoxHeight - 2);
+
                 gc.setFill(Color.RED);
-                gc.fillRect(healthBoxX,healthBoxY, maxHealthBoxWidth, healthBoxHeight);
+                gc.fillRect(healthBoxX, healthBoxY, maxHealthBoxWidth, healthBoxHeight);
                 gc.setFill(Color.GREENYELLOW);
-                gc.fillRect(healthBoxX,healthBoxY, healthValueBoxWidth, healthBoxHeight);
+                gc.fillRect(healthBoxX, healthBoxY, healthValueBoxWidth, healthBoxHeight);
             }
-            double bottomX = gameObject.getBody().getPosition().getTranslatedX();
-            double bottomY = gameObject.getBody().getPosition().getTranslatedY()+gameObject.getBody().getHeight()+10;
+            double bottomX = gameObject.getBody().getCenter().getTranslatedX();
+            double bottomY = gameObject.getBody().getCenter().getTranslatedY() + (gameObject.getBody().getHeight() / 2) + 15;
             gc.setLineWidth(1);
-            gc.setFont(Font.font ("Verdana", 12));
-            gc.strokeText(character.getNickname(), bottomX,bottomY, 200);
+            gc.setFont(Font.font("Verdana", 12));
+            gc.setTextAlign(TextAlignment.CENTER);
+            gc.strokeText(character.getNickname(), bottomX, bottomY, 200);
+            gc.setTextAlign(TextAlignment.LEFT);
+
         }
-
     }
-
 }
