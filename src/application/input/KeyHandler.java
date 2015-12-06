@@ -14,7 +14,7 @@ public class KeyHandler
 {
     public enum Action
     {
-        MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, SHOOT, BLINK, RELOAD;
+        MOVE_UP, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, SHOOT, BLINK, RELOAD, PAUSE_MENU;
     }
 
     public HashMap<KeyCode, Action> keyMap;
@@ -35,11 +35,14 @@ public class KeyHandler
         keyMap.put(KeyCode.LEFT, Action.MOVE_LEFT);
         keyMap.put(KeyCode.D, Action.MOVE_RIGHT);
         keyMap.put(KeyCode.RIGHT, Action.MOVE_RIGHT);
+        keyMap.put(KeyCode.ESCAPE, Action.PAUSE_MENU);
     }
 
     /**
      * Gets the action based on a key code. For example KeyCode.W would result in action MOVE_UP.
-     * @param code The keycode of which an action should be connected with.
+     * 
+     * @param code
+     *            The keycode of which an action should be connected with.
      * @return The action the key was related to.
      */
     public Action getAction(KeyCode code)

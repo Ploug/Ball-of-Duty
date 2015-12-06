@@ -27,14 +27,18 @@ import application.util.Observation;
 import application.util.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Affine;
 
 /**
@@ -66,6 +70,8 @@ public class ClientMap extends Observable
     // private ConcurrentLinkedQueue<GameObject> unassignedBullets;
     private Affine startingAffine;
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
+    private ConcurrentMap<Integer, String> killNotis;
+    private int killNotisCounter = 0;
 
     /**
      * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with the
@@ -80,7 +86,7 @@ public class ClientMap extends Observable
      * @param clientChar
      *            The character of the client.
      */
-    public ClientMap(GameDTO serverGame, BorderPane gameBox, Broker broker, Player clientPlayer)
+    public ClientMap(GameDTO serverGame, Pane gameBox, Broker broker, Player clientPlayer)
     {
         mapPoint = new TranslatedPoint(0, 0);
         mapWidth = serverGame.getMapWidth();
@@ -89,6 +95,7 @@ public class ClientMap extends Observable
         this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
         this.leaderboard = new Leaderboard();
+        this.killNotis = new ConcurrentHashMap<>();
 
         mapActive = true;
         gameObjects = new ConcurrentHashMap<>();
@@ -127,35 +134,7 @@ public class ClientMap extends Observable
             }
         }
 
-        fpsLabel = new Label();
-        fpsLabel.setPrefSize(50, 20);
-        fpsLabel.setText("fps: ");
-        scoreLabel = new Label();
-        scoreLabel.setPrefSize(70, 20);
-        scoreLabel.setText("Score: ");
-        healthLabel = new Label();
-        healthLabel.setPrefSize(80, 20);
-        healthLabel.setText("Health: ");
-        ammoLabel = new Label();
-        ammoLabel.setPrefSize(80, 20);
-        ammoLabel.setText("Ammo: ");
-        reloadingLabel = new Label();
-        reloadingLabel.setPrefSize(80, 20);
-        reloadingLabel.setText("");
-
-        labelBox = new VBox();
-        labelBox.setSpacing(1);
-        gameBox.setLeft(labelBox);
-        gameBox.setRight(leaderboard);
-        BorderPane.setAlignment(leaderboard, Pos.TOP_LEFT);
-
-        labelBox.getChildren().add(fpsLabel);
-        labelBox.getChildren().add(scoreLabel);
-        labelBox.getChildren().add(healthLabel);
-        labelBox.getChildren().add(ammoLabel);
-        labelBox.getChildren().add(reloadingLabel);
-
-        this.canvas = (Canvas)gameBox.getCenter();
+        this.canvas = (Canvas)gameBox.getChildren().get(0);
         gc = canvas.getGraphicsContext2D();
         startingAffine = gc.getTransform();
     }
@@ -169,31 +148,8 @@ public class ClientMap extends Observable
 
         LightEvent uiPanelEvent = new LightEvent(250, () ->
         {
-            ammoLabel.setText(
-                    clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
-            if (clientChar.getWeapon().getReloading())
-            {
-                reloadingLabel.setText("Reloading");
-            }
-            else
-            {
-                reloadingLabel.setText("");
-            }
-
-            fpsLabel.setText("fps: " + frames * 4);// every 0.25 second, time by 4 to get frame per second.
-            scoreLabel.setText("Score: " + (int)clientChar.getScore());
-            if (!clientChar.isDestroyed())
-            {
-                healthLabel.setText("Health: " + clientChar.getHealth().getValue());
-            }
-            else
-            {
-                healthLabel.setText("Health: DEAD");
-            }
             leaderboard.refresh();
-
             frames = 0;
-
         });
 
         animationTimer = new AnimationTimer()
@@ -220,7 +176,7 @@ public class ClientMap extends Observable
                 ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(),
                         mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
-                gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
+                gc.fillRect(0, 0, GUI.WINDOW_START_WIDTH, GUI.WINDOW_START_HEIGHT);
 
                 for (GameObject go : gameObjects.values())
                 {
@@ -232,6 +188,43 @@ public class ClientMap extends Observable
                 if (!clientChar.isDestroyed())
                 {
                     clientChar.updateWithCollision(secondsSinceLastUpdate, gc, gameObjects);
+                }
+                gc.setLineWidth(1);
+                gc.setFont(Font.font("Verdana", 12));
+
+                gc.strokeText("fps: " + frames * 4, 10, 20, 200);
+                gc.strokeText("Score: " + (int)clientChar.getScore(), 10, 40, 200);
+                if (!clientChar.isDestroyed())
+                {
+                    gc.strokeText("Health: " + clientChar.getHealth().getValue(), 10, 60, 200);
+                }
+                else
+                {
+                    gc.strokeText("Health: DEAD", 10, 60, 200);
+                }
+                gc.strokeText(clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize(), 10, 80, 200);
+
+                if (clientChar.getWeapon().getReloading())
+                {
+                    gc.strokeText("Reloading", clientChar.getBody().getPosition().getTranslatedX(),
+                            clientChar.getBody().getPosition().getTranslatedY() - 20, 100);
+                }
+                int LeaderboardY = 20;
+                ObservableList<BoDCharacter> bodChars = leaderboard.getItems();
+                gc.setTextAlign(TextAlignment.RIGHT);
+                for (BoDCharacter ch : bodChars)
+                {
+                    gc.strokeText(ch.getNickname() + " |", 1200, LeaderboardY, 200);
+                    gc.strokeText((int)ch.getScore() + "", 1260, LeaderboardY, 200);
+                    LeaderboardY += 20;
+                }
+
+                int killNotificationY = 20;
+                gc.setTextAlign(TextAlignment.CENTER);
+                for (String s : killNotis.values())
+                {
+                    gc.strokeText(s, 640, killNotificationY, 400);
+                    killNotificationY += 20;
                 }
 
                 ++frames; // fps is reliant on the refresh rate.
@@ -426,7 +419,25 @@ public class ClientMap extends Observable
 
     public void killNotification(int victimId, int killerId)
     {
-
+        String killString = ((BoDCharacter)gameObjects.get(killerId)).getNickname() + " killed "
+                + ((BoDCharacter)gameObjects.get(victimId)).getNickname();
+        Thread killNotisThread = new Thread(() ->
+        {
+            int count = killNotisCounter;
+            killNotis.put(count, killString);
+            killNotisCounter++;
+            try
+            {
+                Thread.sleep(3000);
+            }
+            catch (Exception e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            killNotis.remove(count);
+        });
+        killNotisThread.start();
         destroyGameObject(victimId);
         if (victimId == clientChar.getId())
         {

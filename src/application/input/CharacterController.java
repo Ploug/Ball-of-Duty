@@ -1,15 +1,14 @@
 package application.input;
 
 import java.awt.MouseInfo;
-import java.util.Observable;
-import java.util.Observer;
 
 import application.engine.entities.BoDCharacter;
 import application.util.Observation;
 import application.util.Vector2;
 import application.engine.rendering.TranslatedPoint;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 
 /**
  * Controls a character with input from peripherals such as keyboard and mouse.
@@ -26,7 +25,8 @@ public class CharacterController
     private static final Vector2 LEFT_VECTOR = new Vector2(-1, 0);
     private KeyHandler keyHandler;
     private TranslatedPoint canvasRelativeLocation;
-    private BorderPane gameBox;
+    private Pane gameBox;
+    private Canvas canvas;
 
     /**
      * Creates a controller defining the character to control, the gamebox on which it is being controlled, and the windows relative
@@ -39,11 +39,12 @@ public class CharacterController
      * @param windowRelativeLocation
      *            The relative location is based on how the scene's is located relative to the operating system.
      */
-    public CharacterController(BoDCharacter inputChar, BorderPane gameBox, TranslatedPoint windowRelativeLocation)
+    public CharacterController(BoDCharacter inputChar, Pane gameBox, TranslatedPoint windowRelativeLocation)
     {
         this.gameBox = gameBox;
+        this.canvas = (Canvas) gameBox.getChildren().get(0);
         this.canvasRelativeLocation = new TranslatedPoint(windowRelativeLocation.getX(), windowRelativeLocation.getY());
-        this.canvasRelativeLocation.add(gameBox.getCenter().getLayoutX(), gameBox.getCenter().getLayoutY());
+        this.canvasRelativeLocation.add(canvas.getLayoutX(), canvas.getLayoutY());
         character = inputChar;
         character.register(Observation.EXTERMINATION, this,(observable, data)->characterDeath() );
         keyHandler = new KeyHandler();
@@ -75,6 +76,18 @@ public class CharacterController
             else if (action == KeyHandler.Action.RELOAD)
             {
                 character.getWeapon().reload();
+            }
+
+            else if (action == KeyHandler.Action.PAUSE_MENU)
+            {
+                if (!gameBox.getChildren().get(1).isVisible()) 
+                {
+                	gameBox.getChildren().get(1).setVisible(true);
+                }
+                else
+                {
+                	gameBox.getChildren().get(1).setVisible(false);
+                }
             }
 
         });
@@ -134,8 +147,8 @@ public class CharacterController
     public TranslatedPoint getMousePoint()
     {
         return new TranslatedPoint(
-                MouseInfo.getPointerInfo().getLocation().getX() - (canvasRelativeLocation.getTranslatedX() + gameBox.getCenter().getLayoutX()),
-                MouseInfo.getPointerInfo().getLocation().getY() - (canvasRelativeLocation.getTranslatedY() + gameBox.getCenter().getLayoutY()));
+                MouseInfo.getPointerInfo().getLocation().getX() - (canvasRelativeLocation.getTranslatedX() + canvas.getLayoutX()),
+                MouseInfo.getPointerInfo().getLocation().getY() - (canvasRelativeLocation.getTranslatedY() + canvas.getLayoutY()));
     }
 
     public void characterDeath()
