@@ -373,6 +373,7 @@ public class GUI extends Application
 
         actionQuitGame = actionEvent ->
         {
+            gameManager.getPlayer().unregisterAll(this);
             gameManager.quitGame();
             tStage.setScene(sceneMainMenu);
         };
