@@ -38,6 +38,7 @@ public class EntityFactory
     public enum EntityType
     {
         ENEMY_CHARACTER, WALL, BULLET;
+
         private static Map<Integer, EntityType> values = new HashMap<>();
 
         static
@@ -80,11 +81,12 @@ public class EntityFactory
      *            The type of the entity.
      * @return A game object based on the DTO.
      */
-    public static GameObject getEntity(GameObjectDTO dto, EntityType type)
+    public static GameObject getEntity(GameObjectDTO dto)
     {
 
         BodyDTO body = dto.getBody();
         TranslatedPoint position = new TranslatedPoint(body.getPosition().getX(), body.getPosition().getY());
+        EntityType type = EntityType.fromInteger(dto.getType());
         switch (type)
         {
             case WALL:
@@ -110,6 +112,14 @@ public class EntityFactory
                 // TODO get velocity from server so we can update the enemies position while inbetween
                 // position updates and if enemy has special cosmetics it's passed through here.
                 return enemy;
+            case BULLET:
+
+                Bullet.Type bType = Bullet.Type.fromInteger(dto.getBulletType());
+                return new Bullet(dto.getId(), new TranslatedPoint(dto.getBody().getPosition().getX(), dto.getBody().getPosition().getY()),
+                        dto.getBody().getHeight(), new Vector2(dto.getVelX(), dto.getVelY()), 0,bType, 
+                        (Image)Weapon.getBulletImages().get(bType), -1);
+            default:
+                break;
         }
         return null;
     }
@@ -151,8 +161,8 @@ public class EntityFactory
             }
             case BULLET:
             {
-                return new Bullet(data.objectId, new TranslatedPoint(data.x, data.y), data.height, new Vector2(data.velocityX, data.velocityY), data.damage,
-                        data.bulletType, (Image)Weapon.getBulletImages().get(data.bulletType), data.ownerId);
+                return new Bullet(data.objectId, new TranslatedPoint(data.x, data.y), data.height, new Vector2(data.velocityX, data.velocityY),
+                        data.damage, data.bulletType, (Image)Weapon.getBulletImages().get(data.bulletType), data.ownerId);
             }
             default:
                 return null;

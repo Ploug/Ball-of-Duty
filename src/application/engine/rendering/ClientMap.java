@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_Domain_Entities.EntityType;
 
 import application.account.Player;
 import application.communication.Broker;
@@ -68,8 +69,8 @@ public class ClientMap extends Observable
     private ConcurrentLinkedQueue<GameObjectDAO> addQueue;
 
     /**
-     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with the
-     * server with and the character that belongs to the client.
+     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
+     * the server with and the character that belongs to the client.
      * 
      * @param serverGame
      *            The server map which the ClientMap is based upon.
@@ -85,7 +86,9 @@ public class ClientMap extends Observable
         mapPoint = new TranslatedPoint(0, 0);
         mapWidth = serverGame.getMapWidth();
         mapHeight = serverGame.getMapHeight();
+
         // this.unassignedBullets = new ConcurrentLinkedQueue<>();
+
         this.addQueue = new ConcurrentLinkedQueue<>();
         this.serverGameId = serverGame.getGameId();
         this.leaderboard = new Leaderboard();
@@ -100,17 +103,11 @@ public class ClientMap extends Observable
 
         for (GameObjectDTO dto : serverGame.getGameObjects())
         {
-            if (dto.getBody().getType() == Body.Geometry.CIRCLE.ordinal())
+            if (dto.getId() != clientChar.getId())
             {
-                if (dto.getId() != clientChar.getId())
-                {
-                    addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.ENEMY_CHARACTER));
-                }
+                addGameObject(EntityFactory.getEntity(dto));
             }
-            else if (dto.getBody().getType() == Body.Geometry.RECTANGLE.ordinal())
-            {
-                addGameObject(EntityFactory.getEntity(dto, EntityFactory.EntityType.WALL));
-            }
+
         }
 
         for (PlayerDTO pdto : serverGame.getPlayers())
@@ -169,8 +166,7 @@ public class ClientMap extends Observable
 
         LightEvent uiPanelEvent = new LightEvent(250, () ->
         {
-            ammoLabel.setText(
-                    clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
+            ammoLabel.setText(clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize());
             if (clientChar.getWeapon().getReloading())
             {
                 reloadingLabel.setText("Reloading");
@@ -209,16 +205,15 @@ public class ClientMap extends Observable
                     firstUpdate = false;
                 }
 
-                double secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime))
-                        / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
+                double secondsSinceLastUpdate = ((double)(currentNanoTime - lastNanoTime)) / (NANOSECONDS_TO_MILLISECONDS * MILLISECONDS_TO_SECONDS);
                 lastNanoTime = currentNanoTime;
 
                 double translateX = clientChar.getBody().getCenter().getX() - canvas.getWidth() / 2;
                 double translateY = clientChar.getBody().getCenter().getY() - canvas.getHeight() / 2;
                 TranslatedPoint.setTranslate(-translateX, -translateY);
 
-                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(),
-                        mapPoint.getTranslatedY(), mapImage.getWidth(), mapImage.getHeight(), false);
+                ImagePattern mapPattern = new ImagePattern(mapImage, mapPoint.getTranslatedX(), mapPoint.getTranslatedY(), mapImage.getWidth(),
+                        mapImage.getHeight(), false);
                 gc.setFill(mapPattern);
                 gc.fillRect(0, 0, GUI.CANVAS_START_WIDTH, GUI.CANVAS_START_HEIGHT);
 
@@ -310,8 +305,9 @@ public class ClientMap extends Observable
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of BoDCharacter,
-     * then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the score.
+     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
+     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
+     * score.
      * 
      * @param scoreMap
      */
@@ -375,8 +371,8 @@ public class ClientMap extends Observable
         {
             BoDCharacter character = (BoDCharacter)go;
             leaderboard.addCharacter(character);
-            if (character.getNickname().toLowerCase().contains("john")
-                    && character.getNickname().toLowerCase().contains("cena") && !Resources.johnCena.isPlaying())
+            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
+                    && !Resources.johnCena.isPlaying())
             {
                 Resources.johnCena.setVolume(0.2);
                 Resources.johnCena.play();
@@ -403,7 +399,7 @@ public class ClientMap extends Observable
             go.destroy();
 
             gameObjects.remove(id);
-            
+
             go.unregisterAll(this);
             if (go.getWeapon() != null)
             {
@@ -457,8 +453,6 @@ public class ClientMap extends Observable
         result = prime * result + mapWidth;
         return result;
     }
-
- 
 
     public void newBullet(Bullet bullet)
     {
