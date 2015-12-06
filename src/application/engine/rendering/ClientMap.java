@@ -319,7 +319,7 @@ public class ClientMap extends Observable
 
             GameObject go = gameObjects.get(id);
 
-            if (go != null)
+            if (go != null&&go instanceof BoDCharacter)
             {
 
                 BoDCharacter bodCharacter = (BoDCharacter)go;
@@ -419,13 +419,9 @@ public class ClientMap extends Observable
     {
         GameObject killer = gameObjects.get(killerId);
         GameObject victim = gameObjects.get(victimId);
-        if(killer  == null&&victim != null)  // if no killer killerId is 0
+        if(killer  == null&&victim != null || !(victim instanceof BoDCharacter)|| !(killer instanceof BoDCharacter))  // if no killer killerId is 0
         {
             destroyGameObject(victimId);
-            return;
-        }
-        if(victim == null|| !(victim instanceof BoDCharacter)||!(killer instanceof BoDCharacter))
-        {
             return;
         }
         String killString = ((BoDCharacter)gameObjects.get(killerId)).getNickname() + " killed "

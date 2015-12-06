@@ -522,7 +522,7 @@ public class Broker
                                                  // player instead
     {
         GameObjectDAO data = new GameObjectDAO();
-        char[] nickname = new char[input.get()];
+        char[] nickname = new char[input.get()]; //FIXME can randomly very rarely return negative. (Probably serverside problem)
         for (int i = 0; i < nickname.length; ++i)
         {
             nickname[i] = (char)(input.get());
