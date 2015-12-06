@@ -71,7 +71,7 @@ public class GUI extends Application
         // Start
         tStage = theStage;
         tStage.setTitle("Ball of Duty");
-        tStage.getIcons().add(new Image("images/ball_red.png"));
+        tStage.getIcons().add(new Image("images/Logo.png"));
         tStage.setHeight(WINDOW_START_HEIGHT);
         tStage.setWidth(WINDOW_START_WIDTH);
         tStage.centerOnScreen();
@@ -519,6 +519,7 @@ public class GUI extends Application
         };
 
         btnJoinGameMMG.setOnAction(actionJoinGame);
+        tfNicknameMMG.setOnAction(actionJoinGame);
         btnLoginMMG.setOnAction(actionGoToLogin);
         btnCreateAccountMMG.setOnAction(actionGoToCreateAccount);
         btnViewLeaderboardMMG.setOnAction(actionGoToLeaderboard);

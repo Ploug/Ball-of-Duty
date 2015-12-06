@@ -36,7 +36,7 @@ public class Blaster extends BoDCharacter
         // physics.setTopSpeed(SPEED + (_score * 1));
         weapon.setBulletSpeed(BULLET_SPEED + (_score * 0.05));
         weapon.setFireRate(FIRE_RATE + (_score * 0.01));
-        weapon.setDamage(DAMAGE + (int)(_score * 0.02));
+        weapon.setDamage(DAMAGE + (int)(_score * 0.015));
         //weapon.setMagazineMaxSize(MAGAZINE_MAX_SIZE + (int)(_score * 1));
         weapon.setReloadSpeed(RELOAD_SPEED - (int)(_score));
     }

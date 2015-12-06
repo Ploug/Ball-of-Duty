@@ -2,6 +2,7 @@ package application.engine.game_object;
 
 import java.util.Collection;
 
+import application.engine.entities.Wall;
 import application.engine.game_object.physics.CollisionHandler;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Vector2;
@@ -78,10 +79,14 @@ public class Body
     {
         for (GameObject other : gameObjects)
         {
-            if (CollisionHandler.isColliding(this, other.body))
+            if(other instanceof Wall)
             {
-                return true;
+                if (CollisionHandler.isColliding(this, other.body))
+                {
+                    return true;
+                }
             }
+            
         }
         return false;
     }
