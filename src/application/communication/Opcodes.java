@@ -13,15 +13,14 @@ public enum Opcodes
 {
     BROADCAST_POSITION_UPDATE(1),
     POSITION_UPDATE(2),
-    REQUEST_BULLET(3),
-    NEW_PLAYER(4),
-    DISCONNECTED_PLAYER(5),
-    BROADCAST_SCORE_UPDATE(6),
-    BROADCAST_HEALTH_UPDATE(7),
-    KILL_NOTIFICATION(8),
-    OBJECT_DESTRUCTION(9),
-    PING(10),
-    UDP_CONNECT(11);
+    REQUEST_BULLET(4),
+    NEW_PLAYER(8),
+    DISCONNECTED_PLAYER(16),
+    BROADCAST_CHARACTER_STAT_UPDATE(32),
+    KILL_NOTIFICATION(64),
+    OBJECT_DESTRUCTION(128),
+    PING(256),
+    UDP_CONNECT(512);
 
     private int value;
 
@@ -34,8 +33,7 @@ public enum Opcodes
         values.put(REQUEST_BULLET.value, REQUEST_BULLET);
         values.put(NEW_PLAYER.value, NEW_PLAYER);
         values.put(DISCONNECTED_PLAYER.value, DISCONNECTED_PLAYER);
-        values.put(BROADCAST_SCORE_UPDATE.value, BROADCAST_SCORE_UPDATE);
-        values.put(BROADCAST_HEALTH_UPDATE.value, BROADCAST_HEALTH_UPDATE);
+        values.put(BROADCAST_CHARACTER_STAT_UPDATE.value, BROADCAST_CHARACTER_STAT_UPDATE);
         values.put(KILL_NOTIFICATION.value, KILL_NOTIFICATION);
         values.put(OBJECT_DESTRUCTION.value, OBJECT_DESTRUCTION);
         values.put(PING.value, PING);
@@ -66,5 +64,4 @@ public enum Opcodes
     {
         return value;
     }
-
 }

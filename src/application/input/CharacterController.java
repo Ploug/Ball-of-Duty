@@ -80,7 +80,7 @@ public class CharacterController
                 }
                 case BLINK:
                 {
-                    // character.getBody().setCenter(getMousePoint());
+                    character.getBody().setCenter(getMousePoint());
                     break;
                 }
                 case RELOAD:
@@ -98,6 +98,11 @@ public class CharacterController
                     {
                         gameBox.getChildren().get(1).setVisible(false);
                     }
+                    break;
+                }
+                case SHOOT:
+                {
+                    character.getWeapon().startShooting();
                     break;
                 }
                 default:
@@ -132,6 +137,11 @@ public class CharacterController
                 case MOVE_RIGHT:
                 {
                     character.getPhysics().removeDirection(RIGHT_VECTOR);
+                    break;
+                }
+                case SHOOT:
+                {
+                    character.getWeapon().stopShooting();
                     break;
                 }
                 default:

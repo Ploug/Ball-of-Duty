@@ -21,7 +21,5 @@ public class GameObjectDAO
     public int maxHealth;
     public int healthValue;
     public String nickname;
-    
-    
-    
+    public double score;
 }

@@ -1,7 +1,6 @@
 package application.engine.rendering;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,23 +16,19 @@ import application.communication.GameObjectDAO;
 import application.engine.entities.BoDCharacter;
 import application.engine.entities.Bullet;
 import application.engine.factories.EntityFactory;
-import application.engine.game_object.Body;
 import application.engine.game_object.GameObject;
 import application.gui.GUI;
 import application.gui.Leaderboard;
 import application.util.LightEvent;
 import application.util.Observable;
 import application.util.Observation;
-import application.util.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
@@ -77,8 +72,8 @@ public class ClientMap extends Observable
     private ArrayList<Double> drawtimes;
 
     /**
-     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with
-     * the server with and the character that belongs to the client.
+     * Creates a client map defining the serverMap its based upon, the gamebox it should be drawn in, the broker it uses to communicate with the
+     * server with and the character that belongs to the client.
      * 
      * @param serverGame
      *            The server map which the ClientMap is based upon.
@@ -147,11 +142,11 @@ public class ClientMap extends Observable
         {
             leaderboard.refresh();
             double total = 0;
-            for(double d : drawtimes)
+            for (double d : drawtimes)
             {
-                total+= d;
+                total += d;
             }
-            fps = (int)(1/(total/drawtimes.size()));
+            fps = (int)(1 / (total / drawtimes.size()));
             drawtimes.clear();
         });
 
@@ -306,44 +301,26 @@ public class ClientMap extends Observable
     }
 
     /**
-     * For every GameObject go in gameObjects, checks if go.iD() matches a key in the scoreMap. If it does, and the go is an instance of
-     * BoDCharacter, then it calls the setScore method of the BoDCharacter and gives the value associated with the matching key as the
-     * score.
-     * 
-     * @param scoreMap
-     */
-    public void updateScores(HashMap<Integer, Double> scoreMap)
-    {
-        for (Integer id : scoreMap.keySet())
-        {
-
-            GameObject go = gameObjects.get(id);
-
-            if (go != null&&go instanceof BoDCharacter)
-            {
-
-                BoDCharacter bodCharacter = (BoDCharacter)go;
-                double score = scoreMap.get(id);
-                bodCharacter.setScore(score);
-            }
-        }
-    }
-
-    /**
      * Updates healths for all the game objects in the game that has health.
      * 
      * @param healths
      */
-    public void updateHealths(List<GameObjectDAO> healths)
+    public void updateCharacterStats(List<GameObjectDAO> characterStats)
     {
-        for (GameObjectDAO data : healths)
+        for (GameObjectDAO data : characterStats)
         {
             GameObject go = gameObjects.get(data.objectId);
-            if (go != null && go.getHealth() != null)
+            if (go == null)
+            {
+                continue;
+            }
+            if (go.getHealth() != null)
             {
                 go.getHealth().setValue(data.healthValue);
                 go.getHealth().setMax(data.maxHealth);
             }
+
+            ((BoDCharacter)go).setScore(data.score);
         }
     }
 
@@ -359,7 +336,6 @@ public class ClientMap extends Observable
         {
             addGameObject(EntityFactory.getEntity(data, data.entityType));
         }
-
     }
 
     private void addGameObject(GameObject go)
@@ -368,12 +344,12 @@ public class ClientMap extends Observable
         {
             BoDCharacter character = (BoDCharacter)go;
             leaderboard.addCharacter(character);
-//            if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
-//                    && !Resources.johnCena.isPlaying())
-//            {
-//                Resources.johnCena.setVolume(0.07);
-//                Resources.johnCena.play();
-//            }
+            // if (character.getNickname().toLowerCase().contains("john") && character.getNickname().toLowerCase().contains("cena")
+            // && !Resources.johnCena.isPlaying())
+            // {
+            // Resources.johnCena.setVolume(0.07);
+            // Resources.johnCena.play();
+            // }
         }
         go.register(Observation.EXTERMINATION, this, (observable, data) -> removeGameObject((GameObject)observable));
         gameObjects.put(go.getId(), go);
@@ -417,32 +393,30 @@ public class ClientMap extends Observable
 
     public void killNotification(int victimId, int killerId)
     {
-        GameObject killer = gameObjects.get(killerId);
         GameObject victim = gameObjects.get(victimId);
-        if(killer  == null&&victim != null || !(victim instanceof BoDCharacter)|| !(killer instanceof BoDCharacter))  // if no killer killerId is 0
+        GameObject killer = gameObjects.get(killerId);
+
+        if (killer != null && victim != null)
         {
-            destroyGameObject(victimId);
-            return;
+            String killString = ((BoDCharacter)killer).getNickname() + " killed " + ((BoDCharacter)victim).getNickname();
+            new Thread(() ->
+            {
+                int count = killNotisCounter;
+                killNotis.put(count, killString);
+                killNotisCounter++;
+                try
+                {
+                    Thread.sleep(3000);
+                }
+                catch (Exception e)
+                {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                killNotis.remove(count);
+            }).start();
         }
-        String killString = ((BoDCharacter)gameObjects.get(killerId)).getNickname() + " killed "
-                + ((BoDCharacter)gameObjects.get(victimId)).getNickname();
-        Thread killNotisThread = new Thread(() ->
-        {
-            int count = killNotisCounter;
-            killNotis.put(count, killString);
-            killNotisCounter++;
-            try
-            {
-                Thread.sleep(3000);
-            }
-            catch (Exception e)
-            {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            killNotis.remove(count);
-        });
-        killNotisThread.start();
+
         destroyGameObject(victimId);
         if (victimId == clientChar.getId())
         {

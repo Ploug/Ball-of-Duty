@@ -26,7 +26,7 @@ public class KeyHandler
     {
         keyMap = new HashMap<>();
         keyMap.put(KeyCode.R, Action.RELOAD);
-        keyMap.put(KeyCode.SPACE, Action.BLINK);
+        keyMap.put(KeyCode.B, Action.BLINK);
         keyMap.put(KeyCode.W, Action.MOVE_UP);
         keyMap.put(KeyCode.UP, Action.MOVE_UP);
         keyMap.put(KeyCode.S, Action.MOVE_DOWN);
@@ -36,6 +36,7 @@ public class KeyHandler
         keyMap.put(KeyCode.D, Action.MOVE_RIGHT);
         keyMap.put(KeyCode.RIGHT, Action.MOVE_RIGHT);
         keyMap.put(KeyCode.ESCAPE, Action.PAUSE_MENU);
+        keyMap.put(KeyCode.SPACE, Action.SHOOT);
     }
 
     /**

@@ -13,9 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import application.engine.entities.Bullet;
 import application.engine.entities.specializations.Specializations;
@@ -24,8 +22,8 @@ import application.engine.rendering.ClientMap;
 import application.util.LightEvent;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
- * needs to communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that needs to
+ * communicate with the server.
  * 
  */
 public class Broker
@@ -35,7 +33,7 @@ public class Broker
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "85.218.183.174";
+    private static final String SERVER_IP = "10.126.24.36";
     private static final int SERVER_UDP_PORT = 15001;
     private static final int SERVER_TCP_PORT = 15010;
     private DataOutputStream output = null;
@@ -140,17 +138,14 @@ public class Broker
      *            the bullets that needs to have its position updated to the server.
      * @throws IOException
      */
-    public void sendUpdate(List<GameObjectDAO> posList) // TODO Should possibly
-                                                        // know DAO of
-                                                        // GameObject instead of
-                                                        // ObjectPosition.
+    public void sendUpdate(List<GameObjectDAO> posList)
     {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte)1); // ASCII Standard for Start of heading
-        buffer.put((byte)Opcodes.POSITION_UPDATE.getValue());
+        buffer.putInt(Opcodes.POSITION_UPDATE.getValue());
         buffer.put((byte)2); // ASCII Standard for Start of text
+
         for (int i = 0; i < posList.size(); ++i)
         {
             GameObjectDAO data = posList.get(i);
@@ -163,6 +158,7 @@ public class Broker
                 buffer.put((byte)31);
             }
         }
+
         buffer.put((byte)4); // ASCII Standard for End of transmission
         sendUdp(buffer.array());
     }
@@ -178,36 +174,14 @@ public class Broker
 
     private void sendPing()
     {
-        ByteBuffer buffer = ByteBuffer.allocate(4);
+        ByteBuffer buffer = ByteBuffer.allocate(20);
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte)1); // ASCII Standard for Start of heading
-        buffer.put((byte)Opcodes.PING.getValue());
+        buffer.putInt(Opcodes.PING.getValue());
         buffer.put((byte)2); // ASCII Standard for Start of text
         buffer.put((byte)4); // ASCII Standard for End of transmission
         sendTcp(buffer);
-    }
-
-    /**
-     * Handles reading of score updates;
-     * 
-     * @param input
-     *            The ByteBuffer that handles reading of data send from the server.
-     */
-    private void readScoreUpdate(ByteBuffer buffer)
-    {
-        HashMap<Integer, Double> scoreMap = new HashMap<>();
-
-        do
-        {
-            int ID = buffer.getInt();
-            double score = buffer.getDouble();
-
-            scoreMap.put(ID, score);
-        }
-        while (buffer.get() == 31); // unit separator
-
-        map.updateScores(scoreMap);
     }
 
     /**
@@ -216,21 +190,22 @@ public class Broker
      * @param input
      *            The ByteBuffer that handles reading of data send from the server.
      */
-    private void readHealthUpdate(ByteBuffer buffer)
+    private void readCharacterStatUpdate(ByteBuffer buffer)
     {
-        List<GameObjectDAO> healths = new ArrayList<>();
+        List<GameObjectDAO> characterStats = new ArrayList<>();
 
         do
         {
-            GameObjectDAO objectHealth = new GameObjectDAO();
-            objectHealth.objectId = buffer.getInt();
-            objectHealth.maxHealth = buffer.getInt();
-            objectHealth.healthValue = buffer.getInt();
-            healths.add(objectHealth);
+            GameObjectDAO characterStat = new GameObjectDAO();
+            characterStat.objectId = buffer.getInt();
+            characterStat.score = buffer.getDouble();
+            characterStat.maxHealth = buffer.getInt();
+            characterStat.healthValue = buffer.getInt();
+            characterStats.add(characterStat);
         }
         while (buffer.get() == 31); // unit separator
 
-        map.updateHealths(healths);
+        map.updateCharacterStats(characterStats);
     }
 
     public void readPositionUpdate(ByteBuffer buffer)
@@ -261,13 +236,14 @@ public class Broker
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i])
+                throw new Error("Rest in pepperoni m9");
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(256);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte)1);
-        buffer.put((byte)Opcodes.UDP_CONNECT.getValue());
+        buffer.putInt(Opcodes.UDP_CONNECT.getValue());
         buffer.put((byte)2);
         buffer.put(sessionId);
         buffer.put((byte)4);
@@ -278,7 +254,8 @@ public class Broker
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i])
+                throw new Error("Rest in pepperoni m9");
         }
     }
 
@@ -297,47 +274,52 @@ public class Broker
                 try
                 {
                     _socket.receive(packet);
-                    byte[] data = Arrays.copyOf(packet.getData(), packet.getLength());
-
-                    ByteBuffer buffer = ByteBuffer.allocate(1024);
-                    buffer.order(ByteOrder.LITTLE_ENDIAN);
-                    buffer.put(data);
-                    buffer.rewind();
-
-                    if (buffer.get() != 1) // start of heading
-                    {
-                        return;
-                    }
-                    byte value = buffer.get();
-                    Opcodes opcode = Opcodes.fromInteger(value);
-
-                    buffer.get(); // start of text
-
-                    switch (opcode)
-                    {
-                        case BROADCAST_POSITION_UPDATE:
-                        {
-                            readPositionUpdate(buffer);
-                            break;
-                        }
-                        case BROADCAST_SCORE_UPDATE:
-                        {
-                            readScoreUpdate(buffer);
-                            break;
-                        }
-                        case BROADCAST_HEALTH_UPDATE:
-                        {
-                            readHealthUpdate(buffer);
-                            break;
-                        }
-                        default:
-                            break;
-                    }
                 }
                 catch (IOException e)
                 {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
+                }
+
+                byte[] data = Arrays.copyOf(packet.getData(), packet.getLength());
+
+                ByteBuffer buffer = ByteBuffer.allocate(1024);
+                buffer.order(ByteOrder.LITTLE_ENDIAN);
+                buffer.put(data);
+                buffer.rewind();
+
+                try
+                {
+                    while (buffer.get() == 1) // start of heading
+                    {
+                        Opcodes opcode = Opcodes.fromInteger(buffer.getInt());
+
+                        buffer.get(); // start of text
+
+                        switch (opcode)
+                        {
+                            case BROADCAST_POSITION_UPDATE:
+                            {
+                                readPositionUpdate(buffer);
+                                break;
+                            }
+                            case BROADCAST_CHARACTER_STAT_UPDATE:
+                            {
+                                readCharacterStatUpdate(buffer);
+                                break;
+                            }
+                            default:
+                                break;
+                        }
+
+                        if (buffer.position() == data.length)
+                        {
+                            break;
+                        }
+                    }
+                }
+                catch (BufferUnderflowException ex)
+                {
+                    ex.printStackTrace();
                 }
             }
         }).start();
@@ -351,9 +333,7 @@ public class Broker
      */
     public void sendUdp(byte[] data)
     {
-        DatagramPacket packet = new DatagramPacket(data, data.length, ina, SERVER_UDP_PORT); // TODO
-                                                                                             // dynamically
-                                                                                             // port.
+        DatagramPacket packet = new DatagramPacket(data, data.length, ina, SERVER_UDP_PORT); // TODO dynamically port.
         try
         {
             _socket.send(packet);
@@ -385,9 +365,6 @@ public class Broker
         }
     }
 
-    AtomicInteger send = new AtomicInteger(0);
-    AtomicInteger received = new AtomicInteger(0);
-
     /**
      * Creates a bullet and returns it Id.
      * 
@@ -399,7 +376,7 @@ public class Broker
 
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte)1); // ASCII Standard for Start of heading
-        buffer.put((byte)Opcodes.REQUEST_BULLET.getValue());
+        buffer.putInt(Opcodes.REQUEST_BULLET.getValue());
         buffer.put((byte)2); // ASCII Standard for Start of text
 
         buffer.putDouble(data.x);
@@ -456,8 +433,7 @@ public class Broker
         {
             while (buffer.get() == 1) // start of heading
             {
-                byte value = buffer.get();
-                Opcodes opcode = Opcodes.fromInteger(value);
+                Opcodes opcode = Opcodes.fromInteger(buffer.getInt());
 
                 buffer.get(); // start of text
 
@@ -483,16 +459,25 @@ public class Broker
                         readKillNotification(buffer);
                         break;
                     }
+                    case OBJECT_DESTRUCTION:
+                    {
+                        readDestroyedObject(buffer);
+                        break;
+                    }
                     default:
                         break;
                 }
                 buffer.get(); // Consuming end of transmission
 
+                if (buffer.position() == data.length)
+                {
+                    break;
+                }
             }
         }
         catch (BufferUnderflowException e)
         {
-
+            e.printStackTrace();
         }
     }
 
@@ -509,7 +494,17 @@ public class Broker
         map.destroyGameObject(objectId);
     }
 
-   
+    /**
+     * Handles destroyed objects
+     * 
+     * @param input
+     *            The ByteBuffer that handles reading of data send from the server.
+     */
+    private void readDestroyedObject(ByteBuffer input)
+    {
+        int objectId = input.getInt();
+        map.destroyGameObject(objectId);
+    }
 
     /**
      * Handles new players created by the server.
@@ -522,12 +517,20 @@ public class Broker
                                                  // player instead
     {
         GameObjectDAO data = new GameObjectDAO();
-        char[] nickname = new char[input.get()]; //FIXME can randomly very rarely return negative. (Probably serverside problem)
-        for (int i = 0; i < nickname.length; ++i)
+        int nicknameLength = (int)input.get();
+        if (nicknameLength > 0)
         {
-            nickname[i] = (char)(input.get());
+            char[] nickname = new char[nicknameLength];
+            for (int i = 0; i < nickname.length; ++i)
+            {
+                nickname[i] = (char)(input.get());
+            }
+            data.nickname = new String(nickname);
         }
-        data.nickname = new String(nickname);
+        else
+        {
+            data.nickname = new String();
+        }
         data.objectId = input.getInt();
         data.x = input.getDouble();
         data.y = input.getDouble();

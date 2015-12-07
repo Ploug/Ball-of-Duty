@@ -10,15 +10,14 @@ import application.communication.GameObjectDAO;
 import application.engine.entities.BoDCharacter;
 import application.engine.entities.Bullet;
 import application.engine.entities.Wall;
-import application.engine.entities.Bullet.Type;
 import application.engine.entities.specializations.Blaster;
 import application.engine.entities.specializations.Heavy;
 import application.engine.entities.specializations.Roller;
 import application.engine.entities.specializations.Specializations;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Weapon;
-import application.util.Vector2;
 import application.engine.rendering.TranslatedPoint;
+import application.util.Vector2;
 import javafx.scene.image.Image;
 
 /**
@@ -42,7 +41,6 @@ public class EntityFactory
 
         static
         {
-
             values.put(BULLET.ordinal(), BULLET);
             values.put(WALL.ordinal(), WALL);
             values.put(ENEMY_CHARACTER.ordinal(), ENEMY_CHARACTER);
@@ -57,7 +55,6 @@ public class EntityFactory
          */
         public static EntityType fromInteger(int x)
         {
-
             return values.get(x);
         }
     }
@@ -82,7 +79,6 @@ public class EntityFactory
      */
     public static GameObject getEntity(GameObjectDTO dto)
     {
-
         BodyDTO body = dto.getBody();
         TranslatedPoint position = new TranslatedPoint(body.getPosition().getX(), body.getPosition().getY());
         EntityType type = EntityType.fromInteger(dto.getType());
@@ -121,8 +117,8 @@ public class EntityFactory
             {
                 Bullet.Type bType = Bullet.Type.fromInteger(dto.getBulletType());
                 return new Bullet(dto.getId(), new TranslatedPoint(dto.getBody().getPosition().getX(), dto.getBody().getPosition().getY()),
-                        dto.getBody().getHeight(), new Vector2(dto.getPhysics().getVelX(), dto.getPhysics().getVelY()), 0, bType, (Image)Weapon.getBulletImages().get(bType),
-                        -1);
+                        dto.getBody().getHeight(), new Vector2(dto.getPhysics().getVelocityX(), dto.getPhysics().getVelocityY()), 0, bType,
+                        (Image)Weapon.getBulletImages().get(bType), 0);
             }
 
             default:

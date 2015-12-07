@@ -8,58 +8,58 @@
 package org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO;
 
 public class PhysicsDTO  implements java.io.Serializable {
-    private double velX;
+    private double velocityX;
 
-    private double velY;
+    private double velocityY;
 
     public PhysicsDTO() {
     }
 
     public PhysicsDTO(
-           double velX,
-           double velY) {
-           this.velX = velX;
-           this.velY = velY;
+           double velocityX,
+           double velocityY) {
+           this.velocityX = velocityX;
+           this.velocityY = velocityY;
     }
 
 
     /**
-     * Gets the velX value for this PhysicsDTO.
+     * Gets the velocityX value for this PhysicsDTO.
      * 
-     * @return velX
+     * @return velocityX
      */
-    public double getVelX() {
-        return velX;
+    public double getVelocityX() {
+        return velocityX;
     }
 
 
     /**
-     * Sets the velX value for this PhysicsDTO.
+     * Sets the velocityX value for this PhysicsDTO.
      * 
-     * @param velX
+     * @param velocityX
      */
-    public void setVelX(double velX) {
-        this.velX = velX;
+    public void setVelocityX(double velocityX) {
+        this.velocityX = velocityX;
     }
 
 
     /**
-     * Gets the velY value for this PhysicsDTO.
+     * Gets the velocityY value for this PhysicsDTO.
      * 
-     * @return velY
+     * @return velocityY
      */
-    public double getVelY() {
-        return velY;
+    public double getVelocityY() {
+        return velocityY;
     }
 
 
     /**
-     * Sets the velY value for this PhysicsDTO.
+     * Sets the velocityY value for this PhysicsDTO.
      * 
-     * @param velY
+     * @param velocityY
      */
-    public void setVelY(double velY) {
-        this.velY = velY;
+    public void setVelocityY(double velocityY) {
+        this.velocityY = velocityY;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -74,8 +74,8 @@ public class PhysicsDTO  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            this.velX == other.getVelX() &&
-            this.velY == other.getVelY();
+            this.velocityX == other.getVelocityX() &&
+            this.velocityY == other.getVelocityY();
         __equalsCalc = null;
         return _equals;
     }
@@ -87,8 +87,8 @@ public class PhysicsDTO  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        _hashCode += new Double(getVelX()).hashCode();
-        _hashCode += new Double(getVelY()).hashCode();
+        _hashCode += new Double(getVelocityX()).hashCode();
+        _hashCode += new Double(getVelocityY()).hashCode();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -100,14 +100,14 @@ public class PhysicsDTO  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PhysicsDTO"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("velX");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "VelX"));
+        elemField.setFieldName("velocityX");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "VelocityX"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("velY");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "VelY"));
+        elemField.setFieldName("velocityY");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "VelocityY"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "double"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
