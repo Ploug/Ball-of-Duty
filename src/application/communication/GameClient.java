@@ -19,6 +19,8 @@ import application.engine.rendering.ClientMap;
 import application.engine.rendering.TranslatedPoint;
 import application.gui.HighscoreLeaderboard;
 import application.input.CharacterController;
+import application.util.Observable;
+import application.util.Observation;
 import javafx.scene.layout.Pane;
 
 /**
@@ -27,7 +29,7 @@ import javafx.scene.layout.Pane;
  * @author Gruppe6
  *
  */
-public class GameClient
+public class GameClient extends Observable
 {
 
     private ClientMap cMap;
@@ -35,15 +37,16 @@ public class GameClient
     private Account account;
     private CharacterController characterController;
     private TranslatedPoint sceneRelativeLocation;
+    private boolean inGame = false;
     IBoDService ibs;
 
     /**
-     * Creates a game client with the current relative location of the window. The relative location is based on how the scene's is located relative
-     * to the operating system.
+     * Creates a game client with the current relative location of the window. The relative location is based on how the scene's is located
+     * relative to the operating system.
      * 
      * @param windowRelativeLocation
-     *            The current relative location of the window. The relative location is based on how the scene's is located relative to the operating
-     *            system,
+     *            The current relative location of the window. The relative location is based on how the scene's is located relative to the
+     *            operating system,
      */
     public GameClient(TranslatedPoint windowRelativeLocation)
     {
@@ -79,16 +82,16 @@ public class GameClient
         }
         catch (RemoteException e)
         {
-            e.printStackTrace();
+           serverOffline();
         }
         return leaderboard;
     }
 
-    public void joinAsGuest(Pane gameBox, String nickname, Specializations spec)
+    public boolean joinAsGuest(Pane gameBox, String nickname, Specializations spec)
     {
         try
         {
-            if(nickname.length() > 20)
+            if (nickname.length() > 20)
             {
                 nickname = nickname.substring(0, 20);
             }
@@ -97,8 +100,10 @@ public class GameClient
         }
         catch (RemoteException e)
         {
-            e.printStackTrace();
+            serverOffline();
+            return false;
         }
+        return true;
     }
 
     public void createAccount(String username, String nickname, char[] password, char[] passwordConfirmation)
@@ -140,7 +145,8 @@ public class GameClient
      * Sets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
      * 
      * @param sceneRelativeLocation
-     *            The scenes relative location. he relative location is based on how the scene's is located relative to the operating system.
+     *            The scenes relative location. he relative location is based on how the scene's is located relative to the operating
+     *            system.
      */
     public void setSceneRelativeLocation(TranslatedPoint sceneRelativeLocation)
     {
@@ -150,6 +156,21 @@ public class GameClient
             characterController.setCanvasRelativeLocation(sceneRelativeLocation);
         }
 
+    }
+    private void brokerError()
+    {
+        if(inGame)
+        {
+            serverOffline();
+        }
+    }
+    private void serverOffline()
+    {
+        if (cMap != null)
+        {
+            cMap.deactivate();
+        }
+        notifyObservers(Observation.SERVER_OFFLINE);
     }
 
     /**
@@ -163,7 +184,15 @@ public class GameClient
         System.out.println("trying to join game");
         try
         {
-            Broker broker = new Broker();
+            
+            if(cMap != null)
+            {
+                cMap.getBroker().unregisterAll(this);
+            }
+
+            Broker  broker = new Broker();
+            broker.register(Observation.SERVER_OFFLINE, this, (Observable, data)->brokerError());
+            
             GameDTO map = ibs.joinGame(clientPlayer.getId(), spec.getValue());
             try
             {
@@ -176,6 +205,7 @@ public class GameClient
             }
             clientPlayer.createNewCharacter(map.getCharacterId(), spec);
             cMap = new ClientMap(map, gameBox, broker, clientPlayer);
+            inGame = true;
 
         }
         catch (RemoteException e)
@@ -214,6 +244,8 @@ public class GameClient
             if (ibs != null && clientPlayer != null)
             {
                 ibs.quitGame(clientPlayer.getId());
+
+                inGame = false;
             }
 
         }

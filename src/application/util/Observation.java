@@ -3,5 +3,6 @@ package application.util;
 public enum Observation
 {
     EXTERMINATION,
-    SPAWNING
+    SPAWNING,
+    SERVER_OFFLINE
 }

@@ -15,7 +15,7 @@ public class Roller extends BoDCharacter
     private static final double SPEED = 230;
     private static final int DAMAGE = 5;
     private static final double BULLET_SPEED = 480;
-    private static final int BULLET_SIZE = 15;
+    private static final int BULLET_DIAMETER = 15;
     private static final double FIRE_RATE = 20;
     private static final int MAGAZINE_MAX_SIZE = 15;
     private static final int RELOAD_SPEED = 1000;
@@ -27,7 +27,7 @@ public class Roller extends BoDCharacter
         this.body = new Body(this, position, SIZE, SIZE, TYPE);
         this.physics = new Physics(this, SPEED);
         this.view = new View(this, image);
-        this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_MAX_SIZE, DAMAGE, BULLET_SPEED, RELOAD_SPEED, BULLET_SIZE);
+        this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_MAX_SIZE, DAMAGE, BULLET_SPEED, RELOAD_SPEED, BULLET_DIAMETER);
         this.health = new Health(HEALTH);
     }
 

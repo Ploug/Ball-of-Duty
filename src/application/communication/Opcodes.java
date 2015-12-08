@@ -20,7 +20,8 @@ public enum Opcodes
     KILL_NOTIFICATION(64),
     OBJECT_DESTRUCTION(128),
     PING(256),
-    UDP_CONNECT(512);
+    UDP_CONNECT(512),
+    SERVER_MESSAGE(1024);
 
     private int value;
 
@@ -38,6 +39,7 @@ public enum Opcodes
         values.put(OBJECT_DESTRUCTION.value, OBJECT_DESTRUCTION);
         values.put(PING.value, PING);
         values.put(UDP_CONNECT.value, UDP_CONNECT);
+        values.put(SERVER_MESSAGE.value,  SERVER_MESSAGE);
     }
 
     /**

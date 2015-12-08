@@ -80,7 +80,7 @@ public class CharacterController
                 }
                 case BLINK:
                 {
-                    character.getBody().setCenter(getMousePoint());
+//                    character.getBody().setCenter(getMousePoint());
                     break;
                 }
                 case RELOAD:

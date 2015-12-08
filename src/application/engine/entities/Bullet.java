@@ -77,14 +77,14 @@ public class Bullet extends GameObject
      * @param damage
      *            The amount of health reduced on another object if this bullet collides with the object.
      */
-    public Bullet(int id, TranslatedPoint position, double radius, Vector2 velocity, int damage, Type type, Image image,
+    public Bullet(int id, TranslatedPoint position, double diameter, Vector2 velocity, int damage, Type type, Image image,
             int ownerId)
     {
         super(id);
         this.ownerId = ownerId;
         this.type = type;
         this.damage = damage;
-        this.setBody(new Body(this, position, radius, radius, BODYTYPE));
+        this.setBody(new Body(this, position, diameter, diameter, BODYTYPE));
         this.setPhysics(new Physics(this, velocity.getMagnitude()));
         getPhysics().setVelocity(velocity);
         this.view = new View(this, image);

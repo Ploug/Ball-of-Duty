@@ -23,7 +23,7 @@ public class Weapon extends Observable
 
     private double fireRate;
     private double bulletSpeed;
-    private int bulletSize;
+    private int bulletDiameter;
     private int reloadSpeed;
     private int magazineMaxSize;
     private int magazineSize;
@@ -55,7 +55,7 @@ public class Weapon extends Observable
      *            Damage per bullet.
      */
     public Weapon(GameObject gameObject, double firerate, int magazineMaxSize, int damage, double bulletSpeed,
-            int reloadSpeed, int bulletSize)
+            int reloadSpeed, int bulletDiameter)
     {
         timer = new Timer();
         timer.start();
@@ -66,7 +66,7 @@ public class Weapon extends Observable
         this.reloadSpeed = reloadSpeed;
         this.magazineMaxSize = magazineMaxSize;
         this.magazineSize = magazineMaxSize;
-        this.bulletSize = bulletSize;
+        this.bulletDiameter = bulletDiameter;
     }
 
     /**
@@ -95,7 +95,7 @@ public class Weapon extends Observable
                             gameObject.getBody().getCenter().getY() + orientation.getY());
                     Vector2 velocity = new Vector2(gameObject.getBody().getOrientation());
                     velocity.setMagnitude(bulletSpeed);
-                    Bullet bullet = new Bullet(0, position, bulletSize, velocity, damage, Bullet.Type.RIFLE,
+                    Bullet bullet = new Bullet(0, position, bulletDiameter, velocity, damage, Bullet.Type.RIFLE,
                             bulletImages.get(Bullet.Type.RIFLE), gameObject.getId());
                     bullet.getBody().setCenter(position);
                     notifyObservers(Observation.SPAWNING, bullet);

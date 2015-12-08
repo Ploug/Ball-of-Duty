@@ -46,6 +46,7 @@ public class View
         // gameObject.getBody().getLength()+" "+ gameObject.getBody().getWidth());
         gc.drawImage(image, (int)gameObject.getBody().getPosition().getTranslatedX(), (int)gameObject.getBody().getPosition().getTranslatedY(),
                 gameObject.getBody().getHeight(), gameObject.getBody().getWidth());
+        
         // debug info
         // gc.setLineWidth(2);
         // gc.setStroke(Color.BLACK);

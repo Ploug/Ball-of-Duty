@@ -102,8 +102,8 @@ public class Timer
     }
 
     /**
-     * Gets the duration since the timer was started or resetted. Calculated for any pauses there might have been.
-     * @return The duration since the timer was started or resetted. Calculated for any pauses there might have been.
+     * Gets the duration in milliseconds since the timer was started or resetted. Calculated for any pauses there might have been.
+     * @return The duration in milliseconds since the timer was started or resetted. Calculated for any pauses there might have been.
      */
     public double getDuration()
     {

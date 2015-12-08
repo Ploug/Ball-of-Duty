@@ -6,12 +6,15 @@ import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Observation;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -31,7 +34,7 @@ public class GUI extends Application
     public static final int WINDOW_START_WIDTH = 1280;
     public static final int WINDOW_START_HEIGHT = 720;
 
-    public static GameClient gameManager;
+    public static GameClient gameClient;
     public static Scale scale;
     private Scene sceneMainMenu;
     private Pane gameBox;
@@ -48,7 +51,8 @@ public class GUI extends Application
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating system.
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
+     *         system.
      */
     private TranslatedPoint getRelativeSceneLocation(Stage stage)
     {
@@ -121,10 +125,12 @@ public class GUI extends Application
         Button btnLoginMMG = new Button("Log in");
         btnLoginMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnLoginMMG);
+        btnLoginMMG.setVisible(false); //FIXME When login is implemented.
 
         Button btnCreateAccountMMG = new Button("Create Account");
         btnCreateAccountMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnCreateAccountMMG);
+        btnCreateAccountMMG.setVisible(false); //FIXME When login is implemented.
 
         Button btnViewLeaderboardMMG = new Button("Leaderboard");
         btnViewLeaderboardMMG.setMinSize(buttonWidth, buttonHeight);
@@ -253,13 +259,13 @@ public class GUI extends Application
         vBoxRespawn2.setAlignment(Pos.CENTER);
         vBoxRespawn.getChildren().add(vBoxRespawn2);
 
-        Button btnRespawn = new Button("Repawn");
+        Button btnRespawn = new Button("Respawn");
         btnJoinGameMMG.setId("joinbtn");
         btnRespawn.setMinSize(buttonWidth, 60);
         btnRespawn.setAlignment(Pos.CENTER);
         vBoxRespawn2.getChildren().add(btnRespawn);
 
-        Button btnRespawnChangeSpec = new Button("Chance Specialization");
+        Button btnRespawnChangeSpec = new Button("Change Specialization");
         btnRespawn.setMinSize(buttonWidth, buttonHeight);
         btnRespawn.setAlignment(Pos.CENTER);
         vBoxRespawn2.getChildren().add(btnRespawnChangeSpec);
@@ -299,11 +305,12 @@ public class GUI extends Application
         vBoxLB.getChildren().add(btnBackLB);
 
         // Init game things
-        gameManager = new GameClient(getRelativeSceneLocation(tStage));
+        gameClient = new GameClient(getRelativeSceneLocation(tStage));
+        gameClient.register(Observation.SERVER_OFFLINE, this, (Observable, data)->serverOffline());
 
         tStage.heightProperty().addListener(e ->
         {
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage)); // This
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage)); // This
                                                                                     // only
                                                                                     // happens
                                                                                     // once
@@ -313,23 +320,23 @@ public class GUI extends Application
         });
         tStage.widthProperty().addListener(e ->
         {
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
         });
         tStage.xProperty().addListener(e ->
         {
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
         });
         tStage.yProperty().addListener(e ->
         {
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
         });
         gameScene.xProperty().addListener(e ->
         {
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
         });
         gameScene.yProperty().addListener(e ->
         {
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
         });
 
         // Actions
@@ -357,13 +364,13 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionGoToLeaderboard = actionEvent ->
         {
-            HighscoreLeaderboard hBoard = gameManager.getHighscoreLeaderboard();
+            HighscoreLeaderboard hBoard = gameClient.getHighscoreLeaderboard();
             hBoard.setFocusTraversable(false);
             borderLB.setCenter(hBoard);
             BorderPane.setMargin(hBoard, new Insets(12, 12, 12, 12));
-            if (gameManager.getPlayer() != null)
+            if (gameClient.getPlayer() != null)
             {
-                Player client = gameManager.getPlayer();
+                Player client = gameClient.getPlayer();
                 Label you = new Label("YOU:    " + client.getNickname() + " [" + client.getId() + "]    | Score: "
                         + client.getHighscore());
                 borderLB.setBottom(you);
@@ -378,7 +385,7 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionCreateAccount = actionEvent ->
         {
-            gameManager.createAccount(tfUserNameCA.getText(), tfNicknameCA.getText(), pfCA.getText().toCharArray(),
+            gameClient.createAccount(tfUserNameCA.getText(), tfNicknameCA.getText(), pfCA.getText().toCharArray(),
                     pfRepeatCA.getText().toCharArray());
             borderMainMenu.setCenter(hBoxMMG);
             hBoxMMG.requestFocus();
@@ -407,10 +414,14 @@ public class GUI extends Application
             tStage.setScene(gameScene);
             vBoxPmenu.setVisible(false);
             vBoxRespawn.setVisible(false);
-            gameManager.joinAsGuest(gameBox, tfNicknameMMG.getText(), spec);
-            gameManager.getPlayer().register(Observation.EXTERMINATION, this, (observable, data) -> playerDeath());
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
-            canvas.requestFocus();
+            if(gameClient.joinAsGuest(gameBox, tfNicknameMMG.getText(), spec))
+            {
+                gameClient.getPlayer().register(Observation.EXTERMINATION, this, (observable, data) -> playerDeath());
+                gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+                canvas.requestFocus();
+            }
+            
+            
         };
 
         EventHandler<ActionEvent> actionRespawn = actionEvent ->
@@ -431,8 +442,8 @@ public class GUI extends Application
                     spec = Specializations.BLASTER;
                     break;
             }
-            gameManager.respawn(gameBox, spec);
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.respawn(gameBox, spec);
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
             vBoxRespawn.setVisible(false);
             canvas.requestFocus();
         };
@@ -447,8 +458,8 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionRespawnBlaster = actionEvent ->
         {
-            gameManager.respawn(gameBox, Specializations.BLASTER);
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.respawn(gameBox, Specializations.BLASTER);
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
             vBoxRespawn2.getChildren().clear();
             vBoxRespawn2.getChildren().add(btnRespawn);
             vBoxRespawn2.getChildren().add(btnRespawnChangeSpec);
@@ -460,8 +471,8 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionRespawnRoller = actionEvent ->
         {
-            gameManager.respawn(gameBox, Specializations.ROLLER);
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.respawn(gameBox, Specializations.ROLLER);
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
             vBoxRespawn2.getChildren().clear();
             vBoxRespawn2.getChildren().add(btnRespawn);
             vBoxRespawn2.getChildren().add(btnRespawnChangeSpec);
@@ -473,8 +484,8 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionRespawnHeavy = actionEvent ->
         {
-            gameManager.respawn(gameBox, Specializations.HEAVY);
-            gameManager.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+            gameClient.respawn(gameBox, Specializations.HEAVY);
+            gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
             vBoxRespawn2.getChildren().clear();
             vBoxRespawn2.getChildren().add(btnRespawn);
             vBoxRespawn2.getChildren().add(btnRespawnChangeSpec);
@@ -491,15 +502,15 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionRespawnQuit = actionEvent ->
         {
-            gameManager.getPlayer().unregisterAll(this);
-            gameManager.quitGame();
+            gameClient.getPlayer().unregisterAll(this);
+            gameClient.quitGame();
             tStage.setScene(sceneMainMenu);
         };
 
         EventHandler<ActionEvent> actionQuitGame = actionEvent ->
         {
-            gameManager.getPlayer().unregisterAll(this);
-            gameManager.quitGame();
+            gameClient.getPlayer().unregisterAll(this);
+            gameClient.quitGame();
             tStage.setScene(sceneMainMenu);
         };
 
@@ -507,7 +518,7 @@ public class GUI extends Application
         {
             public void handle(WindowEvent we)
             {
-                gameManager.quitGame();
+                gameClient.quitGame();
                 System.exit(0);
             }
         };
@@ -545,10 +556,23 @@ public class GUI extends Application
 
         tStage.setOnCloseRequest(actionQuit);
 
-        hBoxMMG.requestFocus();
+        tfNicknameMMG.requestFocus();
         tStage.show();
     }
-
+    public void serverOffline()
+    {
+        Platform.runLater(() ->
+        {
+            tStage.setScene(sceneMainMenu);
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Server Message");
+            alert.setHeaderText("Server Maintenance");
+            alert.setContentText("We are working on making the server more stable, please try again later :)");
+            alert.showAndWait();
+        });
+        
+    }
+    
     public void playerDeath()
     {
         gameBox.getChildren().get(2).setVisible(true);
