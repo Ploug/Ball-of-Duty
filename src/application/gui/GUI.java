@@ -1,5 +1,6 @@
 package application.gui;
 
+import Exceptions.BadVersionException;
 import application.account.Player;
 import application.communication.GameClient;
 import application.engine.entities.specializations.Specializations;
@@ -33,6 +34,7 @@ import javafx.stage.WindowEvent;
 
 public class GUI extends Application
 {
+    
     public static final int WINDOW_START_WIDTH = 1280;
     public static final int WINDOW_START_HEIGHT = 720;
 
@@ -412,14 +414,26 @@ public class GUI extends Application
                     break;
             }
 
-            tStage.setScene(gameScene);
-            vBoxPmenu.setVisible(false);
-            vBoxRespawn.setVisible(false);
-            if (gameClient.joinAsGuest(gameBox, tfNicknameMMG.getText(), spec))
+            try
             {
-                gameClient.getPlayer().register(Observation.EXTERMINATION, this, (observable, data) -> playerDeath());
-                gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
-                canvas.requestFocus();
+                if (gameClient.joinAsGuest(gameBox, tfNicknameMMG.getText(), spec))
+                {
+                    gameClient.getPlayer().register(Observation.EXTERMINATION, this, (observable, data) -> playerDeath());
+                    tStage.setScene(gameScene);
+                    vBoxPmenu.setVisible(false);
+                    vBoxRespawn.setVisible(false);
+                    gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
+                    canvas.requestFocus();
+                    
+                }
+            }
+            catch (BadVersionException e1)
+            {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Server Message");
+                alert.setHeaderText("Client version out of date");
+                alert.setContentText("We've made a new version of the game, to play the game please redownload the jar file from the same drive link.");
+                alert.showAndWait();
             }
 
         };

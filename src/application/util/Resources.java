@@ -7,7 +7,7 @@ import javafx.scene.media.AudioClip;
 
 public class Resources
 {
-    public static AudioClip johnCena = new AudioClip(new File("src/sounds/JohnCena.mp3").toURI().toString());
+//    public static AudioClip johnCena = new AudioClip(new File("src/sounds/JohnCena.mp3").toURI().toString());
     public static Image blackBall = new Image("images/ball_black.png");
     public static Image blueBall = new Image("images/ball_blue.png");
     public static Image redBall = new Image("images/ball_red.png");
