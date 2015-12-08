@@ -7,7 +7,11 @@ import application.engine.game_object.View;
 import application.engine.game_object.Weapon;
 import application.engine.game_object.physics.Physics;
 import application.engine.rendering.TranslatedPoint;
+import application.util.Resources;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 public class Blaster extends BoDCharacter
 {
@@ -21,12 +25,23 @@ public class Blaster extends BoDCharacter
     private static final int RELOAD_SPEED = 3000;
     private static final double SIZE = 50;
 
-    public Blaster(int id, TranslatedPoint translatedPoint, Image image)
+    public Blaster(int id, TranslatedPoint translatedPoint, Image defaultImage)
     {
         super(id);
         this.body = new Body(this, translatedPoint, SIZE, SIZE, TYPE);
         this.physics = new Physics(this, SPEED);
-        this.view = new View(this, image);
+        
+        Canvas blasterImage = new Canvas(defaultImage.getWidth(), defaultImage.getHeight());
+        blasterImage.getGraphicsContext2D().drawImage(defaultImage, 0, 0);
+        double iconWidth = 20;
+        double iconHeight = iconWidth/Resources.blaster.getWidth()*Resources.blaster.getHeight();
+        blasterImage.getGraphicsContext2D().drawImage(Resources.blaster, blasterImage.getWidth()/2-iconWidth/2, blasterImage.getHeight()/2-iconHeight/2, iconWidth, iconHeight);
+
+        SnapshotParameters sp = new SnapshotParameters();
+        sp.setFill(Color.TRANSPARENT);
+
+        this.view = new View(this, blasterImage.snapshot(sp, null));    
+        
         this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_MAX_SIZE, DAMAGE, BULLET_SPEED, RELOAD_SPEED, BULLET_DIAMETER);
         this.health = new Health(HEALTH);
     }

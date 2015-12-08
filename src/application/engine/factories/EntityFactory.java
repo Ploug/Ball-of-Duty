@@ -17,6 +17,7 @@ import application.engine.entities.specializations.Specializations;
 import application.engine.game_object.GameObject;
 import application.engine.game_object.Weapon;
 import application.engine.rendering.TranslatedPoint;
+import application.util.Resources;
 import application.util.Vector2;
 import javafx.scene.image.Image;
 
@@ -64,8 +65,8 @@ public class EntityFactory
     static
     {
         defaultImages = new HashMap<>();
-        defaultImages.put(EntityType.ENEMY_CHARACTER, new Image("images/ball_red.png"));
-        defaultImages.put(EntityType.WALL, new Image("images/wall_box.png"));
+        defaultImages.put(EntityType.ENEMY_CHARACTER, Resources.redBall);
+        defaultImages.put(EntityType.WALL, Resources.wallBox);
     }
 
     /**

@@ -10,6 +10,7 @@ import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Observable;
 import application.util.Observation;
+import application.util.Resources;
 import javafx.scene.image.Image;
 
 /**
@@ -54,7 +55,7 @@ public class  Player extends Observable
      */
     public void createNewCharacter(int id, Specializations spec)
     {
-        Image myCharImage = new Image("images/ball_blue.png");
+        Image myCharImage = Resources.blueBall;
         if(_character != null)
         {
             _character.unregisterAll(this);

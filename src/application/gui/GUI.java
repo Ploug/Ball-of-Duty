@@ -5,12 +5,15 @@ import application.communication.GameClient;
 import application.engine.entities.specializations.Specializations;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Observation;
+import application.util.Resources;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -20,7 +23,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -74,7 +76,7 @@ public class GUI extends Application
         // Start
         tStage = theStage;
         tStage.setTitle("Ball of Duty");
-        tStage.getIcons().add(new Image("images/Logo.png"));
+        tStage.getIcons().add(Resources.logo);
         tStage.setHeight(WINDOW_START_HEIGHT);
         tStage.setWidth(WINDOW_START_WIDTH);
         tStage.centerOnScreen();
@@ -214,6 +216,7 @@ public class GUI extends Application
         // Game
         gameBox = new Pane();
         Scene gameScene = new Scene(gameBox);
+        gameScene.setCursor(new ImageCursor(Resources.crosshair,Resources.crosshair.getWidth()/2,Resources.crosshair.getHeight()/2));
         gameScene.getStylesheets().add((cssURL));
 
         canvas = new Canvas(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
@@ -370,8 +373,7 @@ public class GUI extends Application
             if (gameClient.getPlayer() != null)
             {
                 Player client = gameClient.getPlayer();
-                Label you = new Label("YOU:    " + client.getNickname() + " [" + client.getId() + "]    | Score: "
-                        + client.getHighscore());
+                Label you = new Label("YOU:    " + client.getNickname() + " [" + client.getId() + "]    | Score: " + client.getHighscore());
                 borderLB.setBottom(you);
             }
             tStage.setScene(sceneLB);
@@ -419,6 +421,7 @@ public class GUI extends Application
                 gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
                 canvas.requestFocus();
             }
+
         };
 
         EventHandler<ActionEvent> actionRespawn = actionEvent ->
@@ -568,6 +571,7 @@ public class GUI extends Application
             alert.setContentText("We are working on making the server more stable, please try again later :)");
             alert.showAndWait();
         });
+
     }
 
     public void playerDeath()

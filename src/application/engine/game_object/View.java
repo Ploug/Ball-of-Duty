@@ -2,6 +2,7 @@ package application.engine.game_object;
 
 import application.engine.entities.BoDCharacter;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -66,8 +67,9 @@ public class View
                  */
                 // Draw orientation vector.
                 gc.setStroke(Color.BLACK);
-                gc.strokeLine(centerX, centerY, centerX + gameObject.getBody().getOrientation().getX(),
-                        centerY + gameObject.getBody().getOrientation().getY());
+                double orientationX = gameObject.getBody().getOrientation().getX();
+                double orientationY = gameObject.getBody().getOrientation().getY();
+                gc.strokeLine(centerX + orientationX * 0.5, centerY + orientationY * 0.5, centerX + orientationX, centerY + orientationY);
             }
             if (gameObject.getHealth() != null)
             {
