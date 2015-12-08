@@ -8,6 +8,7 @@ import application.engine.game_object.Weapon;
 import application.engine.game_object.physics.Physics;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Resources;
+import javafx.application.Platform;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
@@ -34,13 +35,17 @@ public class Roller extends BoDCharacter
         Canvas rollerImage = new Canvas(defaultImage.getWidth(), defaultImage.getHeight());
         rollerImage.getGraphicsContext2D().drawImage(defaultImage, 0, 0);
         double iconWidth = 20;
-        double iconHeight = iconWidth/Resources.roller.getWidth()*Resources.roller.getHeight();
-        rollerImage.getGraphicsContext2D().drawImage(Resources.roller, rollerImage.getWidth()/2-iconWidth/2, rollerImage.getHeight()/2-iconHeight/2, iconWidth, iconHeight);
+        double iconHeight = iconWidth / Resources.roller.getWidth() * Resources.roller.getHeight();
+        rollerImage.getGraphicsContext2D().drawImage(Resources.roller, rollerImage.getWidth() / 2 - iconWidth / 2,
+                rollerImage.getHeight() / 2 - iconHeight / 2, iconWidth, iconHeight);
 
-        SnapshotParameters sp = new SnapshotParameters();
-        sp.setFill(Color.TRANSPARENT);
+        Platform.runLater(() ->
+        {
+            SnapshotParameters sp = new SnapshotParameters();
+            sp.setFill(Color.TRANSPARENT);
 
-        this.view = new View(this, rollerImage.snapshot(sp, null));
+            this.view = new View(this, rollerImage.snapshot(sp, null));
+        });
 
         this.weapon = new Weapon(this, FIRE_RATE, MAGAZINE_MAX_SIZE, DAMAGE, BULLET_SPEED, RELOAD_SPEED, BULLET_DIAMETER);
         this.health = new Health(HEALTH);

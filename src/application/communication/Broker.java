@@ -168,7 +168,7 @@ public class Broker extends Observable
         }
 
         buffer.put((byte)4); // ASCII Standard for End of transmission
-        
+
         sendUdp(buffer);
     }
 
@@ -357,9 +357,11 @@ public class Broker extends Observable
      */
     public void sendUdp(ByteBuffer buffer)
     {
-     // Remove trash data from the buffer before sending.
+        // Remove trash data from the buffer before sending.
         // Otherwise bytesRead will be useless on the receiving side.
         byte[] data = Arrays.copyOf(buffer.array(), buffer.position());
+        DatagramPacket packet = new DatagramPacket(data, data.length, ina, _serverUdpPort);
+
         try
         {
             _socket.send(packet);
