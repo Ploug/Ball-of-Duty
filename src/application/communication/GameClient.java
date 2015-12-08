@@ -41,12 +41,12 @@ public class GameClient extends Observable
     IBoDService ibs;
 
     /**
-     * Creates a game client with the current relative location of the window. The relative location is based on how the scene's is located
-     * relative to the operating system.
+     * Creates a game client with the current relative location of the window. The relative location is based on how the scene's is located relative
+     * to the operating system.
      * 
      * @param windowRelativeLocation
-     *            The current relative location of the window. The relative location is based on how the scene's is located relative to the
-     *            operating system,
+     *            The current relative location of the window. The relative location is based on how the scene's is located relative to the operating
+     *            system,
      */
     public GameClient(TranslatedPoint windowRelativeLocation)
     {
@@ -82,7 +82,8 @@ public class GameClient extends Observable
         }
         catch (RemoteException e)
         {
-           serverOffline();
+            e.printStackTrace();
+            serverOffline();
         }
         return leaderboard;
     }
@@ -100,6 +101,7 @@ public class GameClient extends Observable
         }
         catch (RemoteException e)
         {
+            e.printStackTrace();
             serverOffline();
             return false;
         }
@@ -145,8 +147,7 @@ public class GameClient extends Observable
      * Sets the scenes relative location. The relative location is based on how the scene's is located relative to the operating system.
      * 
      * @param sceneRelativeLocation
-     *            The scenes relative location. he relative location is based on how the scene's is located relative to the operating
-     *            system.
+     *            The scenes relative location. he relative location is based on how the scene's is located relative to the operating system.
      */
     public void setSceneRelativeLocation(TranslatedPoint sceneRelativeLocation)
     {
@@ -157,13 +158,15 @@ public class GameClient extends Observable
         }
 
     }
+
     private void brokerError()
     {
-        if(inGame)
+        if (inGame)
         {
             serverOffline();
         }
     }
+
     private void serverOffline()
     {
         if (cMap != null)
@@ -184,16 +187,16 @@ public class GameClient extends Observable
         System.out.println("trying to join game");
         try
         {
-            
-            if(cMap != null)
+
+            if (cMap != null)
             {
                 cMap.getBroker().unregisterAll(this);
             }
 
-            Broker  broker = new Broker();
-            broker.register(Observation.SERVER_OFFLINE, this, (Observable, data)->brokerError());
-            
             GameDTO map = ibs.joinGame(clientPlayer.getId(), spec.getValue());
+            Broker broker = new Broker(map.getIpAddress(), map.getTcpPort(), map.getUdpPort());
+            broker.register(Observation.SERVER_OFFLINE, this, (Observable, data) -> brokerError());
+
             try
             {
                 broker.readSessionId(map.getSessionId());
@@ -206,7 +209,6 @@ public class GameClient extends Observable
             clientPlayer.createNewCharacter(map.getCharacterId(), spec);
             cMap = new ClientMap(map, gameBox, broker, clientPlayer);
             inGame = true;
-
         }
         catch (RemoteException e)
         {
@@ -244,7 +246,6 @@ public class GameClient extends Observable
             if (ibs != null && clientPlayer != null)
             {
                 ibs.quitGame(clientPlayer.getId());
-
                 inGame = false;
             }
 

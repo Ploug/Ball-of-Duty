@@ -22,11 +22,10 @@ import application.engine.rendering.ClientMap;
 import application.util.LightEvent;
 import application.util.Observable;
 import application.util.Observation;
-import application.util.Timer;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
- * needs to communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that needs to
+ * communicate with the server.
  * 
  */
 public class Broker extends Observable
@@ -36,26 +35,29 @@ public class Broker extends Observable
     private DatagramSocket _socket;
     private Socket tcpSocket;
     private boolean isActive = false;
-    private static final String SERVER_IP = "85.218.183.174";
-    private static final int SERVER_UDP_PORT = 15001;
-    private static final int SERVER_TCP_PORT = 15010;
+    private final String _serverIp;
+    private final int _serverUdpPort;
+    private final int _serverTcpPort;
     private DataOutputStream output = null;
     private long ping = 0; // in ms
     private long lastPing;
     private LightEvent _pingEvent = new LightEvent(1000, () ->
     {
-
         sendPing();
     });
 
     /**
      * Creates a broker communication with a default server ip.
      */
-    public Broker()
+    public Broker(String serverIp, int serverTcpPort, int serverUdpPort)
     {
+        _serverIp = serverIp;
+        _serverTcpPort = serverTcpPort;
+        _serverUdpPort = serverUdpPort;
+
         try
         {
-            ina = InetAddress.getByName(SERVER_IP);
+            ina = InetAddress.getByName(_serverIp);
         }
         catch (UnknownHostException e1)
         {
@@ -72,7 +74,7 @@ public class Broker extends Observable
         }
         try
         {
-            tcpSocket = new Socket(ina, SERVER_TCP_PORT);
+            tcpSocket = new Socket(ina, _serverTcpPort);
             tcpSocket.setTcpNoDelay(true);
             output = new DataOutputStream(tcpSocket.getOutputStream());
         }
@@ -200,10 +202,9 @@ public class Broker extends Observable
         buffer.putInt(Opcodes.PING.getValue());
         buffer.put((byte)2); // ASCII Standard for Start of text
         buffer.put((byte)4); // ASCII Standard for End of transmission
-        
+
         lastPing = System.currentTimeMillis();
         sendTcp(buffer);
-        
     }
 
     /**
@@ -258,7 +259,8 @@ public class Broker extends Observable
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i])
+                throw new Error("Rest in pepperoni m9");
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -269,13 +271,14 @@ public class Broker extends Observable
         buffer.put(sessionId);
         buffer.put((byte)4);
         byte[] buf = buffer.array();
-        _socket.send(new DatagramPacket(buf, buf.length, ina, SERVER_UDP_PORT));
+        _socket.send(new DatagramPacket(buf, buf.length, ina, _serverUdpPort));
 
         input.read(b);
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i])
+                throw new Error("Rest in pepperoni m9");
         }
     }
 
@@ -297,8 +300,7 @@ public class Broker extends Observable
                 }
                 catch (IOException e)
                 {
-
-                    notifyObservers(Observation.SERVER_OFFLINE);
+                    notifyObservers(Observation.SERVER_OFFLINE); // this isnt necessarily a server issue.
                 }
 
                 byte[] data = Arrays.copyOf(packet.getData(), packet.getLength());
@@ -354,7 +356,7 @@ public class Broker extends Observable
      */
     public void sendUdp(byte[] data)
     {
-        DatagramPacket packet = new DatagramPacket(data, data.length, ina, SERVER_UDP_PORT); // TODO dynamically port.
+        DatagramPacket packet = new DatagramPacket(data, data.length, ina, _serverUdpPort);
         try
         {
             _socket.send(packet);
@@ -438,8 +440,7 @@ public class Broker extends Observable
             }
             catch (IOException e)
             {
-                this.notifyObservers(Observation.SERVER_OFFLINE);
-                e.printStackTrace();
+                this.notifyObservers(Observation.SERVER_OFFLINE); // this isnt necessarily a server issue.
             }
         }).start();
     }
@@ -493,7 +494,7 @@ public class Broker extends Observable
                     }
                     case PING:
                     {
-                        ping = System.currentTimeMillis()-lastPing;
+                        ping = System.currentTimeMillis() - lastPing;
                         break;
                     }
                     default:
@@ -515,7 +516,6 @@ public class Broker extends Observable
 
     private void readServerMessage(ByteBuffer input)
     {
-
         map.writeServerMessage(readString(input));
     }
 
@@ -575,7 +575,6 @@ public class Broker extends Observable
         GameObjectDAO data = new GameObjectDAO();
 
         data.nickname = readString(input);
-
         data.objectId = input.getInt();
         data.x = input.getDouble();
         data.y = input.getDouble();

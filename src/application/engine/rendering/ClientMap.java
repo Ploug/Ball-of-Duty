@@ -204,8 +204,8 @@ public class ClientMap extends Observable
                 {
                     gc.strokeText("Health: DEAD", 10, 60, 200);
                 }
-                gc.strokeText("Ammo: "+clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize(), 10, 80, 200);
-                gc.strokeText("Ping: "+ broker.getPing()+" ms", 10, 100, 200);
+                gc.strokeText("Ammo: " + clientChar.getWeapon().getMagazineSize() + "/" + clientChar.getWeapon().getMagazineMaxSize(), 10, 80, 200);
+                gc.strokeText("Ping: " + broker.getPing() + " ms", 10, 100, 200);
                 int LeaderboardY = 20;
                 ObservableList<BoDCharacter> bodChars = leaderboard.getItems();
                 gc.setTextAlign(TextAlignment.RIGHT);
@@ -225,11 +225,11 @@ public class ClientMap extends Observable
                 }
                 gc.setFont(Font.font("Impact", 20));
                 gc.setFill(Color.BLACK);
-                gc.fillText(serverMessage, canvas.getWidth()/2, canvas.getHeight()-200);
+                gc.fillText(serverMessage, canvas.getWidth() / 2, canvas.getHeight() - 200);
                 gc.setFont(Font.font("Verdana", 12));
                 ++frames;
                 canvas.requestFocus();
-            } 
+            }
         };
         animationTimer.start();
         updateThread = new Thread(() ->
@@ -261,9 +261,7 @@ public class ClientMap extends Observable
                     Thread.sleep(20);
                 }
                 catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
+                {}
             }
         });
         updateThread.start();
@@ -492,7 +490,7 @@ public class ClientMap extends Observable
     {
         return broker;
     }
-    
+
     public void writeServerMessage(String readString)
     {
         new Thread(() ->
@@ -509,6 +507,6 @@ public class ClientMap extends Observable
             }
             serverMessage = null;
         }).start();
-        
+
     }
 }

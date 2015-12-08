@@ -24,6 +24,10 @@ public class GameDTO  implements java.io.Serializable {
 
     private byte[] sessionId;
 
+    private java.lang.Integer tcpPort;
+
+    private java.lang.Integer udpPort;
+
     public GameDTO() {
     }
 
@@ -35,7 +39,9 @@ public class GameDTO  implements java.io.Serializable {
            java.lang.Integer mapHeight,
            java.lang.Integer mapWidth,
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players,
-           byte[] sessionId) {
+           byte[] sessionId,
+           java.lang.Integer tcpPort,
+           java.lang.Integer udpPort) {
            this.characterId = characterId;
            this.gameId = gameId;
            this.gameObjects = gameObjects;
@@ -44,6 +50,8 @@ public class GameDTO  implements java.io.Serializable {
            this.mapWidth = mapWidth;
            this.players = players;
            this.sessionId = sessionId;
+           this.tcpPort = tcpPort;
+           this.udpPort = udpPort;
     }
 
 
@@ -206,6 +214,46 @@ public class GameDTO  implements java.io.Serializable {
         this.sessionId = sessionId;
     }
 
+
+    /**
+     * Gets the tcpPort value for this GameDTO.
+     * 
+     * @return tcpPort
+     */
+    public java.lang.Integer getTcpPort() {
+        return tcpPort;
+    }
+
+
+    /**
+     * Sets the tcpPort value for this GameDTO.
+     * 
+     * @param tcpPort
+     */
+    public void setTcpPort(java.lang.Integer tcpPort) {
+        this.tcpPort = tcpPort;
+    }
+
+
+    /**
+     * Gets the udpPort value for this GameDTO.
+     * 
+     * @return udpPort
+     */
+    public java.lang.Integer getUdpPort() {
+        return udpPort;
+    }
+
+
+    /**
+     * Sets the udpPort value for this GameDTO.
+     * 
+     * @param udpPort
+     */
+    public void setUdpPort(java.lang.Integer udpPort) {
+        this.udpPort = udpPort;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GameDTO)) return false;
@@ -241,7 +289,13 @@ public class GameDTO  implements java.io.Serializable {
               java.util.Arrays.equals(this.players, other.getPlayers()))) &&
             ((this.sessionId==null && other.getSessionId()==null) || 
              (this.sessionId!=null &&
-              java.util.Arrays.equals(this.sessionId, other.getSessionId())));
+              java.util.Arrays.equals(this.sessionId, other.getSessionId()))) &&
+            ((this.tcpPort==null && other.getTcpPort()==null) || 
+             (this.tcpPort!=null &&
+              this.tcpPort.equals(other.getTcpPort()))) &&
+            ((this.udpPort==null && other.getUdpPort()==null) || 
+             (this.udpPort!=null &&
+              this.udpPort.equals(other.getUdpPort())));
         __equalsCalc = null;
         return _equals;
     }
@@ -300,6 +354,12 @@ public class GameDTO  implements java.io.Serializable {
                     _hashCode += obj.hashCode();
                 }
             }
+        }
+        if (getTcpPort() != null) {
+            _hashCode += getTcpPort().hashCode();
+        }
+        if (getUdpPort() != null) {
+            _hashCode += getUdpPort().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -368,6 +428,20 @@ public class GameDTO  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "base64Binary"));
         elemField.setMinOccurs(0);
         elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("tcpPort");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "TcpPort"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("udpPort");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "UdpPort"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }
 

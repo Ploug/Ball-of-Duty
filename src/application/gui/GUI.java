@@ -51,8 +51,7 @@ public class GUI extends Application
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
-     *         system.
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating system.
      */
     private TranslatedPoint getRelativeSceneLocation(Stage stage)
     {
@@ -125,12 +124,12 @@ public class GUI extends Application
         Button btnLoginMMG = new Button("Log in");
         btnLoginMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnLoginMMG);
-        btnLoginMMG.setVisible(false); //FIXME When login is implemented.
+        btnLoginMMG.setVisible(false); // FIXME When login is implemented.
 
         Button btnCreateAccountMMG = new Button("Create Account");
         btnCreateAccountMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnCreateAccountMMG);
-        btnCreateAccountMMG.setVisible(false); //FIXME When login is implemented.
+        btnCreateAccountMMG.setVisible(false); // FIXME When login is implemented.
 
         Button btnViewLeaderboardMMG = new Button("Leaderboard");
         btnViewLeaderboardMMG.setMinSize(buttonWidth, buttonHeight);
@@ -306,17 +305,17 @@ public class GUI extends Application
 
         // Init game things
         gameClient = new GameClient(getRelativeSceneLocation(tStage));
-        gameClient.register(Observation.SERVER_OFFLINE, this, (Observable, data)->serverOffline());
+        gameClient.register(Observation.SERVER_OFFLINE, this, (Observable, data) -> serverOffline());
 
         tStage.heightProperty().addListener(e ->
         {
             gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage)); // This
-                                                                                    // only
-                                                                                    // happens
-                                                                                    // once
-                                                                                    // for
-                                                                                    // some
-                                                                                    // reason
+                                                                                   // only
+                                                                                   // happens
+                                                                                   // once
+                                                                                   // for
+                                                                                   // some
+                                                                                   // reason
         });
         tStage.widthProperty().addListener(e ->
         {
@@ -414,14 +413,12 @@ public class GUI extends Application
             tStage.setScene(gameScene);
             vBoxPmenu.setVisible(false);
             vBoxRespawn.setVisible(false);
-            if(gameClient.joinAsGuest(gameBox, tfNicknameMMG.getText(), spec))
+            if (gameClient.joinAsGuest(gameBox, tfNicknameMMG.getText(), spec))
             {
                 gameClient.getPlayer().register(Observation.EXTERMINATION, this, (observable, data) -> playerDeath());
                 gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
                 canvas.requestFocus();
             }
-            
-            
         };
 
         EventHandler<ActionEvent> actionRespawn = actionEvent ->
@@ -559,6 +556,7 @@ public class GUI extends Application
         tfNicknameMMG.requestFocus();
         tStage.show();
     }
+
     public void serverOffline()
     {
         Platform.runLater(() ->
@@ -570,9 +568,8 @@ public class GUI extends Application
             alert.setContentText("We are working on making the server more stable, please try again later :)");
             alert.showAndWait();
         });
-        
     }
-    
+
     public void playerDeath()
     {
         gameBox.getChildren().get(2).setVisible(true);
