@@ -22,12 +22,14 @@ import application.gui.Leaderboard;
 import application.util.LightEvent;
 import application.util.Observable;
 import application.util.Observation;
+import application.util.Resources;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -136,7 +138,7 @@ public class ClientMap extends Observable
      */
     public void activate()
     {
-        Image mapImage = new Image("images/texture_dirt.png");
+        Image mapImage = Resources.dirtTexture;
 
         LightEvent uiPanelEvent = new LightEvent(250, () ->
         {

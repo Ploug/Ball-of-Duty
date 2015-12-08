@@ -8,6 +8,7 @@ import application.engine.entities.Bullet.Type;
 import application.engine.rendering.TranslatedPoint;
 import application.util.Observable;
 import application.util.Observation;
+import application.util.Resources;
 import application.util.Timer;
 import application.util.Vector2;
 import javafx.scene.image.Image;
@@ -38,7 +39,7 @@ public class Weapon extends Observable
     static
     {
         bulletImages = new HashMap<>();
-        bulletImages.put(Type.RIFLE, new Image("images/ball_black.png"));
+        bulletImages.put(Type.RIFLE, Resources.blackBall);
     }
 
     /**
