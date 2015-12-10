@@ -28,6 +28,8 @@ public class GameDTO  implements java.io.Serializable {
 
     private java.lang.Integer udpPort;
 
+    private java.lang.String version;
+
     public GameDTO() {
     }
 
@@ -41,7 +43,8 @@ public class GameDTO  implements java.io.Serializable {
            org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] players,
            byte[] sessionId,
            java.lang.Integer tcpPort,
-           java.lang.Integer udpPort) {
+           java.lang.Integer udpPort,
+           java.lang.String version) {
            this.characterId = characterId;
            this.gameId = gameId;
            this.gameObjects = gameObjects;
@@ -52,6 +55,7 @@ public class GameDTO  implements java.io.Serializable {
            this.sessionId = sessionId;
            this.tcpPort = tcpPort;
            this.udpPort = udpPort;
+           this.version = version;
     }
 
 
@@ -254,6 +258,26 @@ public class GameDTO  implements java.io.Serializable {
         this.udpPort = udpPort;
     }
 
+
+    /**
+     * Gets the version value for this GameDTO.
+     * 
+     * @return version
+     */
+    public java.lang.String getVersion() {
+        return version;
+    }
+
+
+    /**
+     * Sets the version value for this GameDTO.
+     * 
+     * @param version
+     */
+    public void setVersion(java.lang.String version) {
+        this.version = version;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof GameDTO)) return false;
@@ -295,7 +319,10 @@ public class GameDTO  implements java.io.Serializable {
               this.tcpPort.equals(other.getTcpPort()))) &&
             ((this.udpPort==null && other.getUdpPort()==null) || 
              (this.udpPort!=null &&
-              this.udpPort.equals(other.getUdpPort())));
+              this.udpPort.equals(other.getUdpPort()))) &&
+            ((this.version==null && other.getVersion()==null) || 
+             (this.version!=null &&
+              this.version.equals(other.getVersion())));
         __equalsCalc = null;
         return _equals;
     }
@@ -360,6 +387,9 @@ public class GameDTO  implements java.io.Serializable {
         }
         if (getUdpPort() != null) {
             _hashCode += getUdpPort().hashCode();
+        }
+        if (getVersion() != null) {
+            _hashCode += getVersion().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -442,6 +472,13 @@ public class GameDTO  implements java.io.Serializable {
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("version");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "Version"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(true);
         typeDesc.addFieldDesc(elemField);
     }
 

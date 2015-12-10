@@ -12,6 +12,7 @@ import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
+import Exceptions.BadVersionException;
 import application.account.Account;
 import application.account.Player;
 import application.engine.entities.specializations.Specializations;
@@ -32,6 +33,7 @@ import javafx.scene.layout.Pane;
 public class GameClient extends Observable
 {
 
+    public static final String VERSION = "0.0.1";
     private ClientMap cMap;
     private Player clientPlayer;
     private Account account;
@@ -88,7 +90,7 @@ public class GameClient extends Observable
         return leaderboard;
     }
 
-    public boolean joinAsGuest(Pane gameBox, String nickname, Specializations spec)
+    public boolean joinAsGuest(Pane gameBox, String nickname, Specializations spec) throws BadVersionException
     {
         try
         {
@@ -181,8 +183,9 @@ public class GameClient extends Observable
      * 
      * @param gameBox
      *            The BorderPane where the game graphics and UI is handled.
+     * @throws BadVersionException 
      */
-    private void joinGame(Pane gameBox, Specializations spec)
+    private void joinGame(Pane gameBox, Specializations spec) throws BadVersionException
     {
         System.out.println("trying to join game");
         try
@@ -193,7 +196,11 @@ public class GameClient extends Observable
                 cMap.getBroker().unregisterAll(this);
             }
 
-            GameDTO map = ibs.joinGame(clientPlayer.getId(), spec.getValue());
+            GameDTO map = ibs.joinGame(clientPlayer.getId(), spec.getValue(), VERSION);
+            if(!map.getVersion().equals(VERSION))
+            {
+                throw new BadVersionException("Current version out of date");
+            }
             Broker broker = new Broker(map.getIpAddress(), map.getTcpPort(), map.getUdpPort());
             broker.register(Observation.SERVER_OFFLINE, this, (Observable, data) -> brokerError());
 
