@@ -24,8 +24,8 @@ import application.util.Observable;
 import application.util.Observation;
 
 /**
- * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that needs to
- * communicate with the server.
+ * Handles all networking that isn't web service based and acts as a middleman between server and client objects, such as ClientMap, that
+ * needs to communicate with the server.
  * 
  */
 public class Broker extends Observable
@@ -146,27 +146,17 @@ public class Broker extends Observable
      *            the bullets that needs to have its position updated to the server.
      * @throws IOException
      */
-    public void sendUpdate(List<GameObjectDAO> posList)
+    public void sendUpdate(GameObjectDAO data)
     {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte)1); // ASCII Standard for Start of heading
         buffer.putInt(Opcodes.POSITION_UPDATE.getValue());
         buffer.put((byte)2); // ASCII Standard for Start of text
-
-        for (int i = 0; i < posList.size(); ++i)
-        {
-            GameObjectDAO data = posList.get(i);
-            buffer.putInt(data.objectId);
-            buffer.putDouble(data.x);
-            buffer.putDouble(data.y);
-
-            if (i < posList.size() - 1)
-            {
-                buffer.put((byte)31);
-            }
-        }
-
+        buffer.putInt(data.objectId);
+        buffer.putDouble(data.x);
+        buffer.putDouble(data.y);
+        buffer.put((byte)31);
         buffer.put((byte)4); // ASCII Standard for End of transmission
 
         sendUdp(buffer);
@@ -260,8 +250,7 @@ public class Broker extends Observable
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i])
-                throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
         }
 
         ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -278,8 +267,7 @@ public class Broker extends Observable
 
         for (int i = 0; i < sessionId.length; ++i)
         {
-            if (b[i] != sessionId[i])
-                throw new Error("Rest in pepperoni m9");
+            if (b[i] != sessionId[i]) throw new Error("Rest in pepperoni m9");
         }
     }
 
