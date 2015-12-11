@@ -16,7 +16,7 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[6];
+        _operations = new org.apache.axis.description.OperationDesc[8];
         _initOperationDesc1();
     }
 
@@ -119,6 +119,36 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[5] = oper;
 
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("RequestAuthenticationChallenge");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "username"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "LoginDTO"));
+        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "RequestAuthenticationChallengeResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[6] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("CompleteAuthenticationChallenge");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "username"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("http://tempuri.org/", "decryptedChallenge"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "base64Binary"), byte[].class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "PlayerDTO"));
+        oper.setReturnClass(org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("http://tempuri.org/", "CompleteAuthenticationChallengeResult"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[7] = oper;
+
     }
 
     public BasicHttpBinding_IBoDServiceStub() throws org.apache.axis.AxisFault {
@@ -192,6 +222,13 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
             qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "GameObjectDTO");
             cachedSerQNames.add(qName);
             cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://schemas.datacontract.org/2004/07/Ball_of_Duty_Server.DTO", "LoginDTO");
+            cachedSerQNames.add(qName);
+            cls = org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
@@ -473,6 +510,74 @@ public class BasicHttpBinding_IBoDServiceStub extends org.apache.axis.client.Stu
                 return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO) _resp;
             } catch (java.lang.Exception _exception) {
                 return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO requestAuthenticationChallenge(java.lang.String username) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[6]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://tempuri.org/IBoDService/RequestAuthenticationChallenge");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "RequestAuthenticationChallenge"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {username});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO completeAuthenticationChallenge(java.lang.String username, byte[] decryptedChallenge) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[7]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("http://tempuri.org/IBoDService/CompleteAuthenticationChallenge");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://tempuri.org/", "CompleteAuthenticationChallenge"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {username, decryptedChallenge});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO) org.apache.axis.utils.JavaUtils.convert(_resp, org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

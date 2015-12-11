@@ -14,4 +14,6 @@ public interface IBoDService extends java.rmi.Remote {
     public void quitGame(java.lang.Integer clientPlayerId) throws java.rmi.RemoteException;
     public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO[] getLeaderboard() throws java.rmi.RemoteException;
     public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO respawn(java.lang.Integer clientPlayerId, java.lang.Integer clientSpecializations) throws java.rmi.RemoteException;
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO requestAuthenticationChallenge(java.lang.String username) throws java.rmi.RemoteException;
+    public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO completeAuthenticationChallenge(java.lang.String username, byte[] decryptedChallenge) throws java.rmi.RemoteException;
 }

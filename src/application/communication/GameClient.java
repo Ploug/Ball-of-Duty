@@ -8,6 +8,7 @@ import javax.xml.rpc.ServiceException;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameObjectDTO;
+import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO;
 import org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO;
 import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
@@ -20,6 +21,7 @@ import application.engine.rendering.ClientMap;
 import application.engine.rendering.TranslatedPoint;
 import application.gui.HighscoreLeaderboard;
 import application.input.CharacterController;
+import application.util.Cryptohelper;
 import application.util.Observable;
 import application.util.Observation;
 import javafx.scene.layout.Pane;
@@ -90,6 +92,20 @@ public class GameClient extends Observable
         return leaderboard;
     }
 
+    public void login(String username, String password)
+    {
+        try
+        {
+            LoginDTO loginDTO = ibs.requestAuthenticationChallenge(username);
+            ibs.completeAuthenticationChallenge(username, Cryptohelper.Decrypt(loginDTO.getAuthenticationChallenge(),loginDTO.getIV(), password.toCharArray(), loginDTO.getPasswordSalt(), loginDTO.getSessionSalt()));
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
+            serverOffline();
+        }
+    }
+    
     public boolean joinAsGuest(Pane gameBox, String nickname, Specializations spec) throws BadVersionException
     {
         try
@@ -132,7 +148,7 @@ public class GameClient extends Observable
             AccountDTO verifiedAccount = ibs.newAccount(username, nickname, id, account.getSalt(), account.getHash());
             if (verifiedAccount.getId() != 0)
             {
-                System.out.println("Account created, with id: " + verifiedAccount.getId());
+                System.out.println("Account created, with id: " + verifiedAccount.getId() + " and hash: "+new String(account.getHash()));
             }
             else
             {

@@ -8,6 +8,8 @@ import java.util.Arrays;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import application.util.Cryptohelper;
+
 public class Account
 {
     private byte[] _salt;
@@ -29,7 +31,7 @@ public class Account
 
     public byte[] generateHash(char[] password, byte[] salt)
     {
-        PBEKeySpec spec = new PBEKeySpec(password, salt, 1500, 256);
+        PBEKeySpec spec = new PBEKeySpec(password, salt, 1500, Cryptohelper.KEY_LENGTH);
         Arrays.fill(password, Character.MIN_VALUE);
         try
         {

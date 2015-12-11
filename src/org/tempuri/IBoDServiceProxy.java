@@ -50,6 +50,12 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     return iBoDService.newGuest(nickname);
   }
   
+  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientSpecialization, java.lang.String clientVersion) throws java.rmi.RemoteException{
+    if (iBoDService == null)
+      _initIBoDServiceProxy();
+    return iBoDService.joinGame(clientPlayerId, clientSpecialization, clientVersion);
+  }
+  
   public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.AccountDTO newAccount(java.lang.String username, java.lang.String nickname, java.lang.Integer playerId, byte[] salt, byte[] hash) throws java.rmi.RemoteException{
     if (iBoDService == null)
       _initIBoDServiceProxy();
@@ -74,10 +80,16 @@ public class IBoDServiceProxy implements org.tempuri.IBoDService {
     return iBoDService.respawn(clientPlayerId, clientSpecializations);
   }
   
-  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.GameDTO joinGame(java.lang.Integer clientPlayerId, java.lang.Integer clientSpecialization, java.lang.String clientVersion) throws java.rmi.RemoteException{
+  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.LoginDTO requestAuthenticationChallenge(java.lang.String username) throws java.rmi.RemoteException{
     if (iBoDService == null)
       _initIBoDServiceProxy();
-    return iBoDService.joinGame(clientPlayerId, clientSpecialization, clientVersion);
+    return iBoDService.requestAuthenticationChallenge(username);
+  }
+  
+  public org.datacontract.schemas._2004._07.Ball_of_Duty_Server_DTO.PlayerDTO completeAuthenticationChallenge(java.lang.String username, byte[] decryptedChallenge) throws java.rmi.RemoteException{
+    if (iBoDService == null)
+      _initIBoDServiceProxy();
+    return iBoDService.completeAuthenticationChallenge(username, decryptedChallenge);
   }
   
   

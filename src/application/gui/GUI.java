@@ -34,7 +34,7 @@ import javafx.stage.WindowEvent;
 
 public class GUI extends Application
 {
-    
+
     public static final int WINDOW_START_WIDTH = 1280;
     public static final int WINDOW_START_HEIGHT = 720;
 
@@ -55,7 +55,8 @@ public class GUI extends Application
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating system.
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
+     *         system.
      */
     private TranslatedPoint getRelativeSceneLocation(Stage stage)
     {
@@ -128,12 +129,12 @@ public class GUI extends Application
         Button btnLoginMMG = new Button("Log in");
         btnLoginMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnLoginMMG);
-        btnLoginMMG.setVisible(false); // FIXME When login is implemented.
+        btnLoginMMG.setVisible(false); 
 
         Button btnCreateAccountMMG = new Button("Create Account");
         btnCreateAccountMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnCreateAccountMMG);
-        btnCreateAccountMMG.setVisible(false); // FIXME When login is implemented.
+        btnCreateAccountMMG.setVisible(false);
 
         Button btnViewLeaderboardMMG = new Button("Leaderboard");
         btnViewLeaderboardMMG.setMinSize(buttonWidth, buttonHeight);
@@ -218,7 +219,7 @@ public class GUI extends Application
         // Game
         gameBox = new Pane();
         Scene gameScene = new Scene(gameBox);
-        gameScene.setCursor(new ImageCursor(Resources.crosshair,Resources.crosshair.getWidth()/2,Resources.crosshair.getHeight()/2));
+        gameScene.setCursor(new ImageCursor(Resources.crosshair, Resources.crosshair.getWidth() / 2, Resources.crosshair.getHeight() / 2));
         gameScene.getStylesheets().add((cssURL));
 
         canvas = new Canvas(WINDOW_START_WIDTH, WINDOW_START_HEIGHT);
@@ -383,7 +384,7 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionLogin = actionEvent ->
         {
-            // TODO login
+            gameClient.login(tfUserNameLI.getText(), pfLI.getText());
         };
 
         EventHandler<ActionEvent> actionCreateAccount = actionEvent ->
@@ -424,7 +425,7 @@ public class GUI extends Application
                     vBoxRespawn.setVisible(false);
                     gameClient.setSceneRelativeLocation(getRelativeSceneLocation(tStage));
                     canvas.requestFocus();
-                    
+
                 }
             }
             catch (BadVersionException e1)
@@ -432,7 +433,8 @@ public class GUI extends Application
                 Alert alert = new Alert(AlertType.INFORMATION);
                 alert.setTitle("Server Message");
                 alert.setHeaderText("Client version out of date");
-                alert.setContentText("We've made a new version of the game, to play the game please redownload the jar file from the same drive link.");
+                alert.setContentText(
+                        "We've made a new version of the game, to play the game please redownload the jar file from the same drive link.");
                 alert.showAndWait();
             }
 
