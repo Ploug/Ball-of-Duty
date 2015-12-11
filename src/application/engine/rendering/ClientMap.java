@@ -382,15 +382,13 @@ public class ClientMap extends Observable
 
     public void sendUpdate()
     {
-        List<GameObjectDAO> posList = new ArrayList<>();
         double x = clientChar.getBody().getPosition().getX();
         double y = clientChar.getBody().getPosition().getY();
         GameObjectDAO cData = new GameObjectDAO();
         cData.objectId = clientChar.getId();
         cData.x = x;
         cData.y = y;
-        posList.add(cData);
-        broker.sendUpdate(posList);
+        broker.sendUpdate(cData);
     }
 
     public void killNotification(int victimId, int killerId)

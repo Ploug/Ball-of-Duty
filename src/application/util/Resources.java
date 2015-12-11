@@ -13,7 +13,7 @@ public class Resources
     public static Image redBall = new Image("images/ball_red.png");
     public static Image silverBall = new Image("images/ball_silver.png");
     public static Image blaster = new Image("images/Blaster.png");
-    public static Image crosshair = new Image("images/crosshair.png");
+    public static Image crosshair = new Image("images/crosshair_32.png");
     public static Image frontpage = new Image("images/frontpage.png");
     public static Image gamePic = new Image("images/game.jpg");
     public static Image heavy = new Image("images/Heavy.png");
