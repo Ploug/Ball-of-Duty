@@ -13,7 +13,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -55,8 +54,7 @@ public class GUI extends Application
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
-     *         system.
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating system.
      */
     private TranslatedPoint getRelativeSceneLocation(Stage stage)
     {
@@ -129,12 +127,10 @@ public class GUI extends Application
         Button btnLoginMMG = new Button("Log in");
         btnLoginMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnLoginMMG);
-        btnLoginMMG.setVisible(false); 
 
         Button btnCreateAccountMMG = new Button("Create Account");
         btnCreateAccountMMG.setMinSize(buttonWidth, buttonHeight);
         vBoxMMG2.getChildren().add(btnCreateAccountMMG);
-        btnCreateAccountMMG.setVisible(false);
 
         Button btnViewLeaderboardMMG = new Button("Leaderboard");
         btnViewLeaderboardMMG.setMinSize(buttonWidth, buttonHeight);

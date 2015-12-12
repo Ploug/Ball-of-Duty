@@ -21,7 +21,7 @@ import application.engine.rendering.ClientMap;
 import application.engine.rendering.TranslatedPoint;
 import application.gui.HighscoreLeaderboard;
 import application.input.CharacterController;
-import application.util.Cryptohelper;
+import application.util.CryptoHelper;
 import application.util.Observable;
 import application.util.Observation;
 import javafx.scene.layout.Pane;
@@ -97,15 +97,22 @@ public class GameClient extends Observable
         try
         {
             LoginDTO loginDTO = ibs.requestAuthenticationChallenge(username);
-            ibs.completeAuthenticationChallenge(username, Cryptohelper.Decrypt(loginDTO.getAuthenticationChallenge(),loginDTO.getIV(), password.toCharArray(), loginDTO.getPasswordSalt(), loginDTO.getSessionSalt()));
+            CryptoHelper ch = new CryptoHelper(password.toCharArray(), loginDTO.getPasswordSalt(), loginDTO.getSessionSalt());
+            byte[] decryptedChallenge = ch.Decrypt(loginDTO.getAuthenticationChallenge(), loginDTO.getIV());
+            clientPlayer = new Player(ibs.completeAuthenticationChallenge(username, decryptedChallenge));
         }
         catch (RemoteException e)
         {
             e.printStackTrace();
             serverOffline();
         }
+        catch (IllegalArgumentException e)
+        {
+            e.printStackTrace();
+            // todo show invalid password to user.
+        }
     }
-    
+
     public boolean joinAsGuest(Pane gameBox, String nickname, Specializations spec) throws BadVersionException
     {
         try
@@ -114,7 +121,10 @@ public class GameClient extends Observable
             {
                 nickname = nickname.substring(0, 20);
             }
-            clientPlayer = new Player(ibs.newGuest(nickname));
+            if (clientPlayer == null || clientPlayer.getId() == 0)
+            {
+                clientPlayer = new Player(ibs.newGuest(nickname));
+            }
             joinGame(gameBox, spec);
         }
         catch (RemoteException e)
@@ -148,7 +158,7 @@ public class GameClient extends Observable
             AccountDTO verifiedAccount = ibs.newAccount(username, nickname, id, account.getSalt(), account.getHash());
             if (verifiedAccount.getId() != 0)
             {
-                System.out.println("Account created, with id: " + verifiedAccount.getId() + " and hash: "+new String(account.getHash()));
+                System.out.println("Account created, with id: " + verifiedAccount.getId());
             }
             else
             {
@@ -199,7 +209,7 @@ public class GameClient extends Observable
      * 
      * @param gameBox
      *            The BorderPane where the game graphics and UI is handled.
-     * @throws BadVersionException 
+     * @throws BadVersionException
      */
     private void joinGame(Pane gameBox, Specializations spec) throws BadVersionException
     {
@@ -213,7 +223,7 @@ public class GameClient extends Observable
             }
 
             GameDTO map = ibs.joinGame(clientPlayer.getId(), spec.getValue(), VERSION);
-            if(!map.getVersion().equals(VERSION))
+            if (!map.getVersion().equals(VERSION))
             {
                 throw new BadVersionException("Current version out of date");
             }
