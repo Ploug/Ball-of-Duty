@@ -14,6 +14,7 @@ import org.tempuri.BoDServiceLocator;
 import org.tempuri.IBoDService;
 
 import Exceptions.BadVersionException;
+import Exceptions.WrongPasswordException;
 import application.account.Account;
 import application.account.Player;
 import application.engine.entities.specializations.Specializations;
@@ -92,7 +93,7 @@ public class GameClient extends Observable
         return leaderboard;
     }
 
-    public void login(String username, String password)
+    public void login(String username, String password) throws WrongPasswordException 
     {
         try
         {
@@ -108,8 +109,7 @@ public class GameClient extends Observable
         }
         catch (IllegalArgumentException e)
         {
-            e.printStackTrace();
-            // todo show invalid password to user.
+            throw new WrongPasswordException(e.getMessage());
         }
     }
 

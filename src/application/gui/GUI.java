@@ -1,6 +1,7 @@
 package application.gui;
 
 import Exceptions.BadVersionException;
+import Exceptions.WrongPasswordException;
 import application.account.Player;
 import application.communication.GameClient;
 import application.engine.entities.specializations.Specializations;
@@ -42,6 +43,8 @@ public class GUI extends Application
     private Scene sceneMainMenu;
     private Pane gameBox;
     private Stage tStage;
+    private BorderPane borderMainMenu;
+    private HBox hBoxMMG;
     public Canvas canvas;
 
     public static void main(String[] args)
@@ -54,7 +57,8 @@ public class GUI extends Application
      * 
      * @param The
      *            stage of which scene to get the relative location.
-     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating system.
+     * @return The relative location of the scene. The relative location is based on how the scene's is located relative to the operating
+     *         system.
      */
     private TranslatedPoint getRelativeSceneLocation(Stage stage)
     {
@@ -84,7 +88,7 @@ public class GUI extends Application
         tStage.setResizable(false);
 
         // Mainmenu
-        BorderPane borderMainMenu = new BorderPane();
+        borderMainMenu = new BorderPane();
         borderMainMenu.setId("mainmenu");
 
         sceneMainMenu = new Scene(borderMainMenu);
@@ -92,7 +96,7 @@ public class GUI extends Application
         tStage.setScene(sceneMainMenu);
 
         // Mainmenu - Menu Guest (MMG)
-        HBox hBoxMMG = new HBox();
+        hBoxMMG = new HBox();
         BorderPane.setMargin(hBoxMMG, new Insets(200, 0, 0, 340));
         hBoxMMG.setAlignment(Pos.CENTER);
         hBoxMMG.setSpacing(100);
@@ -343,12 +347,7 @@ public class GUI extends Application
         // Actions
         EventHandler<ActionEvent> actionGoToMainMenuGuest = actionEvent ->
         {
-            borderMainMenu.setCenter(hBoxMMG);
-            hBoxMMG.requestFocus();
-            if (tStage.getScene() != sceneMainMenu)
-            {
-                tStage.setScene(sceneMainMenu);
-            }
+            openStartScreen();
         };
 
         EventHandler<ActionEvent> actionGoToLogin = actionEvent ->
@@ -380,7 +379,20 @@ public class GUI extends Application
 
         EventHandler<ActionEvent> actionLogin = actionEvent ->
         {
-            gameClient.login(tfUserNameLI.getText(), pfLI.getText());
+            try
+            {
+                gameClient.login(tfUserNameLI.getText(), pfLI.getText());
+                openStartScreen();
+
+            }
+            catch (WrongPasswordException e1)
+            {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setTitle("Input Message");
+                alert.setHeaderText("Wrong password");
+                alert.setContentText("You've entered a wrong password, please try again.");
+                alert.showAndWait();
+            }
         };
 
         EventHandler<ActionEvent> actionCreateAccount = actionEvent ->
@@ -570,6 +582,17 @@ public class GUI extends Application
 
         tfNicknameMMG.requestFocus();
         tStage.show();
+    }
+
+    private void openStartScreen()
+    {
+        borderMainMenu.setCenter(hBoxMMG);
+        hBoxMMG.requestFocus();
+        if (tStage.getScene() != sceneMainMenu)
+        {
+            tStage.setScene(sceneMainMenu);
+        }
+
     }
 
     public void serverOffline()

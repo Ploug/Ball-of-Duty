@@ -21,6 +21,8 @@ import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
+import Exceptions.WrongPasswordException;
+
 public class CryptoHelper
 {
     public static final int IV_LENGTH = 16; // bytes
@@ -40,7 +42,7 @@ public class CryptoHelper
         _hash = generateHash(passwordHash.toCharArray(), sessionSalt);
     }
 
-    public byte[] Decrypt(byte[] buffer, byte[] iv)
+    public byte[] Decrypt(byte[] buffer, byte[] iv) throws IllegalArgumentException
     {
         if (buffer.length % cipher.getBlockSize() != 0)
         {
@@ -64,13 +66,11 @@ public class CryptoHelper
         }
         catch (DataLengthException e)
         {
-            e.printStackTrace();
             throw new IllegalArgumentException(e.getMessage());
         }
 
         catch (InvalidCipherTextException e)
         {
-            e.printStackTrace();
             throw new IllegalArgumentException(e.getMessage());
         }
     }
